@@ -1,0 +1,2193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Escola de Frevo do Recife</title>
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Ícones Phosphor -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        :root {
+            /* Paleta de Cores Base (Tons Vivos do Frevo) */
+            --primary-blue: #0047AB;
+            /* Azul Royal */
+            --secondary-red: #E30022;
+            /* Vermelho Frevo */
+            --accent-yellow: #FFD700;
+            /* Dourado */
+            --accent-green: #00A859;
+            /* Verde Bandeira */
+            --accent-orange: #FF6B00;
+            /* Laranja Metálico */
+
+            /* Backgrounds e Superfícies */
+            --bg-color: #F8FAFC;
+            --surface: #FFFFFF;
+            --surface-hover: #F1F5F9;
+            --sidebar-bg: #FFFFFF;
+
+            /* Textos */
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --text-light: #F8FAFC;
+
+            /* Bordas e Sombras */
+            --border-color: #E2E8F0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+            /* Elementos UI */
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+            /* Largura Sidebar */
+            --sidebar-width: 260px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* TIPOGRAFIA */
+        h1,
+        h2,
+        h3,
+        h4 {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        /* LAYOUT PRINCIPAL */
+        #app-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* SIDEBAR (NAV) */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+            z-index: 50;
+        }
+
+        .sidebar-header {
+            height: 70px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--primary-blue);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* SVG Simulado da Logo do Frevo (Sombrinha) */
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            background: conic-gradient(var(--primary-blue) 0deg 90deg,
+                    var(--secondary-red) 90deg 180deg,
+                    var(--accent-yellow) 180deg 270deg,
+                    var(--accent-green) 270deg 360deg);
+            border-radius: 50%;
+            clip-path: polygon(50% 50%, 100% 0, 100% 100%, 0 100%, 0 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .brand-logo::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: var(--sidebar-bg);
+            border-radius: 50%;
+        }
+
+        .nav-links {
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+
+        .nav-item i {
+            font-size: 1.25rem;
+        }
+
+        .nav-item:hover {
+            background-color: var(--surface-hover);
+            color: var(--primary-blue);
+        }
+
+        .nav-item.active {
+            background-color: #EFF6FF;
+            color: var(--primary-blue);
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .nav-item.active i {
+            color: var(--primary-blue);
+        }
+
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--surface-hover);
+            transition: var(--transition);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            background-color: var(--primary-blue);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* ÁREA PRINCIPAL E TOPBAR */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .topbar {
+            height: 70px;
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            z-index: 40;
+        }
+
+        .topbar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--secondary-red), var(--accent-yellow), var(--accent-green));
+        }
+
+        .page-title {
+            font-size: 1.25rem;
+            color: var(--text-main);
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.25rem;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .icon-btn:hover {
+            background-color: var(--surface-hover);
+            color: var(--primary-blue);
+        }
+
+        /* VIEWS (SPA LOGIC) */
+        .view-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+        }
+
+        .view {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* CARD SYSTEM */
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .col {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .col-12 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        /* FORMS & INPUTS */
+        .form-group {
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .form-control {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            color: var(--text-main);
+            background-color: var(--surface);
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(10, 58, 138, 0.1);
+        }
+
+        /* BOTÕES */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), #082F72);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover {
+            background-color: #082F72;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--surface-hover);
+        }
+
+        /* DROPDOWN USER MENU */
+        .user-menu {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .user-menu-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: none;
+            border: none;
+            padding: 4px 8px;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .user-menu-btn:hover {
+            background-color: var(--surface-hover);
+        }
+
+        .user-menu-info {
+            text-align: right;
+        }
+
+        .user-menu-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-main);
+            line-height: 1.2;
+        }
+
+        .user-menu-role {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background-color: var(--surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            width: 200px;
+            display: none;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .dropdown-content.active {
+            display: flex;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .dropdown-item {
+            padding: 12px 16px;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.875rem;
+            transition: var(--transition);
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--surface-hover);
+            color: var(--primary-blue);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 4px 0;
+        }
+
+        /* TABLES */
+        .table-responsive {
+            overflow-x: auto;
+            width: 100%;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+            text-align: left;
+        }
+
+        .table th {
+            background-color: #F8FAFC;
+            padding: 12px 16px;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table tbody tr:hover {
+            background-color: var(--surface-hover);
+        }
+
+        /* BADGES */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background-color: rgba(56, 142, 60, 0.1);
+            color: var(--accent-green);
+        }
+
+        .badge-warning {
+            background-color: rgba(246, 193, 11, 0.15);
+            color: #B28C0A;
+        }
+
+        .badge-danger {
+            background-color: rgba(217, 35, 46, 0.1);
+            color: var(--secondary-red);
+        }
+
+        .badge-dark {
+            background-color: var(--text-main);
+            color: white;
+        }
+
+        /* SEARCH BAR NA TABELA */
+        .search-wrapper {
+            position: relative;
+            margin-bottom: 16px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .search-wrapper .form-control {
+            padding-left: 40px;
+            border-radius: var(--radius-full);
+        }
+
+        /* BARRA DO CONSUMO DE VAGAS */
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background-color: #E2E8F0;
+            border-radius: 4px;
+            margin-top: 6px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease, background-color 0.4s ease;
+        }
+
+        .progress-low {
+            background-color: var(--accent-green);
+        }
+
+        .progress-medium {
+            background-color: var(--accent-orange);
+        }
+
+        .progress-high {
+            background-color: var(--secondary-red);
+        }
+
+        /* MODAL E TABS (FORMULÁRIOS COMPLEXOS) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--surface);
+            border-radius: var(--radius-lg);
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #F8FAFC;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-close:hover {
+            color: var(--secondary-red);
+        }
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background-color: #F8FAFC;
+        }
+
+        /* TABS HORIZONTAIS */
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 24px;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 12px 16px;
+            background: none;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            color: var(--primary-blue);
+        }
+
+        .nav-tab.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* CHECKBOXES & RADIOS */
+        .radio-group {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        .radio-label input {
+            accent-color: var(--primary-blue);
+            width: 16px;
+            height: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app-container">
+
+        <!-- SIDEBAR -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <a href="#" class="brand">
+                    <div class="brand-logo"></div>
+                    <span>Escola de Frevo</span>
+                </a>
+            </div>
+
+            <div class="nav-links">
+                <a class="nav-item active" data-target="view-inicio">
+                    <i class="ph ph-squares-four"></i>
+                    <span>Início</span>
+                </a>
+                <a class="nav-item" data-target="view-matriculas">
+                    <i class="ph ph-identification-card"></i>
+                    <span>Matrículas</span>
+                </a>
+                <a class="nav-item" data-target="view-turmas">
+                    <i class="ph ph-users-three"></i>
+                    <span>Turmas</span>
+                </a>
+                <a class="nav-item" data-target="view-admin">
+                    <i class="ph ph-gear"></i>
+                    <span>Administração</span>
+                </a>
+            </div>
+
+            <div class="sidebar-footer" style="padding: 24px 12px; text-align: center;">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
+                    <div style="display: flex; gap: 16px; justify-content: center; align-items: center; opacity: 0.8; mix-blend-mode: multiply; transition: all 0.3s ease; cursor: default;"
+                        onmouseover="this.style.opacity='1';" onmouseout="this.style.opacity='0.8';">
+                        <img src="https://statics.recife.pe.gov.br/images/sefin/logo_emprel_transparente.png"
+                            alt="EMPREL" style="height: 16px;" title="Empresa Municipal de Informática">
+                        <img src="https://statics.recife.pe.gov.br/images/sefin/logo_gestao_pcr_alt_mini_transparente.png"
+                            alt="Prefeitura do Recife" style="height: 22px;" title="Prefeitura do Recife">
+                    </div>
+                    <div style="font-size: 0.65rem; color: var(--text-muted); font-weight: 500; line-height: 1.4;">
+                        © 2026 Escola de Frevo<br>
+                        <span style="font-size: 0.55rem; font-weight: 400;">Versão 1.0.0</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- MAIN LAYOUT -->
+        <main class="main-content">
+
+            <!-- TOPBAR -->
+            <header class="topbar">
+                <h1 class="page-title" id="current-page-title">Página inicial</h1>
+                <div class="topbar-actions">
+                    <button class="icon-btn" title="Notificações"><i class="ph ph-bell"></i></button>
+
+                    <div class="user-menu" onclick="toggleUserMenu()">
+                        <button class="user-menu-btn">
+                            <div class="user-menu-info">
+                                <div class="user-menu-name">Márcio Arruda</div>
+                                <div class="user-menu-role">Administrador</div>
+                            </div>
+                            <div class="user-avatar" style="width: 36px; height: 36px; font-size: 12px;">MA</div>
+                            <i class="ph ph-caret-down" style="color: var(--text-muted);"></i>
+                        </button>
+                        <div class="dropdown-content" id="userDropdown">
+                            <a href="#" class="dropdown-item">
+                                <i class="ph ph-user"></i> Meu Perfil
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="ph ph-gear"></i> Configurações
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item" style="color: var(--secondary-red);">
+                                <i class="ph ph-sign-out"></i> Sair / Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- VIEWS CONTAINER -->
+            <div class="view-container">
+
+                <!-- VIEW 1: INÍCIO (DASHBOARD) -->
+                <section id="view-inicio" class="view active">
+                    <div class="row">
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span class="card-title">Total de Matrículas</span>
+                                    <i class="ph ph-users" style="color: var(--primary-blue); font-size: 1.5rem;"></i>
+                                </div>
+                                <div class="metric-value">1.718</div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span class="card-title">Vagas Disponíveis</span>
+                                    <i class="ph ph-ticket" style="color: var(--accent-green); font-size: 1.5rem;"></i>
+                                </div>
+                                <div class="metric-value">22</div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span class="card-title">Oficina de Férias (2026)</span>
+                                    <i class="ph ph-sun" style="color: var(--accent-orange); font-size: 1.5rem;"></i>
+                                </div>
+                                <div class="metric-value">723</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header" style="margin-bottom: 20px;">
+                                    <h3 style="font-size: 1.1rem; color: var(--text-main);">Matrículas Recentes</h3>
+                                    <div class="search-wrapper" style="margin-bottom: 0;">
+                                        <i class="ph ph-magnifying-glass"></i>
+                                        <input type="text" class="form-control" id="search-dashboard-matriculas"
+                                            placeholder="Buscar em qualquer coluna..."
+                                            onkeyup="filterTable('search-dashboard-matriculas', 'table-dashboard-matriculas')">
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table" id="table-dashboard-matriculas">
+                                        <thead>
+                                            <tr>
+                                                <th>Matrícula</th>
+                                                <th>Tipo</th>
+                                                <th>Nome</th>
+                                                <th>CPF</th>
+                                                <th>Turma</th>
+                                                <th>Professor</th>
+                                                <th>Status / Registro</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>179728</td>
+                                                <td><span class="badge badge-dark">Ano letivo</span></td>
+                                                <td>Maria Eugenia da Rocha Cirne</td>
+                                                <td>059.346.684-01</td>
+                                                <td>Adulto Iniciante - TER/QUI</td>
+                                                <td>Minininho</td>
+                                                <td>
+                                                    <span class="badge badge-danger"
+                                                        style="margin-bottom: 4px; display: inline-block;">Encerrada</span><br>
+                                                    <span
+                                                        style="font-size: 0.70rem; color: var(--text-muted); line-height: 1.2; display: inline-block;">20/12/2025
+                                                        09:15<br>Sistema</span>
+                                                </td>
+                                                <td>
+                                                    <button class="icon-btn" style="color: var(--primary-blue);"
+                                                        title="Visualizar"
+                                                        onclick="openModal('modal-matricula', true)"><i
+                                                            class="ph ph-eye"></i></button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>231532</td>
+                                                <td><span class="badge badge-warning">Oficina de férias</span></td>
+                                                <td>Claudia</td>
+                                                <td>040.119.584-84</td>
+                                                <td>Adulto Iniciante - Roda de Frevo</td>
+                                                <td>Minininho</td>
+                                                <td>
+                                                    <span class="badge badge-danger"
+                                                        style="margin-bottom: 4px; display: inline-block;">Encerrada</span><br>
+                                                    <span
+                                                        style="font-size: 0.70rem; color: var(--text-muted); line-height: 1.2; display: inline-block;">15/01/2026
+                                                        11:20<br>João Silva</span>
+                                                </td>
+                                                <td>
+                                                    <button class="icon-btn" style="color: var(--primary-blue);"
+                                                        title="Visualizar"
+                                                        onclick="openModal('modal-matricula', true)"><i
+                                                            class="ph ph-eye"></i></button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>217438</td>
+                                                <td><span class="badge badge-success">Renovação</span></td>
+                                                <td>Andriele de Melo Santana</td>
+                                                <td>081.018.124-07</td>
+                                                <td>Adulto Avançado - SEXTA</td>
+                                                <td>Alice</td>
+                                                <td>
+                                                    <span class="badge badge-success"
+                                                        style="background-color: var(--accent-green); color: white; margin-bottom: 4px; display: inline-block;">Ativa</span><br>
+                                                    <span
+                                                        style="font-size: 0.70rem; color: var(--text-muted); line-height: 1.2; display: inline-block;">26/02/2026
+                                                        14:32<br>Márcio Arruda</span>
+                                                </td>
+                                                <td>
+                                                    <button class="icon-btn" style="color: var(--primary-blue);"
+                                                        title="Visualizar"
+                                                        onclick="openModal('modal-matricula', true)"><i
+                                                            class="ph ph-eye"></i></button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
+                                    <button class="btn btn-outline"
+                                        onclick="document.querySelector('[data-target=\'view-matriculas\']').click()">Ver
+                                        todas as matrículas</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12" style="margin-top: 24px;">
+                            <div class="card">
+                                <div class="card-header" style="margin-bottom: 20px;">
+                                    <h3 style="font-size: 1.1rem; color: var(--text-main);">Resumo de Turmas (2026)</h3>
+                                    <div class="search-wrapper" style="margin-bottom: 0;">
+                                        <i class="ph ph-magnifying-glass"></i>
+                                        <input type="text" class="form-control" id="search-dashboard-turmas"
+                                            placeholder="Buscar turma, professor, sala..."
+                                            onkeyup="filterTable('search-dashboard-turmas', 'table-dashboard-turmas')">
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table" id="table-dashboard-turmas">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Tipo</th>
+                                                <th>Modalidade / Nível</th>
+                                                <th>Turma</th>
+                                                <th>Professor</th>
+                                                <th>Vagas / Saldo</th>
+                                            </tr>
+                                        </thead>
+                                        <tr>
+                                            <td>71</td>
+                                            <td><span class="badge badge-warning">Oficina de férias</span></td>
+                                            <td>18 a 49 Anos / Avançado</td>
+                                            <td>Adulto Avançado - Tecno Frevo - TER/QUI (10:40) - Sala 1</td>
+                                            <td>Minininho</td>
+                                            <td>
+                                                20 / <span
+                                                    style="color: var(--accent-green); font-weight: 600;">20</span>
+                                                <div class="progress-bar-container" title="0% de vagas consumidas">
+                                                    <div class="progress-bar-fill progress-low" style="width: 0%;">
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>75</td>
+                                            <td><span class="badge badge-warning">Oficina de férias</span></td>
+                                            <td>12 a 17 Anos / Iniciante</td>
+                                            <td>Adolescente Iniciante - Roda de Frevo - SEXTA (10:40) - Sala 2</td>
+                                            <td>Minininho</td>
+                                            <td>
+                                                12 / <span
+                                                    style="color: var(--secondary-red); font-weight: 600;">2</span>
+                                                <div class="progress-bar-container" title="83% de vagas consumidas">
+                                                    <div class="progress-bar-fill progress-high" style="width: 83%;">
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>101</td>
+                                            <td><span class="badge badge-dark">Ano letivo</span></td>
+                                            <td>06 a 11 Anos / Intermediário</td>
+                                            <td>Infantil Intermediário - Pisando em Brasa - TER/QUI (14:50) - Sala 1
+                                            </td>
+                                            <td>Alice</td>
+                                            <td>
+                                                20 / <span
+                                                    style="color: var(--accent-orange); font-weight: 600;">10</span>
+                                                <div class="progress-bar-container" title="50% de vagas consumidas">
+                                                    <div class="progress-bar-fill progress-medium" style="width: 50%;">
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
+                                    <button class="btn btn-outline"
+                                        onclick="document.querySelector('[data-target=\'view-turmas\']').click()">Gerenciar
+                                        turmas</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 2: MATRÍCULAS -->
+                <section id="view-matriculas" class="view">
+                    <div class="card">
+                        <div class="card-header" style="margin-bottom: 24px;">
+                            <div>
+                                <h2 style="font-size: 1.25rem; color: var(--text-main); margin-bottom: 8px;">Gestão de
+                                    Matrículas</h2>
+                                <p style="color: var(--text-muted); font-size: 0.9rem;">Gerencie os alunos cadastrados
+                                    no portal</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="openModal('modal-matricula')">
+                                <i class="ph ph-plus-circle" style="font-size: 1.25rem;"></i>
+                                Nova Matrícula
+                            </button>
+                        </div>
+
+                        <div class="search-wrapper">
+                            <i class="ph ph-magnifying-glass"></i>
+                            <input type="text" class="form-control" id="search-main-matriculas"
+                                placeholder="Buscar por nome, CPF ou matrícula..."
+                                onkeyup="filterTable('search-main-matriculas', 'table-main-matriculas')">
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table" id="table-main-matriculas">
+                                <thead>
+                                    <tr>
+                                        <th>Matrícula</th>
+                                        <th>Tipo</th>
+                                        <th>Nome</th>
+                                        <th>Idade</th>
+                                        <th>Turma</th>
+                                        <th>Professor</th>
+                                        <th>Status / Registro</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>217438</td>
+                                        <td><span class="badge badge-success">Renovação</span></td>
+                                        <td>Andriele de Melo Santana</td>
+                                        <td>31</td>
+                                        <td>Adulto Avançado - SEXTA</td>
+                                        <td>Alice</td>
+                                        <td>
+                                            <span class="badge badge-success"
+                                                style="background-color: var(--accent-green); color: white; margin-bottom: 4px; display: inline-block;">Ativa</span><br>
+                                            <span
+                                                style="font-size: 0.70rem; color: var(--text-muted); line-height: 1.2; display: inline-block;">26/02/2026
+                                                14:32<br>Márcio Arruda</span>
+                                        </td>
+                                        <td>
+                                            <button class="icon-btn" style="color: var(--text-muted);"
+                                                title="Visualizar" onclick="openModal('modal-matricula', true)"><i
+                                                    class="ph ph-eye"></i></button>
+                                            <button class="icon-btn" style="color: var(--primary-blue);"
+                                                title="Editar Matrícula" onclick="openModal('modal-matricula')"><i
+                                                    class="ph ph-pencil-simple"></i></button>
+                                            <button class="icon-btn" style="color: var(--secondary-red);"
+                                                title="Trancar/Cancelar"><i class="ph ph-prohibit"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>179728</td>
+                                        <td><span class="badge badge-dark">Ano letivo</span></td>
+                                        <td>Maria Eugenia da Rocha Cirne</td>
+                                        <td>36</td>
+                                        <td>Adulto Iniciante - TER/QUI</td>
+                                        <td>Minininho</td>
+                                        <td>
+                                            <span class="badge badge-danger"
+                                                style="margin-bottom: 4px; display: inline-block;">Encerrada</span><br>
+                                            <span
+                                                style="font-size: 0.70rem; color: var(--text-muted); line-height: 1.2; display: inline-block;">20/12/2025
+                                                09:15<br>Sistema</span>
+                                        </td>
+                                        <td>
+                                            <button class="icon-btn" style="color: var(--primary-blue);"
+                                                title="Visualizar" onclick="openModal('modal-matricula', true)"><i
+                                                    class="ph ph-eye"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 3: TURMAS -->
+                <section id="view-turmas" class="view">
+                    <div class="card">
+                        <div class="card-header" style="margin-bottom: 24px;">
+                            <div>
+                                <h2 style="font-size: 1.25rem; color: var(--text-main); margin-bottom: 8px;">Gestão de
+                                    Turmas</h2>
+                                <p style="color: var(--text-muted); font-size: 0.9rem;">Gerencie as turmas, horários,
+                                    professores e vagas</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="openModal('modal-turma')">
+                                <i class="ph ph-plus-circle" style="font-size: 1.25rem;"></i>
+                                Nova Turma
+                            </button>
+                        </div>
+
+                        <div class="search-wrapper">
+                            <i class="ph ph-magnifying-glass"></i>
+                            <input type="text" class="form-control" id="search-main-turmas"
+                                placeholder="Buscar turma, professor, nível, ano..."
+                                onkeyup="filterTable('search-main-turmas', 'table-main-turmas')">
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table" id="table-main-turmas">
+                                <thead>
+                                    <tr>
+                                        <th>ID / Ano</th>
+                                        <th>Tipo / Modalidade</th>
+                                        <th>Turma / Nível</th>
+                                        <th>Sala</th>
+                                        <th>Professor</th>
+                                        <th>Vagas / Matrículas</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>71</strong><br><span class="badge badge-dark">2026</span></td>
+                                        <td>Oficina de férias<br><span
+                                                style="color:var(--text-muted); font-size: 0.8rem;">18 A 49 ANOS</span>
+                                        </td>
+                                        <td>Adulto Avançado - Tecno Frevo - TER/QUI (10:40)<br><span
+                                                class="badge badge-dark"
+                                                style="background:#E2E8F0; color: var(--text-main);">Avançado - Tecno
+                                                Frevo</span></td>
+                                        <td>Sala 1</td>
+                                        <td>Minininho</td>
+                                        <td>
+                                            <span>20 / 0</span> <br>
+                                            <span
+                                                style="color: var(--accent-green); font-weight:600; font-size:0.85rem;">Saldo:
+                                                20</span>
+                                            <div class="progress-bar-container" title="0% preenchido">
+                                                <div class="progress-bar-fill progress-low" style="width: 0%;"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <button class="icon-btn" style="color: var(--primary-blue);"
+                                                title="Editar Turma" onclick="openModal('modal-turma')"><i
+                                                    class="ph ph-pencil-simple"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>75</strong><br><span class="badge badge-dark">2026</span></td>
+                                        <td>Oficina de férias<br><span
+                                                style="color:var(--text-muted); font-size: 0.8rem;">12 A 17 ANOS</span>
+                                        </td>
+                                        <td>Adolescente Iniciante - Roda de Frevo - SEXTA (10:40)<br><span
+                                                class="badge badge-dark"
+                                                style="background:#E2E8F0; color: var(--text-main);">Iniciante - Roda de
+                                                Frevo</span></td>
+                                        <td>Sala 2</td>
+                                        <td>Minininho</td>
+                                        <td>
+                                            <span>12 / 10</span> <br>
+                                            <span
+                                                style="color: var(--secondary-red); font-weight:600; font-size:0.85rem;">Saldo:
+                                                2</span>
+                                            <div class="progress-bar-container" title="83% preenchido">
+                                                <div class="progress-bar-fill progress-high" style="width: 83%;"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <button class="icon-btn" style="color: var(--primary-blue);"
+                                                title="Editar Turma" onclick="openModal('modal-turma')"><i
+                                                    class="ph ph-pencil-simple"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 4: ADMINISTRAÇÃO -->
+                <section id="view-admin" class="view">
+                    <div class="card">
+                        <div class="card-header" style="margin-bottom: 24px;">
+                            <div>
+                                <h2 style="font-size: 1.25rem; color: var(--text-main); margin-bottom: 8px;">
+                                    Administração Escolar</h2>
+                                <p style="color: var(--text-muted); font-size: 0.9rem;">Configure os prazos de
+                                    matrículas e aulas</p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Coluna Esquerda: Períodos de Matrícula -->
+                            <div class="col" style="flex: 2;">
+                                <h3
+                                    style="font-size: 1.1rem; color: var(--text-main); margin-bottom: 16px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">
+                                    Períodos de Matrícula</h3>
+
+                                <form>
+                                    <div class="card"
+                                        style="box-shadow: none; border: 1px solid var(--border-color); margin-bottom: 16px; padding: 16px;">
+                                        <h4
+                                            style="font-size: 0.95rem; color: var(--primary-blue); margin-bottom: 12px;">
+                                            Oficina de Férias</h4>
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="form-group">
+                                                    <label class="form-label">Início</label>
+                                                    <input type="date" class="form-control" value="2025-12-01">
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="form-group">
+                                                    <label class="form-label">Fim</label>
+                                                    <input type="date" class="form-control" value="2025-12-15">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="card"
+                                        style="box-shadow: none; border: 1px solid var(--border-color); margin-bottom: 16px; padding: 16px;">
+                                        <h4
+                                            style="font-size: 0.95rem; color: var(--accent-orange); margin-bottom: 12px;">
+                                            Renovação de Matrículas</h4>
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="form-group">
+                                                    <label class="form-label">Início</label>
+                                                    <input type="date" class="form-control" value="2026-01-10">
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="form-group">
+                                                    <label class="form-label">Fim</label>
+                                                    <input type="date" class="form-control" value="2026-01-20">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="card"
+                                        style="box-shadow: none; border: 1px solid var(--border-color); margin-bottom: 16px; padding: 16px;">
+                                        <h4
+                                            style="font-size: 0.95rem; color: var(--accent-green); margin-bottom: 12px;">
+                                            Novas Matrículas</h4>
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="form-group">
+                                                    <label class="form-label">Início</label>
+                                                    <input type="date" class="form-control" value="2026-01-25">
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="form-group">
+                                                    <label class="form-label">Fim</label>
+                                                    <input type="date" class="form-control" value="2026-02-05">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Coluna Direita: Início das Aulas -->
+                            <div class="col" style="flex: 1;">
+                                <h3
+                                    style="font-size: 1.1rem; color: var(--text-main); margin-bottom: 16px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">
+                                    Datas Importantes</h3>
+
+                                <div class="card"
+                                    style="box-shadow: none; border: 1px solid var(--border-color); background-color: var(--surface-hover); padding: 16px;">
+                                    <div class="form-group" style="margin-bottom: 16px;">
+                                        <label class="form-label">Início das Aulas (Oficina)</label>
+                                        <input type="date" class="form-control" value="2026-01-05">
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 0;">
+                                        <label class="form-label">Início das Aulas (Ano Letivo)</label>
+                                        <input type="date" class="form-control" value="2026-02-15">
+                                    </div>
+                                </div>
+
+                                <button class="btn btn-primary" style="width: 100%; margin-top: 24px;"
+                                    onclick="alert('Configurações salvas com sucesso!')">Salvar Configurações</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+        <!-- MODAIS -->
+
+        <!-- Modal Nova Matrícula -->
+        <div class="modal-overlay" id="modal-matricula">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Cadastro / Edição de Matrícula</h2>
+                    <button class="btn-close" onclick="closeModal('modal-matricula')"><i class="ph ph-x"></i></button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Abas -->
+                    <div class="nav-tabs">
+                        <button class="nav-tab active" data-tab="tab-identificacao"
+                            onclick="switchTab(this, 'modal-matricula')">Identificação</button>
+                        <button class="nav-tab" data-tab="tab-saude"
+                            onclick="switchTab(this, 'modal-matricula')">Saúde</button>
+                        <button class="nav-tab" data-tab="tab-turma"
+                            onclick="switchTab(this, 'modal-matricula')">Turma</button>
+                        <button class="nav-tab" data-tab="tab-endereco"
+                            onclick="switchTab(this, 'modal-matricula')">Endereço</button>
+                        <button class="nav-tab" data-tab="tab-documentacao"
+                            onclick="switchTab(this, 'modal-matricula')">Documentação & Imagem</button>
+                    </div>
+
+                    <!-- Conteúdo das Abas -->
+                    <form id="formMatricula">
+                        <!-- TAB: Identificação -->
+                        <div class="tab-content active" id="tab-identificacao">
+                            <!-- Campos Ocultos de Controle (Inventory JSON) -->
+                            <input type="hidden" id="tipoMatricula" name="tipomatricula" value="">
+                            <input type="hidden" id="tipo" name="tipo" value="">
+
+                            <!-- Tipo de matrícula (UI Interativa apenas para controle de UX) -->
+                            <div class="row" style="margin-bottom: 24px;">
+                                <div class="col-12">
+                                    <label class="form-label"
+                                        style="display: block; margin-bottom: 12px; font-weight: 600;">Escolha o tipo de
+                                        matrícula *</label>
+                                    <div class="radio-group">
+                                        <label class="radio-label"><input type="radio" name="ui_tipo_matricula"
+                                                value="Renovação" checked> Renovação</label>
+                                        <label class="radio-label"><input type="radio" name="ui_tipo_matricula"
+                                                value="Nova"> Nova</label>
+                                        <label class="radio-label"><input type="radio" name="ui_tipo_matricula"
+                                                value="Oficina de Férias"> Oficina de Férias</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr style="border: 0; border-top: 1px solid var(--border-color); margin-bottom: 24px;">
+
+                            <!-- Campos de Identificação Básica -->
+                            <div class="row">
+                                <div class="col" style="flex: 0 0 150px;">
+                                    <div class="form-group">
+                                        <label class="form-label" for="anoLetivo">Ano Letivo</label>
+                                        <input type="text" class="form-control" id="anoLetivo" value="2026" readonly
+                                            style="background-color: var(--surface-hover); color: var(--primary-blue); font-weight: 600;">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="proximonivel">Próximo nível</label>
+                                        <input type="text" class="form-control" id="proximonivel" name=""
+                                            placeholder="Apenas visualização">
+                                    </div>
+                                </div>
+                                <div class="col"
+                                    style="display: flex; align-items: flex-end; justify-content: flex-end;">
+                                    <div style="text-align: right; margin-bottom: 16px;">
+                                        <span
+                                            style="font-size: 0.75rem; color: var(--text-muted); display: block;">Último
+                                            registro/atualização:</span>
+                                        <span style="font-size: 0.85rem; color: var(--text-main); font-weight: 500;"><i
+                                                class="ph ph-clock"
+                                                style="vertical-align: middle; margin-right: 4px;"></i> 26/02/2026 14:32
+                                            por <strong>Márcio Arruda</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col" style="flex: 1.5;">
+                                    <div class="form-group">
+                                        <label class="form-label" for="cpf">CPF *</label>
+                                        <input type="text" class="form-control" id="cpf" name="cpf_aluno"
+                                            placeholder="Ex: 000.000.000-00">
+                                    </div>
+                                </div>
+                                <div class="col" style="flex: 2;">
+                                    <div class="form-group">
+                                        <label class="form-label" for="nomeCompleto">Nome Completo *</label>
+                                        <input type="text" class="form-control" id="nomeCompleto" name="nome"
+                                            placeholder="Ex: Maria Eugenia da Rocha Cirne">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="datanascimento">Data de Nascimento *</label>
+                                        <input type="date" class="form-control" id="datanascimento" name="data_nasc">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col" style="flex: 0 0 100px;">
+                                    <div class="form-group">
+                                        <label class="form-label" for="idade">Idade</label>
+                                        <input type="number" class="form-control" id="idade" name="idade"
+                                            placeholder="35">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="faixaetaria">Faixa Etária</label>
+                                        <input type="text" class="form-control" id="faixaetaria" name="faixa_etaria"
+                                            placeholder="18 A 49 ANOS" readonly>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="racacor">Raça/Cor *</label>
+                                        <select class="form-control" id="racacor" name="raca_cor">
+                                            <option>Branca</option>
+                                            <option>Parda</option>
+                                            <option>Preta</option>
+                                            <option>Amarela</option>
+                                            <option>Indígena</option>
+                                            <option>Não Informado</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="genero">Gênero *</label>
+                                        <select class="form-control" id="genero" name="genero">
+                                            <option>Feminino</option>
+                                            <option>Masculino</option>
+                                            <option>Não Binário</option>
+                                            <option>Outros</option>
+                                            <option>Prefiro não informar</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr style="border: 0; border-top: 1px solid var(--border-color); margin-bottom: 24px;">
+
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="email">E-mail *</label>
+                                        <input type="email" class="form-control" id="email" name="email"
+                                            placeholder="email@gmail.com">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="confirmarEmail">Confirme seu E-mail *</label>
+                                        <input type="email" class="form-control" id="confirmarEmail" name=""
+                                            placeholder="email@gmail.com">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="whatsapp">WhatsApp (11 dígitos) *</label>
+                                        <input type="text" class="form-control" id="whatsapp" name="telefone"
+                                            placeholder="(81) 99144-9586">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="confirmarWhatsApp">Confirme seu WhatsApp
+                                            *</label>
+                                        <input type="text" class="form-control" id="confirmarWhatsApp" name=""
+                                            placeholder="(81) 99144-9586">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col" style="flex: 1;">
+                                    <div class="form-group">
+                                        <label class="form-label" for="cpfresponsavel">CPF do Responsável</label>
+                                        <input type="text" class="form-control" id="cpfresponsavel"
+                                            name="cpf_responsavel" placeholder="000.000.000-00">
+                                    </div>
+                                </div>
+                                <div class="col" style="flex: 2;">
+                                    <div class="form-group">
+                                        <label class="form-label" for="nomeCompletoResponsavel">Nome do
+                                            Responsável</label>
+                                        <input type="text" class="form-control" id="nomeCompletoResponsavel"
+                                            name="nome_responsavel" placeholder="Nome Completo (Apenas se de menor)">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB: Saúde -->
+                        <div class="tab-content" id="tab-saude">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group" style="margin-bottom: 24px;">
+                                        <label class="form-label" for="pcd_ask" style="margin-bottom: 8px;">É pessoa com
+                                            deficiência
+                                            (PCD)? *</label>
+                                        <select class="form-control" id="pcd_ask" name="pcd_ask">
+                                            <option value="">Selecione...</option>
+                                            <option value="Sim">Sim</option>
+                                            <option value="Não">Não</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col" style="flex: 1;">
+                                            <div class="form-group" style="margin-bottom: 24px;">
+                                                <label class="form-label" for="tipo_def_ask"
+                                                    style="margin-bottom: 8px;">Qual o tipo de deficiência?</label>
+                                                <select class="form-control" id="tipo_def_ask" name="tipo_pcd_ask">
+                                                    <option value="">Selecione...</option>
+                                                    <option value="Física">Física</option>
+                                                    <option value="Visual">Visual</option>
+                                                    <option value="Auditiva">Auditiva</option>
+                                                    <option value="Intelectual">Intelectual</option>
+                                                    <option value="Outra">Outra</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col" style="flex: 2;">
+                                            <div class="form-group" style="margin-bottom: 24px;">
+                                                <label class="form-label" for="qual_deficiencia_ask"
+                                                    style="margin-bottom: 8px;">Qual a deficiência?</label>
+                                                <select class="form-control" id="qual_deficiencia_ask"
+                                                    name="qual_deficiencia_ask">
+                                                    <option value="">Selecione ou descreva...</option>
+                                                    <!-- Opções injetáveis via sistema -->
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group" style="margin-bottom: 24px;">
+                                        <label class="form-label" for="contraindicacao_medica_ask"
+                                            style="margin-bottom: 8px;">Possui contraindicação médica/doença crônica?
+                                            *</label>
+                                        <select class="form-control" id="contraindicacao_medica_ask"
+                                            name="contraindicacao_medica_ask">
+                                            <option value="">Selecione...</option>
+                                            <option value="Sim">Sim</option>
+                                            <option value="Não">Não</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group" style="margin-bottom: 24px;">
+                                        <label class="form-label" for="qual_contraindicacao_ask"
+                                            style="font-size: 0.8rem; color: var(--text-muted);">Qual a
+                                            contraindicação/doença?</label>
+                                        <input type="text" class="form-control" id="qual_contraindicacao_ask"
+                                            name="qual_contraindicacao_ask" placeholder="Descreva, se houver...">
+                                    </div>
+
+                                    <div class="form-group" style="margin-bottom: 24px;">
+                                        <label class="form-label" for="realiza_atv_ask"
+                                            style="margin-bottom: 8px;">Realiza alguma atividade
+                                            física? *</label>
+                                        <select class="form-control" id="realiza_atv_ask" name="realiza_atv_ask"
+                                            style="margin-bottom: 12px;">
+                                            <option value="">Selecione...</option>
+                                            <option value="Sim">Sim</option>
+                                            <option value="Não">Não</option>
+                                        </select>
+
+                                        <label class="form-label" for="descreva_atv_ask"
+                                            style="font-size: 0.8rem; color: var(--text-muted);">Descreva a atividade
+                                            *</label>
+                                        <input type="text" class="form-control" id="descreva_atv_ask"
+                                            name="descreva_atv_ask" placeholder="Ex: Musculação">
+                                    </div>
+
+                                    <div class="form-group" style="margin-bottom: 24px;">
+                                        <label class="form-label" for="usa_mediamento_ask"
+                                            style="margin-bottom: 8px;">Faz uso contínuo de algum medicamento? *</label>
+                                        <select class="form-control" id="usa_mediamento_ask" name="usa_medicamento_ask"
+                                            style="margin-bottom: 12px;">
+                                            <option value="">Selecione...</option>
+                                            <option value="Sim">Sim</option>
+                                            <option value="Não">Não</option>
+                                        </select>
+                                        <label class="form-label" for="descreva_medicamento_ask"
+                                            style="font-size: 0.8rem; color: var(--text-muted);">Quais medicamentos?
+                                            *</label>
+                                        <input type="text" class="form-control" id="descreva_medicamento_ask"
+                                            name="descreva_medicamento_ask" placeholder="Descreva...">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="alergia_ask" style="margin-bottom: 8px;">Possui
+                                            alergia ou contraindicação a medicamentos? *</label>
+                                        <select class="form-control" id="alergia_ask" name="alergia_ask"
+                                            style="margin-bottom: 12px;">
+                                            <option value="">Selecione...</option>
+                                            <option value="Sim">Sim</option>
+                                            <option value="Não">Não</option>
+                                        </select>
+
+                                        <label class="form-label" for="descreva_alergia_ask"
+                                            style="font-size: 0.8rem; color: var(--text-muted);">Qual
+                                            alergia/contraindicação? *</label>
+                                        <input type="text" class="form-control" id="descreva_alergia_ask"
+                                            name="descreva_alergia_ask" placeholder="Descreva...">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB: Turma -->
+                        <div class="tab-content" id="tab-turma">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group" style="margin-bottom: 20px;">
+                                        <label class="form-label" for="turma">Turma</label>
+                                        <!-- Utilizado Select pois JSON indica type="select" -->
+                                        <select class="form-control" id="turma" name="turma"
+                                            style="background-color: var(--surface-hover);">
+                                            <option value="">Selecione ou busque avançado...</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="nivel">Nível</label>
+                                        <select class="form-control" id="nivel" name="nivel">
+                                            <option value="">Selecione</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="modalidade">Modalidade</label>
+                                        <input type="text" class="form-control" id="modalidade" name="modalidade"
+                                            value="" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="dias">Dias</label>
+                                        <input type="text" class="form-control" id="dias" name="dias" value="" readonly>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="horario">Horário</label>
+                                        <input type="text" class="form-control" id="horario" name="horario" value=""
+                                            readonly>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="local">Sala</label>
+                                        <input type="text" class="form-control" id="local" name="sala" value=""
+                                            readonly>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="professor">Professor</label>
+                                        <input type="text" class="form-control" id="professor" name="professor" value=""
+                                            readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin-top: 20px; text-align: right;">
+                                <button type="button" class="btn btn-outline"
+                                    style="color: var(--primary-blue); border-color: var(--primary-blue);">
+                                    <i class="ph ph-magnifying-glass"></i> Escolher Outra Turma
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- TAB: Endereço -->
+                        <div class="tab-content" id="tab-endereco">
+                            <div class="row">
+                                <div class="col" style="flex: 0 0 150px;">
+                                    <div class="form-group">
+                                        <label class="form-label" for="cep">CEP *</label>
+                                        <input type="text" class="form-control" id="cep" name="cep" value="52051340">
+                                    </div>
+                                </div>
+                                <div class="col" style="flex: 2;">
+                                    <div class="form-group">
+                                        <label class="form-label" for="logradouro">Logradouro *</label>
+                                        <input type="text" class="form-control" id="logradouro" name="logradouro"
+                                            value="Bento Loiola">
+                                    </div>
+                                </div>
+                                <div class="col" style="flex: 0 0 120px;">
+                                    <div class="form-group">
+                                        <label class="form-label" for="numero">Número *</label>
+                                        <input type="text" class="form-control" id="numero" name="numero" value="70">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="complemento">Complemento</label>
+                                        <input type="text" class="form-control" id="complemento" name="complemento"
+                                            placeholder="ex: apto 02">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="bairro">Bairro *</label>
+                                        <input type="text" class="form-control" id="bairro" name="bairro"
+                                            value="Casa Amarela">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="cidade">Cidade *</label>
+                                        <input type="text" class="form-control" id="cidade" name="cidade"
+                                            value="Recife">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB: Documentação -->
+                        <div class="tab-content" id="tab-documentacao">
+                            <!-- Documentação -->
+                            <div class="row" style="margin-bottom: 24px;">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="possuirg" style="margin-bottom: 8px;">Possui RG?
+                                            *</label>
+                                        <select class="form-control" id="possuirg" name="possuirg">
+                                            <option value="">Selecione...</option>
+                                            <option value="Sim" selected>Sim</option>
+                                            <option value="Não">Não</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-bottom: 24px;">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="rg_frente">Anexar RG/CNH frente</label>
+                                        <input type="file" class="form-control" id="rg_frente" name="rg_frente">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="rg_verso">Anexar RG/CNH verso</label>
+                                        <input type="file" class="form-control" id="rg_verso" name="rg_verso">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-bottom: 24px;">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="certidao_nasc">Anexar certidão de
+                                            nascimento</label>
+                                        <input type="file" class="form-control" id="certidao_nasc" name="certidao_nasc">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="parecer_medico">Anexar laudo médico</label>
+                                        <input type="file" class="form-control" id="parecer_medico"
+                                            name="parecer_medico">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr style="border: 0; border-top: 1px solid var(--border-color); margin-bottom: 24px;">
+                            <h4 style="margin-bottom: 16px; font-size: 1rem; color: var(--text-main);">Uso de Imagem
+                            </h4>
+
+                            <div class="card"
+                                style="background-color: var(--surface-hover); padding: 16px; box-shadow: none; border: 1px solid var(--border-color); margin-bottom: 16px;">
+                                <h5 style="margin-bottom: 8px; font-size: 0.85rem;">AUTORIZAÇÃO DE USO DE IMAGEM</h5>
+                                <p
+                                    style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; text-align: justify;">
+                                    Declaro que autorizo o uso da minha imagem ou da imagem do menor pelo qual sou
+                                    responsável em todo e qualquer material entre fotos, documentos e outros meios de
+                                    comunicação, para ser utilizada em campanhas promocionais e institucionais da
+                                    Prefeitura da Cidade do Recife, com sede na Avenida Cais do Apolo, 925, Bairro do
+                                    Recife, Recife/PE, CEP 50030-903, inscrita no CNPJ sob o nº 10.565.000/0001-92,
+                                    sejam essas destinadas à divulgação ao público em geral e/ou apenas para uso interno
+                                    desta instituição, desde que não haja desvirtuamento da sua finalidade. A presente
+                                    autorização é concedida a título gratuito, abrangendo o uso da imagem acima
+                                    mencionada em todo território nacional e no exterior, em todas as suas modalidades
+                                    e, em destaque das seguintes formas: (I) outdoor, (II) busdoor; folhetos em geral
+                                    (encarte, mala-direta, catálogo, etc.), (III) folder de apresentação, (IV) anúncios
+                                    em revistas e jornais em geral, (V) home page, (VI) cartazes, (VII) backlight,
+                                    (VIII) mídia eletrônica (painéis, vídeo-tapes, televisão, cinema, programa para
+                                    rádio, entre outros). Por esta ser a expressão da minha vontade, autorizo o uso
+                                    acima descrito sem que nada haja a ser reclamado a qualquer tempo ou título.
+                                </p>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="radio-label" style="font-weight: 500; font-size: 0.95rem;">
+                                    <input type="radio" name="autoriza_imagem" value="Sim" checked> Autorizo o uso de
+                                    minha imagem
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-outline" onclick="closeModal('modal-matricula')">Cancelar</button>
+                    <button class="btn btn-primary"
+                        onclick="alert('Funcionalidade de salvar será implementada em breve!')">Salvar
+                        Matrícula</button>
+                </div>
+            </div>
+            <!-- Modal Nova Turma -->
+            <div class="modal-overlay" id="modal-turma">
+                <div class="modal-content">
+                    <div class="modal-header" style="background-color: var(--accent-orange);">
+                        <h2 class="modal-title" style="color: white; text-align: center; width: 100%;">CADASTRO/EDIÇÃO
+                            DE TURMA</h2>
+                        <button class="btn-close" style="color: white;" onclick="closeModal('modal-turma')"><i
+                                class="ph ph-x"></i></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <form id="formTurma">
+                            <div class="row">
+                                <div class="col" style="flex: 0 0 160px;">
+                                    <div class="form-group">
+                                        <label class="form-label">Ano letivo *</label>
+                                        <select class="form-control">
+                                            <option>2026</option>
+                                            <option>2025</option>
+                                        </select>
+                                        <span
+                                            style="font-size: 0.75rem; color: var(--primary-blue); cursor: pointer;">Busca
+                                            avançada</span>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" style="margin-bottom: 8px;">Tipo de cadastro</label>
+                                        <div class="radio-group">
+                                            <label class="radio-label"><input type="radio" name="tipo_cad_turma"
+                                                    value="Nova turma" checked> Nova Turma</label>
+                                            <label class="radio-label" style="color: var(--text-muted);"><input
+                                                    type="radio" name="tipo_cad_turma" value="Existente" disabled> Turma
+                                                já existente</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" style="margin-bottom: 8px;">Tipo de turma *</label>
+                                        <div class="radio-group">
+                                            <label class="radio-label"><input type="radio" name="tipo_turma_mod"
+                                                    value="Oficina" checked> Oficina de férias</label>
+                                            <label class="radio-label"><input type="radio" name="tipo_turma_mod"
+                                                    value="Ano letivo"> Ano letivo</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col" style="flex: 0 0 150px;">
+                                    <div class="form-group">
+                                        <label class="form-label">Vagas</label>
+                                        <input type="number" class="form-control" placeholder="20">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col" style="flex: 1.5;">
+                                    <div class="form-group">
+                                        <label class="form-label">Faixa etária *</label>
+                                        <select class="form-control">
+                                            <option>18 a 49 Anos</option>
+                                            <option>12 a 17 Anos</option>
+                                            <option>06 a 11 Anos</option>
+                                        </select>
+                                        <span
+                                            style="font-size: 0.75rem; color: var(--primary-blue); cursor: pointer;">Busca
+                                            avançada</span>
+                                    </div>
+                                </div>
+                                <div class="col" style="flex: 2;">
+                                    <div class="form-group">
+                                        <label class="form-label">Nível *</label>
+                                        <select class="form-control">
+                                            <option>Avançado - Tecno Frevo</option>
+                                            <option>Iniciante - Roda de Frevo</option>
+                                        </select>
+                                        <span
+                                            style="font-size: 0.75rem; color: var(--primary-blue); cursor: pointer;">Busca
+                                            avançada</span>
+                                    </div>
+                                </div>
+                                <div class="col" style="flex: 1.5;">
+                                    <div class="form-group">
+                                        <label class="form-label">Modalidade *</label>
+                                        <select class="form-control">
+                                            <option>Adulto</option>
+                                            <option>Infantil</option>
+                                        </select>
+                                        <span
+                                            style="font-size: 0.75rem; color: var(--primary-blue); cursor: pointer;">Busca
+                                            avançada</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">Dias *</label>
+                                        <select class="form-control">
+                                            <option>TER/QUI</option>
+                                            <option>SEG/QUA</option>
+                                            <option>SEXTA</option>
+                                        </select>
+                                        <span
+                                            style="font-size: 0.75rem; color: var(--primary-blue); cursor: pointer;">Busca
+                                            avançada</span>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">Horário *</label>
+                                        <select class="form-control">
+                                            <option>10:40 às 11:30</option>
+                                            <option>09:00 às 10:20</option>
+                                        </select>
+                                        <span
+                                            style="font-size: 0.75rem; color: var(--primary-blue); cursor: pointer;">Busca
+                                            avançada</span>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">Sala *</label>
+                                        <select class="form-control">
+                                            <option>Sala 1</option>
+                                            <option>Sala 2</option>
+                                        </select>
+                                        <span
+                                            style="font-size: 0.75rem; color: var(--primary-blue); cursor: pointer;">Busca
+                                            avançada</span>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">Professor *</label>
+                                        <select class="form-control">
+                                            <option>Minininho</option>
+                                            <option>Alice</option>
+                                            <option>Bhurnno</option>
+                                        </select>
+                                        <span
+                                            style="font-size: 0.75rem; color: var(--primary-blue); cursor: pointer;">Busca
+                                            avançada</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-outline" onclick="closeModal('modal-turma')">Cancelar</button>
+                        <button class="btn btn-primary"
+                            style="background-color: var(--accent-orange); border-color: var(--accent-orange);"
+                            onclick="alert('Turma salva com sucesso!')">Salvar Turma</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- LOGIC (SPA) -->
+        <script>
+            // Função de busca em tabelas (Busca global em todas as colunas)
+            function filterTable(inputId, tableId) {
+                const input = document.getElementById(inputId);
+                const filter = input.value.toLowerCase();
+                const table = document.getElementById(tableId);
+                const tr = table.getElementsByTagName('tr');
+
+                for (let i = 1; i < tr.length; i++) { // Ignora o thead (i=0)
+                    let displayRow = false;
+                    const td = tr[i].getElementsByTagName('td');
+
+                    for (let j = 0; j < td.length; j++) {
+                        if (td[j]) {
+                            const txtValue = td[j].textContent || td[j].innerText;
+                            if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                                displayRow = true;
+                                break;
+                            }
+                        }
+                    }
+                    tr[i].style.display = displayRow ? '' : 'none';
+                }
+            }
+
+            // Funções de Modal e Tabs
+            function openModal(id, isReadOnly = false) {
+                const modal = document.getElementById(id);
+                modal.classList.add('active');
+
+                // Lógica de Leitura (Read-Only) profunda
+                const forms = modal.querySelectorAll('form');
+                forms.forEach(form => {
+                    if (isReadOnly) {
+                        form.style.pointerEvents = 'none'; // Impede clicks nas áreas do form (spans, selects, buttons internos)
+                        form.style.opacity = '0.9';
+                    } else {
+                        form.style.pointerEvents = 'auto';
+                        form.style.opacity = '1';
+                    }
+                });
+
+                const formElements = modal.querySelectorAll('input, select, textarea, button:not(.btn-close):not(.nav-tab)');
+                formElements.forEach(el => {
+                    if (isReadOnly) {
+                        el.tabIndex = -1; // Impede navegação por teclado (TAB)
+                        if (el.type === 'checkbox' || el.type === 'radio' || el.tagName === 'SELECT' || el.type === 'file' || el.tagName === 'BUTTON') {
+                            el.disabled = true;
+                        } else {
+                            el.readOnly = true;
+                        }
+                    } else {
+                        el.tabIndex = 0;
+                        if (el.type === 'checkbox' || el.type === 'radio' || el.tagName === 'SELECT' || el.type === 'file' || el.tagName === 'BUTTON') {
+                            el.disabled = false;
+                        } else {
+                            // Mantém o readOnly apenas no campo Ano Letivo da matrícula
+                            if (el.tagName === 'INPUT' && el.value === '2026') {
+                                el.readOnly = true;
+                            } else {
+                                el.readOnly = false;
+                            }
+                        }
+                    }
+                });
+
+                // Ocultar botões do rodapé (Salvar, Cancelar)
+                const footerBtns = modal.querySelectorAll('.modal-footer .btn');
+                footerBtns.forEach(btn => {
+                    btn.style.display = isReadOnly ? 'none' : 'inline-flex';
+                });
+            }
+
+            function closeModal(id) {
+                document.getElementById(id).classList.remove('active');
+            }
+
+            function switchTab(btnElement, modalId) {
+                const modal = document.getElementById(modalId);
+
+                // Remove active classes nos btns e tabs do modal atual
+                modal.querySelectorAll('.nav-tab').forEach(tb => tb.classList.remove('active'));
+                modal.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+
+                // Adiciona ativo
+                btnElement.classList.add('active');
+                const targetId = btnElement.getAttribute('data-tab');
+                modal.querySelector('#' + targetId).classList.add('active');
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const navItems = document.querySelectorAll('.nav-item');
+                const views = document.querySelectorAll('.view');
+                const pageTitle = document.getElementById('current-page-title');
+
+                const pageTitlesMap = {
+                    'view-inicio': 'Página inicial',
+                    'view-matriculas': 'Matrículas',
+                    'view-turmas': 'Turmas',
+                    'view-admin': 'Administração'
+                };
+
+                // Navegação SPA
+                navItems.forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        e.preventDefault();
+
+                        // Remove ativo de todos
+                        navItems.forEach(n => n.classList.remove('active'));
+                        views.forEach(v => v.classList.remove('active'));
+
+                        // Adiciona ativo no clicado
+                        item.classList.add('active');
+                        const targetId = item.getAttribute('data-target');
+                        document.getElementById(targetId).classList.add('active');
+
+                        // Altera Título
+                        pageTitle.textContent = pageTitlesMap[targetId];
+                    });
+                });
+            });
+
+            // Toggle User Menu Dropdown
+            function toggleUserMenu() {
+                document.getElementById('userDropdown').classList.toggle('active');
+            }
+
+            // Fechar dropdown ao clicar fora
+            window.addEventListener('click', function (e) {
+                if (!e.target.closest('.user-menu')) {
+                    const dropdown = document.getElementById('userDropdown');
+                    if (dropdown && dropdown.classList.contains('active')) {
+                        dropdown.classList.remove('active');
+                    }
+                }
+            });
+        </script>
+</body>
+
+</html>
