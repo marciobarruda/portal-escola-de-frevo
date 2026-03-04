@@ -1092,6 +1092,7 @@
                                         style="margin-bottom: 0; display: flex; align-items: center; gap: 8px;">
                                         <i class="ph ph-magnifying-glass" style="flex-shrink: 0;"></i>
                                         <input type="text" class="form-control" id="search-dashboard-matriculas"
+                                            placeholder="Pesquisar matrículas..."
                                             onkeyup="filterTable('search-dashboard-matriculas', 'table-dashboard-matriculas')"
                                             style="width: 100%;">
                                     </div>
@@ -1198,19 +1199,22 @@
                                 <i class="ph ph-magnifying-glass"
                                     style="color: var(--text-muted); font-size: 1.1rem; flex-shrink: 0;"></i>
                                 <input type="text" class="form-control" id="filter-matricula-cpf"
-                                    oninput="filtrarMatriculas()" style="width: 100%;">
+                                    placeholder="Pesquisar por nome ou CPF" oninput="filtrarMatriculas()"
+                                    style="width: 100%;">
                             </div>
                             <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
                                 <i class="ph ph-user"
                                     style="color: var(--text-muted); font-size: 1.1rem; flex-shrink: 0;"></i>
                                 <input type="text" class="form-control" id="filter-nome-turma"
-                                    oninput="filtrarMatriculas()" style="width: 100%;">
+                                    placeholder="Pesquisar por turma" oninput="filtrarMatriculas()"
+                                    style="width: 100%;">
                             </div>
                             <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
                                 <i class="ph ph-funnel"
                                     style="color: var(--text-muted); font-size: 1.1rem; flex-shrink: 0;"></i>
                                 <input type="text" class="form-control" id="filter-ano-tipo-status"
-                                    oninput="filtrarMatriculas()" style="width: 100%;">
+                                    placeholder="Pesquisar ano, tipo ou status" oninput="filtrarMatriculas()"
+                                    style="width: 100%;">
                             </div>
                         </div>
 
@@ -1278,6 +1282,7 @@
                         <div class="search-wrapper">
                             <i class="ph ph-magnifying-glass"></i>
                             <input type="text" class="form-control" id="search-main-turmas"
+                                placeholder="Pesquisar turmas..."
                                 onkeyup="filterTable('search-main-turmas', 'table-main-turmas')">
                         </div>
 
@@ -1501,7 +1506,10 @@
                                 <div class="col" style="flex: 1.5;">
                                     <div class="form-group">
                                         <label class="form-label" for="cpf">CPF *</label>
-                                        <input type="text" class="form-control" id="cpf" name="cpf_aluno">
+                                        <input type="text" class="form-control" id="cpf" name="cpf_aluno" maxlength="14"
+                                            inputmode="numeric" placeholder="Selecione o tipo de matrícula primeiro"
+                                            disabled style="cursor: not-allowed;"
+                                            oninput="this.value = this.value.replace(/[^\d]/g, '').slice(0,11);">
                                     </div>
                                 </div>
                                 <div class="col" style="flex: 2;">
@@ -1513,7 +1521,8 @@
                                 <div class="col">
                                     <div class="form-group">
                                         <label class="form-label" for="datanascimento">Data de Nascimento *</label>
-                                        <input type="date" class="form-control" id="datanascimento" name="data_nasc">
+                                        <input type="date" class="form-control" id="datanascimento" name="data_nasc"
+                                            onchange="calcularIdadeNascimento()">
                                     </div>
                                 </div>
                             </div>
@@ -1522,7 +1531,8 @@
                                 <div class="col" style="flex: 0 0 100px;">
                                     <div class="form-group">
                                         <label class="form-label" for="idade">Idade</label>
-                                        <input type="number" class="form-control" id="idade" name="idade">
+                                        <input type="number" class="form-control" id="idade" name="idade" readonly
+                                            style="background-color: var(--surface-hover); color: var(--text-main);">
                                     </div>
                                 </div>
                                 <div class="col">
@@ -1551,11 +1561,12 @@
                                         <label class="form-label" for="genero">Gênero *</label>
                                         <select class="form-control" id="genero" name="genero">
                                             <option value="">Selecione...</option>
-                                            <option>Feminino</option>
-                                            <option>Masculino</option>
-                                            <option>Não Binário</option>
-                                            <option>Outros</option>
-                                            <option>Prefiro não informar</option>
+                                            <option value="Feminino">Feminino</option>
+                                            <option value="Masculino">Masculino</option>
+                                            <option value="Não Binário">Não Binário</option>
+                                            <option value="Outros">Outros</option>
+                                            <option value="Não informar">Não informar</option>
+                                            <option value="Prefiro não informar">Prefiro não informar</option>
                                         </select>
                                     </div>
                                 </div>
@@ -1587,10 +1598,8 @@
                             <div class="row">
                                 <div class="col-12">
                                     <div class="form-group" style="margin-bottom: 24px;">
-                                        <label class="form-label" for="pcd_ask" style="margin-bottom: 8px;">MÉ pessoa
-                                            com
-                                            deficiência
-                                            (PCD)? *</label>
+                                        <label class="form-label" for="pcd_ask" style="margin-bottom: 8px;">É pessoa com
+                                            deficiência (PCD)? *</label>
                                         <select class="form-control" id="pcd_ask" name="pcd_ask">
                                             <option value="">Selecione...</option>
                                             <option value="Sim">Sim</option>
@@ -1707,13 +1716,34 @@
                             <div class="row" style="margin-bottom: 20px;">
                                 <div class="col">
                                     <div class="form-group">
-                                        <label class="form-label" for="proximonivel">Próximo nível</label>
+                                        <label class="form-label" for="proximonivel">Nível sugerido</label>
                                         <input type="text" class="form-control" id="proximonivel" name="" readonly
                                             style="background-color: var(--surface-hover);">
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row" style="margin-bottom: 20px;">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="nivel">Nível</label>
+                                        <select class="form-control" id="nivel" name="nivel">
+                                            <option value="">Selecione</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="modalidade">Modalidade</label>
+                                        <select class="form-control" id="modalidade" name="modalidade" disabled
+                                            style="background-color: var(--surface-hover);">
+                                            <option value="">Carregando...</option>
+                                        </select>
+                                        <!-- Hidden input para garantir que o valor chegue no submit mesmo com disabled -->
+                                        <input type="hidden" id="modalidade_submit" name="modalidade">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-bottom: 20px;">
                                 <div class="col-12">
                                     <div class="form-group" style="margin-bottom: 20px;">
                                         <label class="form-label" for="turma">Turma</label>
@@ -1728,50 +1758,34 @@
                             <div class="row">
                                 <div class="col">
                                     <div class="form-group">
-                                        <label class="form-label" for="nivel">Nível</label>
-                                        <select class="form-control" id="nivel" name="nivel">
-                                            <option value="">Selecione</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label class="form-label" for="modalidade">Modalidade</label>
-                                        <input type="text" class="form-control" id="modalidade" name="modalidade"
-                                            value="" readonly>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="form-group">
                                         <label class="form-label" for="dias">Dias</label>
-                                        <input type="text" class="form-control" id="dias" name="dias" value="" readonly>
+                                        <input type="text" class="form-control" id="dias" name="dias" value="" readonly
+                                            style="background-color: var(--surface-hover);">
                                     </div>
                                 </div>
                                 <div class="col">
                                     <div class="form-group">
                                         <label class="form-label" for="horario">Horário</label>
                                         <input type="text" class="form-control" id="horario" name="horario" value=""
-                                            readonly>
+                                            readonly style="background-color: var(--surface-hover);">
                                     </div>
                                 </div>
                                 <div class="col">
                                     <div class="form-group">
                                         <label class="form-label" for="local">Sala</label>
-                                        <input type="text" class="form-control" id="local" name="sala" value=""
-                                            readonly>
+                                        <input type="text" class="form-control" id="local" name="sala" value="" readonly
+                                            style="background-color: var(--surface-hover);">
                                     </div>
                                 </div>
                                 <div class="col">
                                     <div class="form-group">
                                         <label class="form-label" for="professor">Professor</label>
                                         <input type="text" class="form-control" id="professor" name="professor" value=""
-                                            readonly>
+                                            readonly style="background-color: var(--surface-hover);">
                                     </div>
                                 </div>
                             </div>
-                            <div id="btn-escolher-turma" style="margin-top: 20px; text-align: right;">
+                            <div id="btn-escolher-turma" style="margin-top: 20px; text-align: right; display:none;">
                                 <button type="button" class="btn btn-outline"
                                     style="color: var(--primary-blue); border-color: var(--primary-blue);">
                                     <i class="ph ph-magnifying-glass"></i> Escolher Outra Turma
@@ -1838,7 +1852,7 @@
                                 </div>
                                 <div class="col confirm-field">
                                     <div class="form-group">
-                                        <label class="form-label" for="confirmarEmail">Confirme seu E-mail *</label>
+                                        <label class="form-label" for="confirmarEmail">Confirme o E-mail *</label>
                                         <input type="email" class="form-control" id="confirmarEmail" name="">
                                     </div>
                                 </div>
@@ -1853,7 +1867,7 @@
                                 </div>
                                 <div class="col confirm-field">
                                     <div class="form-group">
-                                        <label class="form-label" for="confirmarWhatsApp">Confirme seu WhatsApp
+                                        <label class="form-label" for="confirmarWhatsApp">Confirme o WhatsApp
                                             *</label>
                                         <input type="text" class="form-control" id="confirmarWhatsApp" name="">
                                     </div>
@@ -1883,13 +1897,15 @@
                                     <div class="col">
                                         <div class="form-group">
                                             <label class="form-label" for="rg_frente">Anexar RG/CNH frente</label>
-                                            <input type="file" class="form-control" id="rg_frente" name="rg_frente">
+                                            <input type="file" class="form-control" id="rg_frente" name="rg_frente"
+                                                accept=".pdf,.jpg,.jpeg,.png">
                                         </div>
                                     </div>
                                     <div class="col">
                                         <div class="form-group">
                                             <label class="form-label" for="rg_verso">Anexar RG/CNH verso</label>
-                                            <input type="file" class="form-control" id="rg_verso" name="rg_verso">
+                                            <input type="file" class="form-control" id="rg_verso" name="rg_verso"
+                                                accept=".pdf,.jpg,.jpeg,.png">
                                         </div>
                                     </div>
                                 </div>
@@ -1899,7 +1915,7 @@
                                             <label class="form-label" for="certidao_nasc">Anexar certidão de
                                                 nascimento</label>
                                             <input type="file" class="form-control" id="certidao_nasc"
-                                                name="certidao_nasc">
+                                                name="certidao_nasc" accept=".pdf,.jpg,.jpeg,.png">
                                         </div>
                                     </div>
                                 </div>
@@ -1955,7 +1971,7 @@
                                         <div class="form-group">
                                             <label class="form-label" for="parecer_medico">Anexar laudo médico</label>
                                             <input type="file" class="form-control" id="parecer_medico"
-                                                name="parecer_medico">
+                                                name="parecer_medico" accept=".pdf,.jpg,.jpeg,.png">
                                         </div>
                                     </div>
                                 </div>
@@ -2005,34 +2021,32 @@
 
                             <div class="card"
                                 style="background-color: var(--surface-hover); padding: 16px; box-shadow: none; border: 1px solid var(--border-color); margin-bottom: 16px;">
-                                <h5 style="margin-bottom: 8px; font-size: 0.85rem;">AUTORIZA!ÒO DE USO DE IMAGEM</h5>
+                                <h5 style="margin-bottom: 8px; font-size: 0.85rem;">AUTORIZAÇÃO DE USO DE IMAGEM</h5>
                                 <p
                                     style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; text-align: justify;">
-                                    Declaro que autorizo o uso da minha imagem ou da imagem do menor pelo qual sou
+                                    O aluno declara que autoriza o uso da sua imagem ou da imagem do menor pelo qual é
                                     responsável em todo e qualquer material entre fotos, documentos e outros meios de
                                     comunicação, para ser utilizada em campanhas promocionais e institucionais da
                                     Prefeitura da Cidade do Recife, com sede na Avenida Cais do Apolo, 925, Bairro do
                                     Recife, Recife/PE, CEP 50030-903, inscrita no CNPJ sob o nº 10.565.000/0001-92,
                                     sejam essas destinadas à divulgação ao público em geral e/ou apenas para uso
-                                    interno
-                                    desta instituição, desde que não haja desvirtuamento da sua finalidade. A
-                                    presente
-                                    autorização é concedida a título gratuito, abrangendo o uso da imagem acima
+                                    interno desta instituição, desde que não haja desvirtuamento da sua finalidade. A
+                                    presente autorização é concedida a título gratuito, abrangendo o uso da imagem acima
                                     mencionada em todo território nacional e no exterior, em todas as suas modalidades
                                     e, em destaque das seguintes formas: (I) outdoor, (II) busdoor; folhetos em geral
                                     (encarte, mala-direta, catálogo, etc.), (III) folder de apresentação, (IV)
-                                    anúncios
-                                    em revistas e jornais em geral, (V) home page, (VI) cartazes, (VII) backlight,
+                                    anúncios em revistas e jornais em geral, (V) home page, (VI) cartazes, (VII)
+                                    backlight,
                                     (VIII) mídia eletrônica (painéis, vídeo-tapes, televisão, cinema, programa para
-                                    rádio, entre outros). Por esta ser a expressão da minha vontade, autorizo o uso
+                                    rádio, entre outros). Por esta ser a expressão da sua vontade, autoriza o uso
                                     acima descrito sem que nada haja a ser reclamado a qualquer tempo ou título.
                                 </p>
                             </div>
 
                             <div class="form-group">
                                 <label class="radio-label" style="font-weight: 500; font-size: 0.95rem;">
-                                    <input type="radio" name="autoriza_imagem" value="Sim" checked> Autorizo o uso de
-                                    minha imagem
+                                    <input type="radio" name="autoriza_imagem" value="Sim" checked> O aluno autoriza o
+                                    uso de sua imagem
                                 </label>
                             </div>
                         </div>
@@ -2049,9 +2063,112 @@
                     </div>
                     <div style="width: 100%; display: flex; justify-content: flex-end; gap: 10px;">
                         <button class="btn btn-outline" onclick="closeModal('modal-matricula')">Cancelar</button>
-                        <button class="btn btn-primary" onclick="salvarMatricula(this)">Salvar
-                            Matrícula</button>
+                        <button class="btn btn-primary" id="btn-avancar-matricula"
+                            style="background-color: var(--accent-orange); border-color: var(--accent-orange);"
+                            onclick="abrirResumoMatricula()" disabled>Avançar</button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Confirmação de Matrícula -->
+        <div class="modal-overlay" id="modal-confirmacao-matricula">
+            <div class="modal-content" style="max-width: 600px;">
+                <div class="modal-header" style="background-color: var(--accent-orange);">
+                    <h2 class="modal-title" style="color: white; text-align: center; width: 100%;">RESUMO DA MATRÍCULA
+                    </h2>
+                    <button class="btn-close" style="color: white;"
+                        onclick="closeModal('modal-confirmacao-matricula')"><i class="ph ph-x"></i></button>
+                </div>
+                <div class="modal-body" style="padding: 24px;">
+                    <div
+                        style="background-color: var(--surface-hover); padding: 16px; border-radius: 8px; margin-bottom: 24px;">
+                        <h3 id="resumo-mat-nome"
+                            style="color: var(--text-main); font-size: 1.1rem; margin-bottom: 16px; font-weight: 600; text-align: center;">
+                        </h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 0.9rem;">
+                            <!-- Identification -->
+                            <div
+                                style="grid-column: 1 / -1; margin-top: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;">
+                                <strong style="color: var(--primary-blue);">Identificação Básica</strong>
+                            </div>
+                            <div><strong style="color: var(--text-muted);">CPF:</strong> <span
+                                    id="resumo-mat-cpf"></span></div>
+                            <div><strong style="color: var(--text-muted);">Gênero:</strong> <span
+                                    id="resumo-mat-genero"></span></div>
+                            <div><strong style="color: var(--text-muted);">Data de Nasc.:</strong> <span
+                                    id="resumo-mat-nasc"></span></div>
+                            <div><strong style="color: var(--text-muted);">Idade:</strong> <span
+                                    id="resumo-mat-idade"></span></div>
+                            <div><strong style="color: var(--text-muted);">Raça/Cor:</strong> <span
+                                    id="resumo-mat-raca"></span></div>
+
+                            <!-- Responsável -->
+                            <div id="resumo-section-resp"
+                                style="display: none; grid-column: 1 / -1; margin-top: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;">
+                                <strong style="color: var(--primary-blue);">Responsável Legal</strong>
+                            </div>
+                            <div id="resumo-resp-nome" style="display: none;"><strong
+                                    style="color: var(--text-muted);">Nome:</strong> <span
+                                    id="resumo-mat-resp-nome"></span></div>
+                            <div id="resumo-resp-cpf" style="display: none;"><strong
+                                    style="color: var(--text-muted);">CPF:</strong> <span
+                                    id="resumo-mat-resp-cpf"></span></div>
+
+                            <!-- Contact and Address -->
+                            <div
+                                style="grid-column: 1 / -1; margin-top: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;">
+                                <strong style="color: var(--primary-blue);">Contato e Endereço</strong>
+                            </div>
+                            <div><strong style="color: var(--text-muted);">WhatsApp:</strong> <span
+                                    id="resumo-mat-whatsapp"></span></div>
+                            <div><strong style="color: var(--text-muted);">E-mail:</strong> <span
+                                    id="resumo-mat-email"></span></div>
+                            <div style="grid-column: 1 / -1;"><strong
+                                    style="color: var(--text-muted);">Endereço:</strong> <span
+                                    id="resumo-mat-endereco"></span></div>
+
+                            <!-- Health Overview -->
+                            <div
+                                style="grid-column: 1 / -1; margin-top: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;">
+                                <strong style="color: var(--primary-blue);">Saúde</strong>
+                            </div>
+                            <div><strong style="color: var(--text-muted);">PCD:</strong> <span
+                                    id="resumo-mat-pcd"></span></div>
+                            <div><strong style="color: var(--text-muted);">Contraindicação:</strong> <span
+                                    id="resumo-mat-contra"></span></div>
+                            <div><strong style="color: var(--text-muted);">Medicamentos:</strong> <span
+                                    id="resumo-mat-med"></span></div>
+                            <div><strong style="color: var(--text-muted);">Alergias:</strong> <span
+                                    id="resumo-mat-alergia"></span></div>
+
+                            <!-- Enrollment Targets -->
+                            <div
+                                style="grid-column: 1 / -1; margin-top: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;">
+                                <strong style="color: var(--primary-blue);">Trilha Escolhida</strong>
+                            </div>
+                            <div><strong style="color: var(--text-muted);">Ano Letivo:</strong> <span
+                                    id="resumo-mat-ano"></span></div>
+                            <div><strong style="color: var(--text-muted);">Nível:</strong> <span
+                                    id="resumo-mat-nivel"></span></div>
+                            <div><strong style="color: var(--text-muted);">Modalidade:</strong> <span
+                                    id="resumo-mat-modalidade"></span></div>
+                            <div><strong style="color: var(--text-muted);">Tipo:</strong> <span
+                                    id="resumo-mat-tipo"></span></div>
+                            <div style="grid-column: 1 / -1;"><strong style="color: var(--text-muted);">Turma /
+                                    Horário:</strong> <span id="resumo-mat-turma"></span></div>
+                        </div>
+                    </div>
+                    <div
+                        style="background-color: #fff3cd; color: #856404; padding: 12px; border-radius: 4px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px;">
+                        <i class="ph ph-warning-circle" style="font-size: 1.2rem;"></i>
+                        <span>Confirme todos os dados antes de finalizar. A matrícula será enviada ao sistema do Conecta
+                            Recife.</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" onclick="closeModal('modal-confirmacao-matricula')">Voltar</button>
+                    <button class="btn btn-primary" onclick="salvarMatricula(this)">Salvar Matrícula</button>
                 </div>
             </div>
         </div>
@@ -2297,6 +2414,11 @@
         .toast i {
             font-size: 1.25rem;
         }
+
+        /* RBAC: Ocultar botões de edição de turma para role staff */
+        body[data-role="staff"] .icon-btn[onclick*="editarTurma"] {
+            display: none !important;
+        }
     </style>
     <script>
         // ========== DADOS GLOBAIS ==========
@@ -2304,6 +2426,317 @@
         let turmasData = [];
         let colunaOrdenacao = null;
         let direcaoOrdenacao = 'asc'; // 'asc' ou 'desc'
+
+        // ========== SESSÃO DO USUÁRIO (RBAC) ==========
+        let currentUser = '{{ $json.usuario }}';
+        let currentRole = '{{ $json.role }}';
+        // Fallback para desenvolvimento local (template não processado pelo n8n)
+        if (currentUser.includes('{{')) { currentUser = 'Dev Local'; currentRole = 'dev'; }
+
+        // ========== APLICAR RBAC ==========
+        function aplicarRBAC() {
+            // 1. Atualizar topbar com dados do usuário logado
+            const userNameEl = document.querySelector('.user-menu-name');
+            const userRoleEl = document.querySelector('.user-menu-role');
+            const userAvatarEl = document.querySelector('.user-avatar');
+            if (userNameEl) userNameEl.textContent = currentUser;
+
+            const roleLabels = { dev: 'Desenvolvedor', admin: 'Administrador', staff: 'Atendente' };
+            if (userRoleEl) userRoleEl.textContent = roleLabels[currentRole] || currentRole;
+
+            // Gerar iniciais do avatar
+            if (userAvatarEl) {
+                const partes = currentUser.trim().split(/\s+/);
+                const iniciais = partes.length >= 2
+                    ? (partes[0][0] + partes[partes.length - 1][0]).toUpperCase()
+                    : partes[0].substring(0, 2).toUpperCase();
+                userAvatarEl.textContent = iniciais;
+            }
+
+            // 2. Restrições por role
+            if (currentRole === 'staff') {
+                // Remover aba "Administração" do menu
+                const navAdmin = document.querySelector('.nav-item[data-target="view-admin"]');
+                if (navAdmin) navAdmin.remove();
+
+                // Remover seção de Administração do DOM
+                const viewAdmin = document.getElementById('view-admin');
+                if (viewAdmin) viewAdmin.remove();
+
+                // Ocultar botão "Nova Turma"
+                const btnNovaTurma = document.querySelector('#view-turmas .btn.btn-primary[onclick*="novaTurma"]');
+                if (btnNovaTurma) btnNovaTurma.style.display = 'none';
+
+                // Marcar role para ocultar botões de edição na renderização de turmas
+                document.body.setAttribute('data-role', 'staff');
+            }
+
+            console.log(`[RBAC] Usuário: ${currentUser} | Role: ${currentRole}`);
+        }
+
+        // ========== CONSULTAR ALUNO POR CPF ==========
+        let cpfConsultaEmAndamento = false;
+
+        // Travar/destravar campos do formulário de matrícula
+        function travarFormMatricula(travar) {
+            const modal = document.getElementById('modal-matricula');
+            if (!modal) return;
+            // Todos os inputs/selects/textareas EXCETO CPF e tipo_matricula radios
+            const campos = modal.querySelectorAll(
+                'input:not(#cpf):not([name="ui_tipo_matricula"]):not([type="hidden"]):not(#anoLetivo), select, textarea'
+            );
+            campos.forEach(el => {
+                el.disabled = travar;
+                el.style.opacity = travar ? '0.4' : '1';
+            });
+            // Travar/destravar abas (impedir navegação entre tabs)
+            const tabs = modal.querySelectorAll('.nav-tab:not(:first-child)');
+            tabs.forEach(tab => {
+                tab.style.pointerEvents = travar ? 'none' : '';
+                tab.style.opacity = travar ? '0.4' : '1';
+            });
+            // Travar/destravar botão salvar
+            const btnSalvar = modal.querySelector('.modal-footer .btn-primary');
+            if (btnSalvar) {
+                btnSalvar.disabled = travar;
+                btnSalvar.style.opacity = travar ? '0.4' : '1';
+            }
+            // Travar/destravar uploads
+            const fileInputs = modal.querySelectorAll('input[type="file"]');
+            fileInputs.forEach(el => {
+                el.disabled = travar;
+                el.style.opacity = travar ? '0.4' : '1';
+            });
+        }
+
+        async function consultarAlunoPorCPF(cpfRaw) {
+            const cpf = cpfRaw.replace(/\D/g, '');
+            if (cpf.length < 11) {
+                showToast('Informe um CPF válido com 11 dígitos.', 'error');
+                return;
+            }
+            if (cpfConsultaEmAndamento) return;
+
+            const nomeInput = document.getElementById('nomeCompleto');
+            const btnSalvar = document.querySelector('#modal-matricula .modal-footer .btn-primary');
+
+            // Coletar ano letivo e tipo de matrícula para enviar ao webhook
+            const anoLetivo = (document.getElementById('anoLetivo') || {}).value || '';
+            const tipoRadio = document.querySelector('input[name="ui_tipo_matricula"]:checked');
+            const tipoMatriculaRaw = tipoRadio ? tipoRadio.value : '';
+            const tipoMatricula = tipoMatriculaRaw === 'Nova' ? 'Matrícula nova' : tipoMatriculaRaw;
+
+            // Validar preenchimento obrigatório dos 3 campos antes de consultar
+            if (!tipoMatricula) {
+                showToast('Selecione o tipo de matrícula antes de consultar o CPF.', 'error');
+                return;
+            }
+            if (!anoLetivo) {
+                showToast('O ano letivo é obrigatório para a consulta.', 'error');
+                return;
+            }
+
+            cpfConsultaEmAndamento = true;
+
+            // Indicador visual de loading
+            if (nomeInput) { nomeInput.disabled = false; nomeInput.value = 'Consultando...'; nomeInput.style.opacity = '0.5'; }
+
+            try {
+                const params = new URLSearchParams({ cpf, ano: anoLetivo, tipo: tipoMatricula });
+                const response = await fetch(`https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/consultar-aluno?${params}`);
+
+                if (!response.ok) {
+                    // Aluno não encontrado (404 ou outro erro)
+                    if (nomeInput) { nomeInput.value = ''; nomeInput.style.opacity = '1'; }
+                    showToast('Aluno não encontrado. Preencha os dados manualmente.', 'info');
+                    travarFormMatricula(false); // Desbloquear form para preenchimento manual
+                    cpfConsultaEmAndamento = false;
+                    return;
+                }
+
+                const data = await response.json();
+
+                let strData = '';
+                try { strData = JSON.stringify(data); } catch (e) { }
+
+                let mensagemResposta = '';
+                const extractMsg = (obj) => {
+                    if (typeof obj === 'string') return obj;
+                    if (Array.isArray(obj)) {
+                        for (let i = 0; i < obj.length; i++) {
+                            let m = extractMsg(obj[i]);
+                            if (m && typeof m === 'string') return m;
+                        }
+                    } else if (obj && typeof obj === 'object') {
+                        const keys = ['message', 'mensagem', 'msg', 'error', 'erro', 'detail'];
+                        for (let k of keys) {
+                            if (obj[k]) {
+                                let m = typeof obj[k] === 'string' ? obj[k] : extractMsg(obj[k]);
+                                if (m && typeof m === 'string') return m;
+                            }
+                        }
+                        // Busca genérica nos valores
+                        for (let key in obj) {
+                            let m = extractMsg(obj[key]);
+                            if (m && typeof m === 'string') return m;
+                        }
+                    }
+                    return null;
+                };
+
+                mensagemResposta = extractMsg(data);
+
+                // Fallback final: se não achou nenhuma string nas chaves de erro, converte tudo para string para não aparecer vazio
+                if (!mensagemResposta && strData && strData !== '{}' && strData !== '[]') {
+                    mensagemResposta = strData;
+                }
+
+                if (!mensagemResposta) mensagemResposta = '';
+
+                // Proteção ABSOLUTA contra toast vazio se strData era {} ou [] ou falhou silenciosamente
+                if (mensagemResposta.trim() === '') {
+                    mensagemResposta = "Retorno do servidor: " + JSON.stringify(data);
+                }
+
+                if (!mensagemResposta && strData.includes('Não existe matrícula para o CPF')) {
+                    mensagemResposta = 'Não existe matrícula para o CPF informado no ano anterior';
+                }
+                if (!mensagemResposta && strData.includes('Já existe matrícula para o aluno')) {
+                    mensagemResposta = 'Já existe matrícula para o aluno informado para este ano letivo';
+                }
+
+                if (mensagemResposta.includes("Já existe matrícula para o aluno informado para este ano letivo")) {
+                    if (nomeInput) { nomeInput.value = ''; nomeInput.style.opacity = '1'; }
+                    showToast('Já existe matrícula para o aluno neste ano letivo. Redirecionando...', 'error');
+
+                    // Buscar a matrícula na tabela local e abrir no modo leitura
+                    const idx = matriculasData.findIndex(m => {
+                        const mCpf = (m.cpf_aluno || m.cpf || '').replace(/\D/g, '');
+                        return mCpf === cpf;
+                    });
+
+                    if (idx !== -1) {
+                        travarFormMatricula(false); // Make sure tabs and opacity restore before reopening
+                        closeModal('modal-matricula');
+                        setTimeout(() => {
+                            abrirMatriculaModal(idx, true);
+                        }, 300);
+                    } else {
+                        if (btnSalvar) { btnSalvar.disabled = true; btnSalvar.style.opacity = '0.5'; }
+                    }
+                    cpfConsultaEmAndamento = false;
+                    return;
+                }
+
+                if (mensagemResposta.includes("Não existe matrícula para o CPF informado no ano anterior")) {
+                    if (nomeInput) { nomeInput.value = ''; nomeInput.style.opacity = '1'; }
+                    showToast('Aluno não encontrado no ano anterior. Preencha os dados manualmente.', 'warning');
+                    travarFormMatricula(false);
+                    cpfConsultaEmAndamento = false;
+                    return;
+                }
+
+                // Fallback for general errors disguised as student data
+                if (mensagemResposta && mensagemResposta.trim().length > 0) {
+                    if (nomeInput) { nomeInput.value = ''; nomeInput.style.opacity = '1'; }
+                    showToast(mensagemResposta, 'info');
+                    travarFormMatricula(false);
+                    cpfConsultaEmAndamento = false;
+                    return;
+                }
+
+                const aluno = Array.isArray(data) ? data[0] : data;
+
+                if (!aluno || Object.keys(aluno).length === 0) {
+                    if (nomeInput) { nomeInput.value = ''; nomeInput.style.opacity = '1'; }
+                    showToast('Aluno não encontrado. Preencha os dados manualmente.', 'info');
+                    travarFormMatricula(false);
+                    cpfConsultaEmAndamento = false;
+                    return;
+                }
+
+                // Verificar se já possui matrícula ativa no ano atual
+                const anoAtual = new Date().getFullYear().toString();
+                const statusAluno = (aluno.status || '').toUpperCase();
+                const anoAluno = (aluno.ano_letivo || aluno.ano || '').toString();
+                if ((statusAluno === 'ATIVA' || aluno.matricula_ativa) && anoAluno === anoAtual) {
+                    if (nomeInput) { nomeInput.value = ''; nomeInput.style.opacity = '1'; }
+                    showToast('Este aluno já possui uma matrícula ativa para ' + anoAtual + '. Não é possível cadastrar nova matrícula.', 'error');
+                    // Manter form travado — usuário deve trocar CPF ou fechar
+                    if (btnSalvar) { btnSalvar.disabled = true; btnSalvar.style.opacity = '0.5'; }
+                    cpfConsultaEmAndamento = false;
+                    return;
+                }
+
+                // Desbloquear form e auto-preencher campos com dados do aluno
+                travarFormMatricula(false);
+
+                const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+                const setSelect = (id, val) => {
+                    const el = document.getElementById(id);
+                    if (!el || !val) return;
+                    const upperVal = val.toUpperCase();
+                    for (let i = 0; i < el.options.length; i++) {
+                        if (el.options[i].text.toUpperCase() === upperVal || el.options[i].value.toUpperCase() === upperVal) {
+                            el.selectedIndex = i;
+                            return;
+                        }
+                    }
+                };
+
+                // Identificação
+                setVal('nomeCompleto', aluno.nome_aluno || aluno.nome || '');
+                setVal('datanascimento', aluno.data_nascimento_aluno || aluno.data_nasc || aluno.nascimento || '');
+                setVal('idade', aluno.idade_aluno || aluno.idade || '');
+                setVal('faixaetaria', aluno.faixa_etaria_aluno || aluno.faixa_etaria || '');
+                setSelect('racacor', aluno.raca_cor_aluno || aluno.raca_cor || aluno.raca || '');
+                setSelect('genero', aluno.genero_aluno || aluno.genero || '');
+                setSelect('possuirg', aluno.possui_rg_aluno || '');
+
+                // Responsável
+                setVal('cpfresponsavel', aluno.cpf_responsavel || '');
+                setVal('nomeCompletoResponsavel', aluno.nome_responsavel || aluno.nome_resp || '');
+
+                // Mostrar linha de responsável se for menor de idade
+                const idadeVal = parseInt(aluno.idade_aluno || aluno.idade) || 0;
+                const rowResp = document.getElementById('row-responsavel');
+                if (rowResp) rowResp.style.display = (idadeVal > 0 && idadeVal < 18) ? '' : 'none';
+
+                // Turma (Fallback para Nível Sugerido)
+                let proxNivelVal = aluno.proximonivel || aluno.proximo_nivel || aluno.nivel_sugerido;
+                if (proxNivelVal === null || proxNivelVal === undefined || proxNivelVal === '') {
+                    proxNivelVal = "livre";
+                }
+                setVal('proximonivel', proxNivelVal);
+
+                // Saúde
+                setSelect('pcd_ask', aluno.pessoa_com_deficiencia || aluno.p_pcd || '');
+                setSelect('tipo_def_ask', aluno.tipo_deficiencia || aluno.tipodeficiencia || '');
+                setSelect('contraindicacao_medica_ask', aluno.possui_contraindicacao || aluno.contraindicacao || '');
+                setVal('qual_contraindicacao_ask', aluno.contraindicacao || aluno.descreva_contradi || '');
+
+                // Endereço
+                setVal('cep', aluno.cep_aluno || aluno.cep || '');
+                setVal('logradouro', aluno.logradouro_aluno || aluno.logradouro || '');
+                setVal('numero', aluno.numero_aluno || aluno.numero || '');
+                setVal('complemento', aluno.complemento_aluno || aluno.complemento || '');
+                setVal('bairro', aluno.bairro_aluno || aluno.bairro || '');
+                setVal('cidade', aluno.cidade_aluno || aluno.cidade || '');
+                setVal('whatsapp', aluno.telefone_aluno || aluno.telefone || aluno.whatsapp || '');
+                setVal('email', aluno.email_aluno || aluno.email || '');
+
+                if (nomeInput) nomeInput.style.opacity = '1';
+                showToast('Dados do aluno preenchidos automaticamente!', 'success');
+
+            } catch (err) {
+                console.error('Erro ao consultar aluno:', err);
+                if (nomeInput) { nomeInput.value = ''; nomeInput.style.opacity = '1'; }
+                showToast('Erro ao consultar aluno. Preencha manualmente.', 'error');
+                travarFormMatricula(false); // Desbloquear em caso de erro
+            } finally {
+                cpfConsultaEmAndamento = false;
+            }
+        }
 
         // ========== ORDENAR POR COLUNA (CLIQUE NO HEADER) ==========
         function ordenarPorColuna(campo) {
@@ -2401,6 +2834,18 @@
                         opt.textContent = nivel;
                         selectNivel.appendChild(opt);
                     });
+
+                    // Populate Form's Nível as well
+                    const formNivel = document.getElementById('nivel');
+                    if (formNivel) {
+                        formNivel.innerHTML = '<option value="">Selecione</option>';
+                        niveisUnicos.forEach(nivel => {
+                            const opt = document.createElement('option');
+                            opt.value = nivel;
+                            opt.textContent = nivel;
+                            formNivel.appendChild(opt);
+                        });
+                    }
                 }
 
                 // Renderizar tabelas (apenas ano atual)
@@ -2423,7 +2868,17 @@
             const tbody = document.getElementById(tbodyId);
             if (!tbody) return;
 
-            const registros = limite ? dados.slice(0, limite) : dados;
+            // Ordenar: turmas com saldo > 0 primeiro, preservando ordem original dentro de cada grupo
+            const dadosOrdenados = dados.map((item, idx) => ({ item, idx })).sort((a, b) => {
+                const saldoA = parseInt(a.item.total_saldo) || 0;
+                const saldoB = parseInt(b.item.total_saldo) || 0;
+                const temSaldoA = saldoA > 0 ? 0 : 1;
+                const temSaldoB = saldoB > 0 ? 0 : 1;
+                if (temSaldoA !== temSaldoB) return temSaldoA - temSaldoB;
+                return a.idx - b.idx; // preservar ordem original como desempate
+            }).map(wrapper => wrapper.item);
+
+            const registros = limite ? dadosOrdenados.slice(0, limite) : dadosOrdenados;
 
             if (registros.length === 0) {
                 const cols = contexto === 'dashboard' ? 6 : 7;
@@ -2680,6 +3135,88 @@
             }, 4000);
         }
 
+        // ========== VALIDAR CPF ==========
+        function validarCPF(cpf) {
+            cpf = cpf.replace(/\D/g, '');
+            if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+            let sum = 0, rest;
+            for (let i = 1; i <= 9; i++) sum += parseInt(cpf[i - 1]) * (11 - i);
+            rest = (sum * 10) % 11;
+            if (rest === 10 || rest === 11) rest = 0;
+            if (rest !== parseInt(cpf[9])) return false;
+            sum = 0;
+            for (let i = 1; i <= 10; i++) sum += parseInt(cpf[i - 1]) * (12 - i);
+            rest = (sum * 10) % 11;
+            if (rest === 10 || rest === 11) rest = 0;
+            return rest === parseInt(cpf[10]);
+        }
+
+        // ========== CALCULAR IDADE E FAIXA ETÁRIA A PARTIR DA DATA DE NASCIMENTO ==========
+        function aplicarModalidade(valor) {
+            const el = document.getElementById('modalidade');
+            const hidden = document.getElementById('modalidade_submit');
+            if (!el || !valor) return;
+
+            // Tenta setar por value exato primeiro
+            for (let i = 0; i < el.options.length; i++) {
+                if (el.options[i].value.toUpperCase() === valor.toUpperCase() ||
+                    el.options[i].text.toUpperCase() === valor.toUpperCase()) {
+                    el.selectedIndex = i;
+                    if (hidden) hidden.value = el.options[i].value || el.options[i].text;
+                    return;
+                }
+            }
+            // Se não encontrou (opções ainda não carregadas), guarda como pendente
+            window._pendingModalidade = valor;
+        }
+
+        function calcularIdadeNascimento(skipReactivity = false) {
+            const dtInput = document.getElementById('datanascimento');
+            const idadeEl = document.getElementById('idade');
+            const faixaEl = document.getElementById('faixaetaria');
+
+            if (!dtInput || !dtInput.value) return;
+
+            const nascimento = new Date(dtInput.value + 'T00:00:00');
+            const hoje = new Date();
+
+            let idade = hoje.getFullYear() - nascimento.getFullYear();
+            const mesAtual = hoje.getMonth();
+            const mesNasc = nascimento.getMonth();
+            if (mesAtual < mesNasc || (mesAtual === mesNasc && hoje.getDate() < nascimento.getDate())) {
+                idade--;
+            }
+
+            // Preencher Idade (readonly)
+            if (idadeEl) idadeEl.value = idade;
+
+            // Definir Faixa Etária e Modalidade pelas regras de negócio
+            let faixa = '';
+            let modalidadeValor = '';
+            if (idade >= 6 && idade <= 11) {
+                faixa = '06 A 11 ANOS';
+                modalidadeValor = 'Infantil';
+            } else if (idade >= 12 && idade <= 17) {
+                faixa = '12 A 17 ANOS';
+                modalidadeValor = 'Adolescente';
+            } else if (idade >= 18 && idade <= 49) {
+                faixa = '18 A 49 ANOS';
+                modalidadeValor = 'Adulto';
+            } else if (idade >= 50) {
+                faixa = '50+';
+                modalidadeValor = 'Adulto';
+            }
+
+            // Preencher Faixa Etária (readonly)
+            if (faixaEl) faixaEl.value = faixa;
+
+            // Aplicar Modalidade (select disabled gerenciado via JS)
+            aplicarModalidade(modalidadeValor);
+
+            // Buscar turmas com os novos filtros
+            if (!skipReactivity && typeof buscarTurmasDinamicas === 'function') buscarTurmasDinamicas();
+        }
+
         // ========== FUNÇÕES GLOBAIS DE INICIALIZA!ÒO E UI ==========
         let matriculaSelecionadaId = null;
         let turmaSelecionadaId = null;
@@ -2707,7 +3244,7 @@
         }
 
         // ========== PREENCHER MODAL COM DADOS ==========
-        function preencherModalMatricula(m) {
+        function preencherModalMatricula(m, isReadOnly = false) {
             const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
             const setSelect = (id, val) => {
                 const el = document.getElementById(id);
@@ -2737,9 +3274,13 @@
             setVal('proximonivel', m.proximo_nivel);
             setVal('cpf', formatarCPF(m.cpf_aluno || m.cpf || ''));
             setVal('nomeCompleto', m.nome_aluno || m.nome);
-            setVal('datanascimento', m.data_nascimento_aluno || m.nascimento);
-            setVal('idade', m.idade_aluno || m.idade);
-            setVal('faixaetaria', m.faixa_etaria_aluno || m.faixa_etaria);
+            // Define a data de nascimento e dispara a cadeia: data → idade → faixa → modalidade
+            const dtEl = document.getElementById('datanascimento');
+            if (dtEl) {
+                dtEl.value = m.data_nascimento_aluno || m.nascimento || '';
+                // Calcular tudo a partir desta data (ignora valores de idade/faixa do payload)
+                calcularIdadeNascimento(isReadOnly);
+            }
             setSelect('racacor', m.raca_cor_aluno || m.raca);
             setSelect('genero', m.genero_aluno || m.genero);
             setSelect('possuirg', m.possui_rg_aluno);
@@ -2815,20 +3356,52 @@
             }
 
             // Turma
-            setVal('modalidade', m.modalidade);
+            setSelect('modalidade', m.modalidade);
             // Cruzar com turmasData para obter dias, horário, sala, professor
-            const turmaRef = buscarTurmaCorrespondente(m.ano_letivo, m.turma);
-            if (turmaRef) {
-                setVal('dias', turmaRef.dias);
-                setVal('horario', turmaRef.horario);
-                setVal('local', turmaRef.sala);
-                setVal('professor', turmaRef.professor);
-            } else {
-                setVal('dias', '');
-                setVal('horario', '');
-                setVal('local', '');
+
+            const profEl = document.getElementById('professor');
+            const profGroup = profEl ? profEl.closest('.form-group') : null;
+
+            if (isReadOnly && m.turma) {
+                // String: Modalidade Nivel - Dias (Horario) - Sala
+                // Exemplo: Adulto Avançado - SEXTA (17:10 às 18:30) - Sala 1
+                let diasStr = '', horStr = '', salaStr = '';
+                const parts = m.turma.split('-');
+                if (parts.length >= 3) {
+                    const diasHorario = parts[1].trim();
+                    const dhMatch = diasHorario.match(/(.*?)\((.*?)\)/);
+                    if (dhMatch) {
+                        diasStr = dhMatch[1].trim();
+                        horStr = dhMatch[2].trim();
+                    } else {
+                        diasStr = diasHorario;
+                    }
+                    salaStr = parts.slice(2).join('-').trim();
+                }
+
+                setVal('dias', diasStr);
+                setVal('horario', horStr);
+                setVal('local', salaStr);
                 setVal('professor', '');
+
+                if (profGroup) profGroup.style.display = 'none';
+            } else {
+                if (profGroup) profGroup.style.display = '';
+
+                const turmaRef = buscarTurmaCorrespondente(m.ano_letivo, m.turma);
+                if (turmaRef) {
+                    setVal('dias', turmaRef.dias);
+                    setVal('horario', turmaRef.horario);
+                    setVal('local', turmaRef.sala);
+                    setVal('professor', turmaRef.professor);
+                } else {
+                    setVal('dias', '');
+                    setVal('horario', '');
+                    setVal('local', '');
+                    setVal('professor', '');
+                }
             }
+
             // Turma (select)
             const turmaSelect = document.getElementById('turma');
             if (turmaSelect && m.turma) {
@@ -2846,6 +3419,21 @@
                     opt.textContent = m.turma;
                     opt.selected = true;
                     turmaSelect.appendChild(opt);
+                }
+
+                // Força bruta de read-only
+                if (isReadOnly) {
+                    turmaSelect.disabled = true;
+                    turmaSelect.style.pointerEvents = 'none';
+
+                    const inputsDeps = ['dias', 'horario', 'local'];
+                    inputsDeps.forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) {
+                            el.readOnly = true;
+                            el.style.pointerEvents = 'none';
+                        }
+                    });
                 }
             }
             // Nível (select)
@@ -2925,6 +3513,12 @@
             const modalEl = document.getElementById('modal-matricula');
             const firstTab = modalEl.querySelector('.nav-tab');
             if (firstTab) switchTab(firstTab, 'modal-matricula');
+
+            // On Mount: dispara a cadeia reativa para garantir que modalidade e turmas
+            // fiquem corretos com os dados do payload.
+            if (typeof window.onModalMatriculaOpen === 'function') {
+                setTimeout(() => window.onModalMatriculaOpen(isReadOnly), 50); // Passa o estado de leitura
+            }
         }
 
         // ========== NOVA MATRÍCULA (FORMULÁRIO VAZIO) ==========
@@ -2955,8 +3549,13 @@
             if (laudoEdit) laudoEdit.style.display = 'block';
             if (laudoView) laudoView.style.display = 'none';
             document.querySelectorAll('.confirm-field').forEach(el => el.style.display = '');
-            const btnTurma = document.getElementById('btn-escolher-turma');
-            if (btnTurma) btnTurma.style.display = '';
+
+            // Garantir que o campo de professor seja exibido (pode ter sido ocultado anteriormente)
+            const profEl = document.getElementById('professor');
+            if (profEl) {
+                const profGp = profEl.closest('.form-group');
+                if (profGp) profGp.style.display = '';
+            }
 
             // Ocultar último registro
             const ulInfo = document.getElementById('ultimo-registro-info');
@@ -2976,16 +3575,24 @@
                 numBadge.style.display = 'inline-block';
             }
 
-            // Configurar botões de turma e ocultar timestamp
             const docsEditN = document.getElementById('docs-edit-mode');
             const laudoEditN = document.getElementById('laudo-edit-mode');
             if (docsEditN) docsEditN.style.display = 'block';
             if (laudoEditN) laudoEditN.style.display = 'block';
             document.querySelectorAll('.confirm-field').forEach(el => el.style.display = 'block');
-            const btTurma = document.getElementById('btn-escolher-turma');
-            if (btTurma) btTurma.style.display = 'inline-block';
 
             openModal('modal-matricula', false);
+
+            // Garantir que a aba Identificação seja a primeira a abrir
+            const modalEl = document.getElementById('modal-matricula');
+            const tabIdentificacaoBtn = modalEl.querySelector('.nav-tab[onclick*="tab-identificacao"]');
+            if (tabIdentificacaoBtn) {
+                switchTab(tabIdentificacaoBtn, 'modal-matricula');
+            }
+
+            // Travar todos os campos exceto tipo de matrícula e CPF
+            // O usuário só poderá editar o restante após o processamento do CPF
+            travarFormMatricula(true);
         }
 
         // ========== NOVA TURMA ==========
@@ -3115,12 +3722,15 @@
             const m = matriculasData[index];
             if (!m) return;
 
+            // Garantir que a trava de CPF de "Nova Matrícula" não vaze
+            travarFormMatricula(false);
+
             // Título do modal
             const modalEl = document.getElementById('modal-matricula');
             const titulo = modalEl?.querySelector('.modal-title');
             if (titulo) titulo.textContent = 'Detalhes da matrícula';
 
-            preencherModalMatricula(m);
+            preencherModalMatricula(m, isReadOnly);
 
             // Toggle modos doc: edit vs view
             const docsEdit = document.getElementById('docs-edit-mode');
@@ -3296,7 +3906,6 @@
             const forms = modal.querySelectorAll('form');
             forms.forEach(form => {
                 if (isReadOnly) {
-                    form.style.pointerEvents = 'none';
                     form.style.opacity = '0.9';
                 } else {
                     form.style.pointerEvents = 'auto';
@@ -3316,9 +3925,16 @@
                 } else {
                     el.tabIndex = 0;
                     if (el.type === 'checkbox' || el.type === 'radio' || el.tagName === 'SELECT' || el.type === 'file' || el.tagName === 'BUTTON') {
-                        el.disabled = false;
+                        // 'modalidade' é preenchido automaticamente pela faixa etária, não deve ser editável
+                        if (el.id === 'modalidade') {
+                            el.disabled = true;
+                        } else {
+                            el.disabled = false;
+                        }
                     } else {
-                        if (el.tagName === 'INPUT' && el.id === 'anoLetivo') {
+                        // Campos calculados automaticamente: nunca podem ser editados pelo usuário
+                        const READONLY_ALWAYS = ['anoLetivo', 'idade', 'faixaetaria'];
+                        if (el.tagName === 'INPUT' && READONLY_ALWAYS.includes(el.id)) {
                             el.readOnly = true;
                         } else {
                             el.readOnly = false;
@@ -3368,30 +3984,312 @@
                     const targetId = item.getAttribute('data-target');
                     document.getElementById(targetId).classList.add('active');
                     pageTitle.textContent = pageTitlesMap[targetId];
+
+                    if (targetId === 'view-matriculas' && typeof carregarMatriculas === 'function') {
+                        carregarMatriculas();
+                    } else if (targetId === 'view-turmas' && typeof carregarTurmas === 'function') {
+                        carregarTurmas();
+                    }
                 });
             });
+
+            // Aplicar controle de acesso (RBAC)
+            aplicarRBAC();
 
             // Carregar dados iniciais da API
             carregarMatriculas();
             carregarTurmas();
             carregarOpcoesTurmas();
 
-            // Auto-preencher Modalidade de acordo com a Faixa Etária
-            const selectFaixa = document.getElementById('turma_faixa_etaria');
-            const selectModalidade = document.getElementById('turma_modalidade');
-            if (selectFaixa && selectModalidade) {
-                selectFaixa.addEventListener('change', () => {
-                    const val = selectFaixa.value.toUpperCase();
-                    if (val.includes('06 A 11')) {
-                        setSelectOptionsMatch(selectModalidade, 'Infantil');
-                    } else if (val.includes('12 A 17')) {
-                        setSelectOptionsMatch(selectModalidade, 'Adolescente');
-                    } else if (val.includes('18 A 49') || val.includes('50+')) {
-                        setSelectOptionsMatch(selectModalidade, 'Adulto');
+            // Listener para consulta de aluno por CPF (blur = ao sair do campo)
+            const cpfInput = document.getElementById('cpf');
+            if (cpfInput) {
+                cpfInput.addEventListener('blur', () => {
+                    const val = cpfInput.value.replace(/\D/g, '');
+                    if (val.length === 0) return;
+                    if (val.length !== 11 || !validarCPF(val)) {
+                        showToast('CPF inválido. Verifique os dígitos informados.', 'error');
+                        cpfInput.focus();
+                        return;
+                    }
+                    consultarAlunoPorCPF(val);
+                });
+            }
+
+            // Desbloquear CPF assim que o tipo de matrícula for selecionado
+            document.querySelectorAll('input[name="ui_tipo_matricula"]').forEach(radio => {
+                radio.addEventListener('change', () => {
+                    if (cpfInput) {
+                        cpfInput.disabled = false;
+                        cpfInput.style.cursor = '';
+                        cpfInput.placeholder = '000.000.000-00';
+                        cpfInput.focus();
+                    }
+                });
+            });
+
+            // ====================================================================
+            // REATIVIDADE DO FORMULÁRIO DE MATRÍCULA
+            // Cadeia: Data Nasc → Idade(readonly) → Faixa Etária(readonly) → Modalidade(disabled) → Turmas
+            // ====================================================================
+
+            // Monitorar form para botão Avançar
+            const formInputs = document.querySelectorAll('#formMatricula input, #formMatricula select, #formMatricula textarea');
+            formInputs.forEach(input => {
+                input.addEventListener('input', validarFormularioContinuo);
+                input.addEventListener('change', validarFormularioContinuo);
+            });
+
+            // Cenário B (On Change): usuario altera Data de Nascimento
+            const inputDtNasc = document.getElementById('datanascimento');
+            if (inputDtNasc) {
+                inputDtNasc.addEventListener('change', () => {
+                    calcularIdadeNascimento();
+                    validarFormularioContinuo();
+                });
+            }
+
+            // Cenário B (On Change): usuario altera Nível
+            const selectNivel = document.getElementById('nivel');
+            if (selectNivel) {
+                selectNivel.addEventListener('change', () => {
+                    // Garante modalidade ok antes de buscar (pode ter mudado de faixa)
+                    const f = (document.getElementById('faixaetaria')?.value || '').toUpperCase();
+                    if (f.includes('06 A 11')) aplicarModalidade('Infantil');
+                    else if (f.includes('12 A 17')) aplicarModalidade('Adolescente');
+                    else if (f.includes('18 A 49') || f.includes('50+')) aplicarModalidade('Adulto');
+                    buscarTurmasDinamicas();
+                });
+            }
+
+            // On Change: radios de tipo de matrícula
+            document.querySelectorAll('input[name="ui_tipo_matricula"]').forEach(radio => {
+                radio.addEventListener('change', buscarTurmasDinamicas);
+            });
+
+            // On Change: ano letivo
+            const inputAnoLetivo = document.getElementById('anoLetivo');
+            if (inputAnoLetivo) {
+                inputAnoLetivo.addEventListener('change', buscarTurmasDinamicas);
+            }
+
+            // Cenário A (On Mount): hook chamado por preencherModalMatricula após preencher todos os campos.
+            // Garante que se os campos já vierem preenchidos, a cadeia inteira é executada.
+            window.onModalMatriculaOpen = function (isReadOnly = false) {
+                if (isReadOnly) return; // BLOQUEIO ABSOLUTO: Sem reatividade para modo visualização!
+
+                const dt = document.getElementById('datanascimento');
+                if (dt && dt.value) {
+                    // Recalcula tudo a partir da data de nascimento (fonte primária)
+                    calcularIdadeNascimento();
+                } else {
+                    // Tenta aplicar modalidade a partir da faixaetaria já preenchida (payload)
+                    const faixa = (document.getElementById('faixaetaria')?.value || '').toUpperCase();
+                    if (faixa.includes('06 A 11')) aplicarModalidade('Infantil');
+                    else if (faixa.includes('12 A 17')) aplicarModalidade('Adolescente');
+                    else if (faixa.includes('18 A 49') || faixa.includes('50+')) aplicarModalidade('Adulto');
+                }
+                // Dispara busca de turmas se os pré-requisitos já estão preenchidos
+                const nivel = document.getElementById('nivel')?.value;
+                const modalidade = document.getElementById('modalidade')?.value;
+                if (nivel && modalidade) {
+                    buscarTurmasDinamicas();
+                }
+            };
+
+            const pcdAsk = document.getElementById('pcd_ask');
+            if (pcdAsk) {
+                pcdAsk.addEventListener('change', () => {
+                    const isPcd = (pcdAsk.value === 'Sim');
+                    const tipoRow = document.getElementById('tipo_def_ask')?.closest('.row');
+                    if (tipoRow) tipoRow.style.display = isPcd ? '' : 'none';
+                    if (!isPcd) {
+                        if (document.getElementById('tipo_def_ask')) document.getElementById('tipo_def_ask').value = '';
+                        if (document.getElementById('qual_deficiencia_ask')) document.getElementById('qual_deficiencia_ask').value = '';
+                    }
+                });
+                pcdAsk.dispatchEvent(new Event('change'));
+            }
+
+            const contraAsk = document.getElementById('contraindicacao_medica_ask');
+            const qualContraAsk = document.getElementById('qual_contraindicacao_ask');
+            if (contraAsk && qualContraAsk) {
+                contraAsk.addEventListener('change', () => {
+                    const isSim = (contraAsk.value === 'Sim');
+                    qualContraAsk.closest('.form-group').style.display = isSim ? '' : 'none';
+                    if (!isSim) qualContraAsk.value = '';
+                });
+                contraAsk.dispatchEvent(new Event('change'));
+            }
+
+            const realizaAtvAsk = document.getElementById('realiza_atv_ask');
+            const descAtvAsk = document.getElementById('descreva_atv_ask');
+            if (realizaAtvAsk && descAtvAsk) {
+                realizaAtvAsk.addEventListener('change', () => {
+                    const isSim = (realizaAtvAsk.value === 'Sim');
+                    descAtvAsk.style.display = isSim ? '' : 'none';
+                    if (descAtvAsk.previousElementSibling) descAtvAsk.previousElementSibling.style.display = isSim ? '' : 'none';
+                    if (!isSim) descAtvAsk.value = '';
+                });
+                realizaAtvAsk.dispatchEvent(new Event('change'));
+            }
+
+            const usaMedAsk = document.getElementById('usa_mediamento_ask');
+            const descMedAsk = document.getElementById('descreva_medicamento_ask');
+            if (usaMedAsk && descMedAsk) {
+                usaMedAsk.addEventListener('change', () => {
+                    const isSim = (usaMedAsk.value === 'Sim');
+                    descMedAsk.style.display = isSim ? '' : 'none';
+                    if (descMedAsk.previousElementSibling) descMedAsk.previousElementSibling.style.display = isSim ? '' : 'none';
+                    if (!isSim) descMedAsk.value = '';
+                });
+                usaMedAsk.dispatchEvent(new Event('change'));
+            }
+
+            const alergiaAsk = document.getElementById('alergia_ask');
+            const descAlergiaAsk = document.getElementById('descreva_alergia_ask');
+            if (alergiaAsk && descAlergiaAsk) {
+                alergiaAsk.addEventListener('change', () => {
+                    const isSim = (alergiaAsk.value === 'Sim');
+                    descAlergiaAsk.style.display = isSim ? '' : 'none';
+                    if (descAlergiaAsk.previousElementSibling) descAlergiaAsk.previousElementSibling.style.display = isSim ? '' : 'none';
+                    if (!isSim) descAlergiaAsk.value = '';
+                });
+                alergiaAsk.dispatchEvent(new Event('change'));
+            }
+
+
+
+            // Listener ao selecionar a Turma para preencher dias/horário/sala/professor
+            const selectTurma = document.getElementById('turma');
+            if (selectTurma) {
+                selectTurma.addEventListener('change', () => {
+                    const selVal = selectTurma.value;
+                    const diasEl = document.getElementById('dias');
+                    const horarioEl = document.getElementById('horario');
+                    const localEl = document.getElementById('local');
+                    const professorEl = document.getElementById('professor');
+
+                    if (!selVal) {
+                        if (diasEl) diasEl.value = '';
+                        if (horarioEl) horarioEl.value = '';
+                        if (localEl) localEl.value = '';
+                        if (professorEl) professorEl.value = '';
+                        return;
+                    }
+
+                    if (window._cachedTurmasDinamicas) {
+                        // Busca pelo nome_turma (chave devolvida pelo endpoint)
+                        const t = window._cachedTurmasDinamicas.find(item =>
+                            (item.nome_turma || item.turma || '') === selVal
+                        );
+                        if (t) {
+                            if (diasEl) diasEl.value = t.dias || '';
+                            if (horarioEl) horarioEl.value = t.horario || '';
+                            if (localEl) localEl.value = t.local || t.sala || '';
+                            if (professorEl) professorEl.value = t.professor || '';
+                        }
+                    } else {
+                        // Fallback: ler direto do dataset da option selecionada
+                        const selOpt = selectTurma.options[selectTurma.selectedIndex];
+                        if (selOpt && selOpt.dataset.dias !== undefined) {
+                            if (diasEl) diasEl.value = selOpt.dataset.dias;
+                            if (horarioEl) horarioEl.value = selOpt.dataset.horario;
+                            if (localEl) localEl.value = selOpt.dataset.local;
+                            if (professorEl) professorEl.value = selOpt.dataset.professor;
+                        }
                     }
                 });
             }
         });
+
+        // ========== BUSCAR TURMAS DINAMICAMENTE (WEBHOOK POST) ==========
+        async function buscarTurmasDinamicas() {
+            const faixa_etaria = document.getElementById('faixaetaria')?.value || '';
+            const modalidade = document.getElementById('modalidade')?.value || '';
+            const nivel = document.getElementById('nivel')?.value || '';
+            const anoLetivoStr = document.getElementById('anoLetivo')?.value || '';
+            const ano_letivo = parseInt(anoLetivoStr) || 0;
+
+            const tipoRadio = document.querySelector('input[name="ui_tipo_matricula"]:checked');
+            let tipomatricula = tipoRadio ? tipoRadio.value : '';
+            if (tipomatricula.toLowerCase() === 'nova') tipomatricula = 'Matrícula nova';
+
+            const selectTurma = document.getElementById('turma');
+            if (!selectTurma) return;
+
+            // Pré-requisitos obrigatórios: faixa_etaria, modalidade, nivel e ano_letivo
+            // tipomatricula é enviado se disponível mas não bloqueia a chamada
+            if (!faixa_etaria || !modalidade || !nivel || !ano_letivo) {
+                selectTurma.innerHTML = '<option value="">Selecione ou busque avançado...</option>';
+                window._cachedTurmasDinamicas = null;
+                selectTurma.dispatchEvent(new Event('change'));
+                return;
+            }
+
+            selectTurma.innerHTML = '<option value="">Buscando turmas...</option>';
+            selectTurma.disabled = true;
+
+            const payload = {
+                faixa_etaria,
+                modalidade,
+                nivel,
+                ano_letivo
+            };
+            // tipomatricula: inclui somente se selecionado
+            if (tipomatricula) payload.tipomatricula = tipomatricula;
+
+            try {
+                const response = await fetch('https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/turmas-frevo', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error('Erro ao buscar turmas');
+
+                let data = await response.json();
+                if (!Array.isArray(data)) {
+                    data = [data]; // Garante que seja array caso volte um objeto único
+                }
+
+                window._cachedTurmasDinamicas = data; // Guarda cache para o onChange
+
+                // Ordenar por __ord se existir
+                data.sort((a, b) => {
+                    const ordA = parseInt(a.__ord) || 999;
+                    const ordB = parseInt(b.__ord) || 999;
+                    return ordA - ordB;
+                });
+
+                selectTurma.innerHTML = '<option value="">Selecione a Turma...</option>';
+                data.forEach(t => {
+                    if (Object.keys(t).length === 0) return;
+                    // Ignorar o item placeholder 'Selecione' que pode vir do endpoint
+                    const nomeTurma = t.nome_turma || t.turma || '';
+                    if (!nomeTurma || nomeTurma.toLowerCase() === 'selecione') return;
+
+                    const opt = document.createElement('option');
+                    // value = nome_turma para que o onChange consiga fazer o lookup
+                    opt.value = nomeTurma;
+                    opt.textContent = nomeTurma;
+                    // Guardar os detalhes diretamente no dataset para acesso rápido
+                    opt.dataset.dias = t.dias || '';
+                    opt.dataset.horario = t.horario || '';
+                    opt.dataset.local = t.local || t.sala || '';
+                    opt.dataset.professor = t.professor || '';
+                    selectTurma.appendChild(opt);
+                });
+
+            } catch (error) {
+                console.error('Erro na busca de turmas:', error);
+                selectTurma.innerHTML = '<option value="">Erro ao carregar turmas</option>';
+            } finally {
+                selectTurma.disabled = false;
+                // Dispara o change para limpar os campos dependentes
+                selectTurma.dispatchEvent(new Event('change'));
+            }
+        }
 
         // Função auxiliar para selecionar opção compatível no select
         function setSelectOptionsMatch(selectEl, matchText) {
@@ -3409,7 +4307,9 @@
         async function carregarOpcoesTurmas() {
             const endpoints = [
                 { url: 'https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/faixa_etaria', id: 'turma_faixa_etaria', key: 'faixa_etaria' },
+                // Modalidade: alimenta tanto o select do Cadastrar Turma quanto o da Nova Matrícula
                 { url: 'https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/modalidade_turmas', id: 'turma_modalidade', key: 'modalidade' },
+                { url: 'https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/modalidade_turmas', id: 'modalidade', key: 'modalidade' },
                 { url: 'https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/dias_turmas', id: 'turma_dias', key: 'dias' },
                 { url: 'https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/professor', id: 'turma_professor', key: 'professor' },
                 { url: 'https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/sala', id: 'turma_sala', key: 'sala' },
@@ -3459,6 +4359,12 @@
                             selectEl.appendChild(opt);
                         }
                     });
+
+                    // Se for o select de modalidade, aplicar valor pendente (calculado antes das opções carregarem)
+                    if (config.id === 'modalidade' && window._pendingModalidade) {
+                        aplicarModalidade(window._pendingModalidade);
+                        window._pendingModalidade = null;
+                    }
                 } catch (err) {
                     console.error('Erro ao carregar opções para ' + config.id, err);
                     selectEl.innerHTML = '<option value="">Erro ao carregar</option>';
@@ -3517,6 +4423,258 @@
             }
         }
 
+        // ========== VALIDAÇÃO CONTÍNUA DO BOTÃO AVANÇAR E AUTOCOMPLETE ==========
+        function validarFormularioContinuo() {
+            const btnAvancar = document.getElementById('btn-avancar-matricula');
+            if (!btnAvancar) return;
+
+            const getRaw = id => document.getElementById(id)?.value || '';
+            const tipoRadio = document.querySelector('input[name="ui_tipo_matricula"]:checked');
+
+            let valido = true;
+
+            if (!tipoRadio) valido = false;
+
+            const reqBasic = ['cpf', 'nomeCompleto', 'datanascimento', 'racacor', 'genero', 'cep', 'logradouro', 'numero', 'bairro', 'cidade', 'possuirg', 'pcd_ask', 'contraindicacao_medica_ask', 'realiza_atv_ask', 'usa_mediamento_ask', 'alergia_ask', 'anoLetivo', 'nivel', 'turma'];
+
+            if (valido) {
+                for (const id of reqBasic) {
+                    if (!getRaw(id)) { valido = false; break; }
+                }
+            }
+
+            if (valido && getRaw('pcd_ask') === 'Sim' && (!getRaw('tipo_def_ask') || !getRaw('qual_deficiencia_ask'))) valido = false;
+            if (valido && getRaw('contraindicacao_medica_ask') === 'Sim' && !getRaw('qual_contraindicacao_ask')) valido = false;
+            if (valido && getRaw('realiza_atv_ask') === 'Sim' && !getRaw('descreva_atv_ask')) valido = false;
+            if (valido && getRaw('usa_mediamento_ask') === 'Sim' && !getRaw('descreva_medicamento_ask')) valido = false;
+            if (valido && getRaw('alergia_ask') === 'Sim' && !getRaw('descreva_alergia_ask')) valido = false;
+
+            const idade = parseInt(getRaw('idade')) || 0;
+            if (valido && idade < 18 && (!getRaw('nomeCompletoResponsavel') || !getRaw('cpfresponsavel'))) valido = false;
+
+            // Validação de Email e Confirmar Email
+            const email = getRaw('email').toLowerCase();
+            const emailConf = getRaw('confirmarEmail').toLowerCase();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (valido && (!email || !emailRegex.test(email) || email !== emailConf)) valido = false;
+
+            // Validação de WhatsApp e Confirmar WhatsApp
+            const wpp = getRaw('whatsapp').replace(/\D/g, '');
+            const wppConf = getRaw('confirmarWhatsApp').replace(/\D/g, '');
+            if (valido && (wpp.length !== 11 || wpp !== wppConf)) valido = false;
+
+            // Validação do CEP length
+            const cep = getRaw('cep').replace(/\D/g, '');
+            if (valido && cep.length !== 8) valido = false;
+
+            btnAvancar.disabled = !valido;
+        }
+
+        // Restrição e Autocomplete CEP
+        document.getElementById('cep')?.addEventListener('input', function (e) {
+            this.value = this.value.replace(/\D/g, '').slice(0, 8);
+            validarFormularioContinuo();
+        });
+
+        document.getElementById('cep')?.addEventListener('blur', async function (e) {
+            const cepDigitado = this.value.replace(/\D/g, '');
+            if (cepDigitado.length === 8) {
+                try {
+                    const response = await fetch(`https://brasilapi.com.br/api/cep/v1/${cepDigitado}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        document.getElementById('logradouro').value = data.street || '';
+                        document.getElementById('bairro').value = data.neighborhood || '';
+                        document.getElementById('cidade').value = data.city || '';
+                        // UF ignorada (não no form)
+                        validarFormularioContinuo();
+                    }
+                } catch (error) {
+                    console.error("Erro ao buscar CEP:", error);
+                }
+            }
+        });
+
+        // Formatação Email e Wpp
+        document.getElementById('email')?.addEventListener('input', function (e) {
+            this.value = this.value.toLowerCase();
+            validarFormularioContinuo();
+        });
+        document.getElementById('confirmarEmail')?.addEventListener('input', function (e) {
+            this.value = this.value.toLowerCase();
+            validarFormularioContinuo();
+        });
+        document.getElementById('whatsapp')?.addEventListener('input', function (e) {
+            this.value = this.value.replace(/\D/g, '').slice(0, 11);
+            validarFormularioContinuo();
+        });
+        document.getElementById('confirmarWhatsApp')?.addEventListener('input', function (e) {
+            this.value = this.value.replace(/\D/g, '').slice(0, 11);
+            validarFormularioContinuo();
+        });
+
+
+        // ========== RESUMO DA MATRÍCULA (VALIDAÇÃO E MODAL) ==========
+        function abrirResumoMatricula() {
+            const getVal = (id) => {
+                const el = document.getElementById(id);
+                if (el && el.tagName === 'SELECT' && el.selectedIndex >= 0 && el.options[el.selectedIndex].value !== "") {
+                    return el.options[el.selectedIndex].textContent;
+                }
+                return el ? el.value : '';
+            };
+            const getRaw = id => document.getElementById(id)?.value || '';
+
+            // 1. Tipo de matrícula
+            const tipoRadio = document.querySelector('input[name="ui_tipo_matricula"]:checked');
+            let errorMsg = null;
+            let errorFieldId = null;
+
+            if (!tipoRadio) {
+                errorMsg = 'Preencha o Tipo de Matrícula (Renovação, Nova ou Oficina).';
+                errorFieldId = null;
+            }
+
+            // 2. Campos Obrigatórios Básicos
+            const reqBasic = [
+                { id: 'cpf', label: 'CPF' },
+                { id: 'nomeCompleto', label: 'Nome Completo' },
+                { id: 'datanascimento', label: 'Data de Nascimento' },
+                { id: 'racacor', label: 'Raça/Cor' },
+                { id: 'genero', label: 'Gênero' },
+                { id: 'cep', label: 'CEP' },
+                { id: 'logradouro', label: 'Logradouro' },
+                { id: 'numero', label: 'Número' },
+                { id: 'bairro', label: 'Bairro' },
+                { id: 'cidade', label: 'Cidade' },
+                { id: 'possuirg', label: 'Possui RG?' },
+                { id: 'pcd_ask', label: 'O aluno possui alguma deficiência?' },
+                { id: 'contraindicacao_medica_ask', label: 'Contraindicação médica' },
+                { id: 'realiza_atv_ask', label: 'Realiza atividade física' },
+                { id: 'usa_mediamento_ask', label: 'Uso de medicamento' },
+                { id: 'alergia_ask', label: 'Possui alergia' },
+                { id: 'anoLetivo', label: 'Ano Letivo' },
+                { id: 'nivel', label: 'Nível (Atual)' },
+                { id: 'turma', label: 'Turma' }
+            ];
+
+            if (!errorMsg) {
+                for (const f of reqBasic) {
+                    if (!getRaw(f.id)) {
+                        errorMsg = `O campo '${f.label}' é obrigatório.`;
+                        errorFieldId = f.id;
+                        break;
+                    }
+                }
+            }
+
+            // 3. Validações Condicionais
+            if (!errorMsg && getRaw('pcd_ask') === 'Sim') {
+                if (!getRaw('tipo_def_ask') || !getRaw('qual_deficiencia_ask')) {
+                    errorMsg = 'Se PCD for "Sim", preencha o Tipo e Deficiência.';
+                    errorFieldId = !getRaw('tipo_def_ask') ? 'tipo_def_ask' : 'qual_deficiencia_ask';
+                }
+            }
+            if (!errorMsg && getRaw('contraindicacao_medica_ask') === 'Sim' && !getRaw('qual_contraindicacao_ask')) {
+                errorMsg = 'Preencha qual a contraindicação médica.';
+                errorFieldId = 'qual_contraindicacao_ask';
+            }
+            if (!errorMsg && getRaw('realiza_atv_ask') === 'Sim' && !getRaw('descreva_atv_ask')) {
+                errorMsg = 'Descreva a atividade física.';
+                errorFieldId = 'descreva_atv_ask';
+            }
+            if (!errorMsg && getRaw('usa_mediamento_ask') === 'Sim' && !getRaw('descreva_medicamento_ask')) {
+                errorMsg = 'Descreva o medicamento de uso contínuo.';
+                errorFieldId = 'descreva_medicamento_ask';
+            }
+            if (!errorMsg && getRaw('alergia_ask') === 'Sim' && !getRaw('descreva_alergia_ask')) {
+                errorMsg = 'Descreva a(s) alergia(s).';
+                errorFieldId = 'descreva_alergia_ask';
+            }
+
+            // 4. Responsável (se menor de idade)
+            const idade = parseInt(getRaw('idade')) || 0;
+            if (!errorMsg && idade < 18) {
+                if (!getRaw('nomeCompletoResponsavel') || !getRaw('cpfresponsavel')) {
+                    errorMsg = 'Para menores de 18 anos, Nome e CPF do Responsável são obrigatórios.';
+                    errorFieldId = !getRaw('nomeCompletoResponsavel') ? 'nomeCompletoResponsavel' : 'cpfresponsavel';
+                }
+            }
+
+            // Se houver erro, exibe toast e foca no campo problemático
+            if (errorMsg) {
+                showToast(errorMsg, 'error');
+                if (errorFieldId) {
+                    const el = document.getElementById(errorFieldId);
+                    if (el && !el.disabled) {
+                        // Mudar de aba se necessário
+                        const tabId = el.closest('.tab-content')?.id;
+                        if (tabId) {
+                            const tabBtn = document.querySelector(`.nav-tab[data-target="${tabId}"]`);
+                            if (tabBtn) switchTab(tabBtn, 'modal-matricula');
+                        }
+                        el.focus();
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+                return;
+            }
+
+            // Tudo OK, preencher resumo e abrir modal de confirmação
+            // Identificação Básica
+            document.getElementById('resumo-mat-nome').textContent = getRaw('nomeCompleto') || 'Não informado';
+            document.getElementById('resumo-mat-cpf').textContent = getRaw('cpf') || 'Não informado';
+            document.getElementById('resumo-mat-genero').textContent = getVal('genero') || 'Não informado';
+
+            const nascRaw = getRaw('datanascimento');
+            const nascFormatado = nascRaw ? nascRaw.split('-').reverse().join('/') : 'Não informado';
+            document.getElementById('resumo-mat-nasc').textContent = nascFormatado;
+
+            document.getElementById('resumo-mat-idade').textContent = `${idade} anos (${getRaw('faixaetaria')})`;
+            document.getElementById('resumo-mat-raca').textContent = getVal('racacor') || 'Não informado';
+
+            // Responsável
+            if (idade < 18) {
+                document.getElementById('resumo-section-resp').style.display = 'block';
+                document.getElementById('resumo-resp-nome').style.display = 'block';
+                document.getElementById('resumo-resp-cpf').style.display = 'block';
+                document.getElementById('resumo-mat-resp-nome').textContent = getRaw('nomeCompletoResponsavel') || 'Não informado';
+                document.getElementById('resumo-mat-resp-cpf').textContent = getRaw('cpfresponsavel') || 'Não informado';
+            } else {
+                document.getElementById('resumo-section-resp').style.display = 'none';
+                document.getElementById('resumo-resp-nome').style.display = 'none';
+                document.getElementById('resumo-resp-cpf').style.display = 'none';
+            }
+
+            // Contato e Endereço
+            document.getElementById('resumo-mat-whatsapp').textContent = getRaw('telefone') || 'Não informado';
+            document.getElementById('resumo-mat-email').textContent = getRaw('email') || 'Não informado';
+
+            const endVars = [getRaw('logradouro'), getRaw('numero'), getRaw('complemento'), getRaw('bairro'), getRaw('cidade'), getRaw('cep')];
+            const endFull = endVars.filter(v => !!v).join(', ') || 'Não informado';
+            document.getElementById('resumo-mat-endereco').textContent = endFull;
+
+            // Saúde
+            const formatPcd = getVal('pcd_ask') === 'Sim' ? `Sim (${getVal('tipo_def_ask')} - ${getVal('qual_deficiencia_ask')})` : 'Não';
+            const formatContra = getVal('contraindicacao_medica_ask') === 'Sim' ? `Sim (${getRaw('qual_contraindicacao_ask')})` : 'Não';
+            const formatMed = getVal('usa_mediamento_ask') === 'Sim' ? `Sim (${getRaw('descreva_medicamento_ask')})` : 'Não';
+            const formatAlergia = getVal('alergia_ask') === 'Sim' ? `Sim (${getRaw('descreva_alergia_ask')})` : 'Não';
+
+            document.getElementById('resumo-mat-pcd').textContent = formatPcd;
+            document.getElementById('resumo-mat-contra').textContent = formatContra;
+            document.getElementById('resumo-mat-med').textContent = formatMed;
+            document.getElementById('resumo-mat-alergia').textContent = formatAlergia;
+
+            // Trilha Escolar
+            document.getElementById('resumo-mat-ano').textContent = getRaw('anoLetivo') || 'Não informado';
+            document.getElementById('resumo-mat-nivel').textContent = getVal('nivel') || 'Não informado';
+            document.getElementById('resumo-mat-modalidade').textContent = getVal('modalidade') || 'Não informado';
+            document.getElementById('resumo-mat-tipo').textContent = tipoRadio.value || 'Não informado';
+            document.getElementById('resumo-mat-turma').textContent = getVal('turma') || 'Não informado';
+
+            openModal('modal-confirmacao-matricula', false);
+        }
+
         // ========== EDI!ÒO DE MATRÍCULA ==========
         async function salvarMatricula(btnElement) {
             const originalText = btnElement.innerHTML;
@@ -3528,7 +4686,10 @@
             const fileToBase64 = file => new Promise((resolve, reject) => {
                 if (!file) { resolve(null); return; }
                 const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
+                reader.onload = () => {
+                    const b64 = reader.result.split(',')[1];
+                    resolve(b64);
+                };
                 reader.onerror = error => reject(error);
                 reader.readAsDataURL(file);
             });
@@ -3539,7 +4700,11 @@
                     return await fileToBase64(input.files[0]);
                 }
                 if (window._currentMatriculaDocs && window._currentMatriculaDocs[dictKey]) {
-                    return window._currentMatriculaDocs[dictKey];
+                    let oldB64 = window._currentMatriculaDocs[dictKey];
+                    if (typeof oldB64 === 'string' && oldB64.includes('base64,')) {
+                        oldB64 = oldB64.split('base64,')[1];
+                    }
+                    return oldB64;
                 }
                 return null;
             };
@@ -3566,55 +4731,65 @@
             const payload = {
                 cpf_aluno: cpfVal,
                 nome_aluno: getVal('nomeCompleto'),
-                data_nasc: getVal('datanascimento'),
-                idade: idadeVal,
-                faixa_etaria: getVal('faixaetaria'),
-                maior_idade_aluno: idadeVal >= 18 ? 'SIM' : 'NÒO',
+                data_nascimento_aluno: getVal('datanascimento'),
+                idade_aluno: idadeVal,
+                faixa_etaria_aluno: getVal('faixaetaria'),
+                maior_idade_aluno: idadeVal >= 18 ? 'SIM' : 'NÃO',
                 modalidade: getVal('modalidade'),
-                cep: getVal('cep'),
-                logradouro: getVal('logradouro'),
-                numero: parseInt(getVal('numero')) || 0,
-                complemento: getVal('complemento'),
-                bairro: getVal('bairro'),
-                cidade: getVal('cidade'),
-                telefone: getVal('whatsapp'),
-                email: getVal('email'),
-                possuirg: getVal('possuirg'),
-                racacor: getVal('racacor'),
-                genero: getVal('genero'),
-                nome_resp: getVal('nomeCompletoResponsavel'),
+                cep_aluno: getVal('cep'),
+                logradouro_aluno: getVal('logradouro'),
+                numero_aluno: parseInt(getVal('numero')) || 0,
+                complemento_aluno: getVal('complemento'),
+                bairro_aluno: getVal('bairro'),
+                cidade_aluno: getVal('cidade'),
+                telefone_aluno: getVal('whatsapp'),
+                email_aluno: getVal('email'),
+                possui_rg_aluno: getVal('possuirg'),
+                raca_cor_aluno: getVal('racacor'),
+                genero_aluno: getVal('genero'),
+                nome_responsavel: getVal('nomeCompletoResponsavel'),
                 cpf_responsavel: cpfRespVal,
-                atividadefisica: atividadefisica,
-                contraindicacao: getVal('contraindicacao_medica_ask'),
-                descreva_contradi: getVal('qual_contraindicacao_ask'),
-                descreva_medicamento: descreva_medicamento,
+                atividade_fisica: atividadefisica,
+                possui_contraindicacao: getVal('contraindicacao_medica_ask'),
+                contraindicacao: getVal('qual_contraindicacao_ask'),
+                medicamento_continuo: descreva_medicamento,
                 alergia: alergia,
-                p_pcd: getVal('pcd_ask'),
-                tipodeficiencia: getVal('tipo_def_ask'),
-                deficiencia: getVal('qual_deficiencia_ask'),
-                nova_turma: getVal('turma'),
-                ano: getVal('anoLetivo'),
+                anexo_parecer_medico: await getFileB64('parecer_medico', 'parecer_medico'),
+                pessoa_com_deficiencia: getVal('pcd_ask'),
+                tipo_deficiencia: getVal('tipo_def_ask'),
+                descricao_deficiencia: getVal('qual_deficiencia_ask'),
+                turma: getVal('turma'),
                 autorizacao_uso_imagem: 'SIM',
+                email_logado: window.usuarioLogado || currentUser || 'Desconhecido',
                 status: 'ATIVA',
-
-                // Arquivos em Base64
-                rg_frente: await getFileB64('rg_frente', 'rg_frente'),
-                rg_verso: await getFileB64('rg_verso', 'rg_verso'),
-                certidao_nasc: await getFileB64('certidao_nasc', 'certidao_nasc'),
-                parecer_medico: await getFileB64('parecer_medico', 'parecer_medico')
+                ano_letivo: getVal('anoLetivo'),
+                timestamp: new Date().toISOString(),
+                tipo_matricula: document.querySelector('input[name="ui_tipo_matricula"]:checked')?.value || '',
+                anexo_rg_frente_base64: await getFileB64('rg_frente', 'rg_frente'),
+                anexo_rg_verso_base64: await getFileB64('rg_verso', 'rg_verso'),
+                anexo_cn_base64: await getFileB64('certidao_nasc', 'certidao_nasc'),
+                wfid: window._currentMatriculaWfid || '',
+                nivel_atual: getVal('nivel'),
+                anexo_parecer_base64: await getFileB64('parecer_medico', 'parecer_medico'),
+                parecer_valido: document.querySelector('input[name="parecer_valido"]:checked')?.value || ''
             };
 
+            if (matriculaSelecionadaId) {
+                payload.id = matriculaSelecionadaId;
+            }
+
             try {
-                const response = await fetch('https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/editingdata', {
+                const response = await fetch('https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/realizar-editar-matricula', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ data: payload })
+                    body: JSON.stringify(payload)
                 });
 
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
                 showToast('Matrícula editada via painel com sucesso!', 'success');
                 closeModal('modal-matricula');
+                closeModal('modal-confirmacao-matricula');
                 carregarMatriculas();
             } catch (error) {
                 console.error('Erro ao atualizar matrícula:', error);
