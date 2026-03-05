@@ -1802,13 +1802,16 @@
                                         <input type="text" class="form-control" id="cep" name="cep" value="52051340">
                                     </div>
                                 </div>
-                                <div class="col" style="flex: 2;">
+                                <div class="col" style="flex: 1;">
                                     <div class="form-group">
                                         <label class="form-label" for="logradouro">Logradouro *</label>
                                         <input type="text" class="form-control" id="logradouro" name="logradouro"
                                             value="Bento Loiola">
                                     </div>
                                 </div>
+                            </div>
+
+                            <div class="row">
                                 <div class="col" style="flex: 0 0 120px;">
                                     <div class="form-group">
                                         <label class="form-label" for="numero">Número *</label>
@@ -1821,9 +1824,6 @@
                                         <input type="text" class="form-control" id="complemento" name="complemento">
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="row">
                                 <div class="col">
                                     <div class="form-group">
                                         <label class="form-label" for="bairro">Bairro *</label>
@@ -1836,6 +1836,12 @@
                                         <label class="form-label" for="cidade">Cidade *</label>
                                         <input type="text" class="form-control" id="cidade" name="cidade"
                                             value="Recife">
+                                    </div>
+                                </div>
+                                <div class="col" style="flex: 0 0 100px;">
+                                    <div class="form-group">
+                                        <label class="form-label" for="uf">UF *</label>
+                                        <input type="text" class="form-control" id="uf" name="uf" value="PE">
                                     </div>
                                 </div>
                             </div>
@@ -2630,7 +2636,7 @@
 
                 if (mensagemResposta.includes("Não existe matrícula para o CPF informado no ano anterior")) {
                     if (nomeInput) { nomeInput.value = ''; nomeInput.style.opacity = '1'; }
-                    showToast('Aluno não encontrado no ano anterior. Preencha os dados manualmente.', 'warning');
+                    showToast('Não foram encontrados dados do aluno no ano anterior e solicitamos o preenchimento manual.', 'warning');
                     travarFormMatricula(false);
                     cpfConsultaEmAndamento = false;
                     return;
@@ -2712,8 +2718,36 @@
                 // Saúde
                 setSelect('pcd_ask', aluno.pessoa_com_deficiencia || aluno.p_pcd || '');
                 setSelect('tipo_def_ask', aluno.tipo_deficiencia || aluno.tipodeficiencia || '');
+                setVal('qual_deficiencia_ask', aluno.descricao_deficiencia || aluno.tipo_deficiencia || '');
                 setSelect('contraindicacao_medica_ask', aluno.possui_contraindicacao || aluno.contraindicacao || '');
                 setVal('qual_contraindicacao_ask', aluno.contraindicacao || aluno.descreva_contradi || '');
+
+                const atv = aluno.atividade_fisica || '';
+                if (atv.toUpperCase() === 'SIM' || atv.toUpperCase() === 'NÃO' || atv.toUpperCase() === 'NÒO') {
+                    setSelect('realiza_atv_ask', atv);
+                    setVal('descreva_atv_ask', '');
+                } else if (atv) {
+                    setSelect('realiza_atv_ask', 'Sim');
+                    setVal('descreva_atv_ask', atv);
+                }
+
+                const med = aluno.medicamento_continuo || '';
+                if (med.toUpperCase() === 'SIM' || med.toUpperCase() === 'NÃO' || med.toUpperCase() === 'NÒO') {
+                    setSelect('usa_mediamento_ask', med);
+                    setVal('descreva_medicamento_ask', '');
+                } else if (med) {
+                    setSelect('usa_mediamento_ask', 'Sim');
+                    setVal('descreva_medicamento_ask', med);
+                }
+
+                const alg = aluno.alergia || '';
+                if (alg.toUpperCase() === 'SIM' || alg.toUpperCase() === 'NÃO' || alg.toUpperCase() === 'NÒO') {
+                    setSelect('alergia_ask', alg);
+                    setVal('descreva_alergia_ask', '');
+                } else if (alg) {
+                    setSelect('alergia_ask', 'Sim');
+                    setVal('descreva_alergia_ask', alg);
+                }
 
                 // Endereço
                 setVal('cep', aluno.cep_aluno || aluno.cep || '');
@@ -3585,7 +3619,7 @@
 
             // Garantir que a aba Identificação seja a primeira a abrir
             const modalEl = document.getElementById('modal-matricula');
-            const tabIdentificacaoBtn = modalEl.querySelector('.nav-tab[onclick*="tab-identificacao"]');
+            const tabIdentificacaoBtn = modalEl.querySelector('.nav-tab[data-tab="tab-identificacao"]');
             if (tabIdentificacaoBtn) {
                 switchTab(tabIdentificacaoBtn, 'modal-matricula');
             }
@@ -3593,6 +3627,14 @@
             // Travar todos os campos exceto tipo de matrícula e CPF
             // O usuário só poderá editar o restante após o processamento do CPF
             travarFormMatricula(true);
+
+            // Bloqueio do CPF: Inicia desabilitado na Nova Matrícula até escolher o tipo
+            const cpfEl = document.getElementById('cpf');
+            if (cpfEl) {
+                cpfEl.disabled = true;
+                cpfEl.value = '';
+                cpfEl.placeholder = 'Selecione o tipo de matrícula acima...';
+            }
         }
 
         // ========== NOVA TURMA ==========
@@ -4064,7 +4106,16 @@
 
             // On Change: radios de tipo de matrícula
             document.querySelectorAll('input[name="ui_tipo_matricula"]').forEach(radio => {
-                radio.addEventListener('change', buscarTurmasDinamicas);
+                radio.addEventListener('change', () => {
+                    // Libera campo de CPF caso estejamos em processo de Nova Matrícula
+                    const modalMsg = document.querySelector('#modal-matricula .modal-title')?.textContent;
+                    const cpfEl = document.getElementById('cpf');
+                    if (cpfEl && modalMsg === 'Nova Matrícula' && cpfEl.disabled) {
+                        cpfEl.disabled = false;
+                        cpfEl.placeholder = 'Digite o CPF (apenas números)';
+                    }
+                    buscarTurmasDinamicas();
+                });
             });
 
             // On Change: ano letivo
@@ -4098,18 +4149,29 @@
             };
 
             const pcdAsk = document.getElementById('pcd_ask');
-            if (pcdAsk) {
-                pcdAsk.addEventListener('change', () => {
-                    const isPcd = (pcdAsk.value === 'Sim');
-                    const tipoRow = document.getElementById('tipo_def_ask')?.closest('.row');
-                    if (tipoRow) tipoRow.style.display = isPcd ? '' : 'none';
-                    if (!isPcd) {
-                        if (document.getElementById('tipo_def_ask')) document.getElementById('tipo_def_ask').value = '';
-                        if (document.getElementById('qual_deficiencia_ask')) document.getElementById('qual_deficiencia_ask').value = '';
+            const tipoDefAsk = document.getElementById('tipo_def_ask');
+            const qualDefAsk = document.getElementById('qual_deficiencia_ask');
+
+            const togglePcdFields = () => {
+                const isPcd = (pcdAsk && pcdAsk.value === 'Sim');
+                const tipoRow = tipoDefAsk?.closest('.row');
+                if (tipoRow) tipoRow.style.display = isPcd ? '' : 'none';
+
+                if (tipoDefAsk && !isPcd) tipoDefAsk.value = '';
+
+                if (qualDefAsk) {
+                    const rowQual = qualDefAsk.closest('.form-group') || qualDefAsk.parentElement;
+                    const showQual = isPcd && tipoDefAsk && tipoDefAsk.value && tipoDefAsk.value.toLowerCase() !== 'selecione' && tipoDefAsk.value.trim() !== '';
+                    if (rowQual) {
+                        rowQual.style.display = showQual ? '' : 'none';
                     }
-                });
-                pcdAsk.dispatchEvent(new Event('change'));
-            }
+                    if (!showQual) qualDefAsk.value = '';
+                }
+            };
+
+            if (pcdAsk) pcdAsk.addEventListener('change', togglePcdFields);
+            if (tipoDefAsk) tipoDefAsk.addEventListener('change', togglePcdFields);
+            if (pcdAsk) pcdAsk.dispatchEvent(new Event('change'));
 
             const contraAsk = document.getElementById('contraindicacao_medica_ask');
             const qualContraAsk = document.getElementById('qual_contraindicacao_ask');
@@ -4486,7 +4548,8 @@
                         document.getElementById('logradouro').value = data.street || '';
                         document.getElementById('bairro').value = data.neighborhood || '';
                         document.getElementById('cidade').value = data.city || '';
-                        // UF ignorada (não no form)
+                        const ufEl = document.getElementById('uf');
+                        if (ufEl) ufEl.value = data.state || '';
                         validarFormularioContinuo();
                     }
                 } catch (error) {
@@ -4590,6 +4653,36 @@
             if (!errorMsg && getRaw('alergia_ask') === 'Sim' && !getRaw('descreva_alergia_ask')) {
                 errorMsg = 'Descreva a(s) alergia(s).';
                 errorFieldId = 'descreva_alergia_ask';
+            }
+
+            // Válidação: Email e Confirmação
+            if (!errorMsg && getRaw('email')) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(getRaw('email'))) {
+                    errorMsg = 'O endereço de e-mail informado é inválido.';
+                    errorFieldId = 'email';
+                }
+            }
+            if (!errorMsg && getRaw('email') !== getRaw('confirmarEmail')) {
+                errorMsg = 'A confirmação do e-mail não confere com o e-mail informado.';
+                errorFieldId = 'confirmarEmail';
+            }
+
+            // Validação: WhatsApp e Confirmação
+            if (!errorMsg && getRaw('whatsapp')) {
+                const digits = getRaw('whatsapp').replace(/\D/g, '');
+                if (digits.length !== 11) {
+                    errorMsg = 'O WhatsApp informado deve conter exatamente 11 dígitos numéricos, incluindo o DDD.';
+                    errorFieldId = 'whatsapp';
+                }
+            }
+            if (!errorMsg) {
+                const w1 = getRaw('whatsapp').replace(/\D/g, '');
+                const w2 = getRaw('confirmarWhatsApp').replace(/\D/g, '');
+                if (w1 !== w2) {
+                    errorMsg = 'A confirmação do WhatsApp não confere com o WhatsApp informado.';
+                    errorFieldId = 'confirmarWhatsApp';
+                }
             }
 
             // 4. Responsável (se menor de idade)
