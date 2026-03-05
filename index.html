@@ -2073,8 +2073,8 @@
                     <div style="width: 100%; display: flex; justify-content: flex-end; gap: 10px;">
                         <button class="btn btn-outline" onclick="closeModal('modal-matricula')">Cancelar</button>
                         <button class="btn btn-primary" id="btn-avancar-matricula"
-                            style="background-color: var(--accent-orange); border-color: var(--accent-orange);"
-                            onclick="abrirResumoMatricula()" disabled>Avançar</button>
+                            style="background-color: var(--accent-orange); border-color: var(--accent-orange); display: none;"
+                            onclick="abrirResumoMatricula()">Avançar</button>
                     </div>
                 </div>
             </div>
@@ -3674,6 +3674,7 @@
             document.querySelectorAll('.confirm-field').forEach(el => el.style.display = 'block');
 
             openModal('modal-matricula', false);
+            validarFormularioContinuo();
 
             // Garantir que a aba Identificação seja a primeira a abrir
             const modalEl = document.getElementById('modal-matricula');
@@ -4690,6 +4691,10 @@
             this.value = this.value.replace(/\D/g, '').slice(0, 11);
             validarFormularioContinuo();
         });
+
+        // Ouvinte global para todos os campos do formulário de matrícula
+        document.getElementById('formMatricula')?.addEventListener('input', validarFormularioContinuo);
+        document.getElementById('formMatricula')?.addEventListener('change', validarFormularioContinuo);
 
 
         // ========== RESUMO DA MATRÍCULA (VALIDAÇÃO E MODAL) ==========
