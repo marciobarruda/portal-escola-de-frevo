@@ -4529,6 +4529,24 @@
                             const prioB = faixaPriority[valB] || 99;
                             return prioA - prioB;
                         });
+                    } else if (config.key === 'dias') {
+                        // Ordenação lógica: Segunda a Domingo
+                        const diasPriority = {
+                            'SEGUNDA': 1, 'TERÇA': 2, 'QUARTA': 3, 'QUINTA': 4, 'SEXTA': 5, 'SÁBADO': 6, 'DOMINGO': 7,
+                            'SEG': 1, 'TER': 2, 'QUA': 3, 'QUI': 4, 'SEX': 5, 'SAB': 6, 'DOM': 7
+                        };
+                        data.sort((a, b) => {
+                            const getPrio = (val) => {
+                                const v = (val || '').toUpperCase().trim();
+                                if (diasPriority[v]) return diasPriority[v];
+                                // Se for composto (ex: "Segunda e Quarta")
+                                for (const day in diasPriority) {
+                                    if (v.startsWith(day)) return diasPriority[day];
+                                }
+                                return 99;
+                            };
+                            return getPrio(a[config.key]) - getPrio(b[config.key]);
+                        });
                     } else if (config.key === 'horario') {
                         // Ordenar horários de forma ASC
                         data.sort((a, b) => {
