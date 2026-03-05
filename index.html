@@ -3046,31 +3046,18 @@
                 });
             }
 
-            // Ordenação padrão: Status (Ativa primeiro)   Ano DESC   Tipo (Renovação/Nova antes de Oficina)   Nome ASC
-            const tipoPrio = (t) => {
-                const tl = (t || '').toLowerCase();
-                if (tl.includes('renova')) return 0;
-                if (tl === 'nova' || tl === 'matrícula nova') return 0;
-                if (tl.includes('oficina')) return 1;
-                return 0;
-            };
+            // Ordenação padrão: wfid desc (mais recentes primeiro)
             return [...dados].sort((a, b) => {
-                // 1. Status: Ativa primeiro
+                const wfidA = parseInt(resolverCampo(a, 'wfid')) || 0;
+                const wfidB = parseInt(resolverCampo(b, 'wfid')) || 0;
+                if (wfidB !== wfidA) return wfidB - wfidA;
+
+                // Fallback 1: Status (Ativa primeiro)
                 const sA = getStatusPrio(a);
                 const sB = getStatusPrio(b);
                 if (sA !== sB) return sA - sB;
 
-                // 2. Ano DESC
-                const anoA = parseInt(a.ano_letivo) || 0;
-                const anoB = parseInt(b.ano_letivo) || 0;
-                if (anoB !== anoA) return anoB - anoA;
-
-                // 3. Tipo: Renovação/Nova antes de Oficina
-                const tA = tipoPrio(a.tipo_matricula || a.tipo);
-                const tB = tipoPrio(b.tipo_matricula || b.tipo);
-                if (tA !== tB) return tA - tB;
-
-                // 4. Nome ASC
+                // Fallback 2: Nome ASC
                 const nomeA = (a.nome_aluno || a.nome || '').toLowerCase();
                 const nomeB = (b.nome_aluno || b.nome || '').toLowerCase();
                 if (nomeA < nomeB) return -1;
