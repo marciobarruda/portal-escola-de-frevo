@@ -2093,8 +2093,11 @@
                     <div
                         style="background-color: var(--surface-hover); padding: 16px; border-radius: 8px; margin-bottom: 24px;">
                         <h3 id="resumo-mat-nome"
-                            style="color: var(--text-main); font-size: 1.1rem; margin-bottom: 16px; font-weight: 600; text-align: center;">
+                            style="color: var(--text-main); font-size: 1.1rem; margin-bottom: 4px; font-weight: 600; text-align: center;">
                         </h3>
+                        <div id="resumo-mat-wfid-display"
+                            style="text-align: center; font-size: 0.85rem; color: var(--primary-blue); font-weight: 600; margin-bottom: 16px;">
+                        </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 0.9rem;">
                             <!-- Identification -->
                             <div
@@ -2171,8 +2174,8 @@
                     <div
                         style="background-color: #fff3cd; color: #856404; padding: 12px; border-radius: 4px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px;">
                         <i class="ph ph-warning-circle" style="font-size: 1.2rem;"></i>
-                        <span>Confirme todos os dados antes de finalizar. A matrícula será enviada ao sistema do Conecta
-                            Recife.</span>
+                        <span>Confirme todos os dados antes de finalizar. A matrícula será enviada para processamento em
+                            banco de dados.</span>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -2720,6 +2723,7 @@
                 setSelect('racacor', aluno.raca_cor_aluno || aluno.raca_cor || aluno.raca || '');
                 setSelect('genero', aluno.genero_aluno || aluno.genero || '');
                 setSelect('possuirg', aluno.possui_rg_aluno || '');
+                window._currentMatriculaWfid = aluno.wfid || '';
 
                 // Responsável
                 setVal('cpfresponsavel', aluno.cpf_responsavel || '');
@@ -3685,6 +3689,9 @@
                 const proxNum = maxWfid + 1;
                 numBadge.textContent = `Matrícula #${proxNum}`;
                 numBadge.style.display = 'inline-block';
+                window._currentMatriculaWfid = proxNum;
+            } else {
+                window._currentMatriculaWfid = '';
             }
 
             const docsEditN = document.getElementById('docs-edit-mode');
@@ -4902,7 +4909,8 @@
             }
 
             // Contato e Endereço
-            document.getElementById('resumo-mat-whatsapp').textContent = getRaw('telefone') || 'Não informado';
+            document.getElementById('resumo-mat-whatsapp').textContent = getRaw('whatsapp') || 'Não informado';
+            document.getElementById('resumo-mat-wfid-display').textContent = window._currentMatriculaWfid ? `Matrícula #${window._currentMatriculaWfid}` : '';
             document.getElementById('resumo-mat-email').textContent = getRaw('email') || 'Não informado';
 
             const endVars = [getRaw('logradouro'), getRaw('numero'), getRaw('complemento'), getRaw('bairro'), getRaw('cidade'), getRaw('cep')];
