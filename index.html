@@ -2491,6 +2491,79 @@
             console.log(`[RBAC] Usuário: ${currentUser} | Role: ${currentRole}`);
         }
 
+        // ========== CONTROLE DE SESSÃO E INATIVIDADE ==========
+        let timeoutInatividade;
+        const TEMPO_LIMITE = 15 * 60 * 1000; // 15 minutos em milissegundos
+
+        function encerrarSessao(motivo = 'Sua sessão expirou por inatividade.') {
+            // Ocultar conteúdo principal
+            document.querySelector('.sidebar').style.display = 'none';
+            document.querySelector('.main-content').style.display = 'none';
+
+            // Criar e exibir overlay de sessão encerrada
+            let overlay = document.getElementById('session-expired-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'session-expired-overlay';
+                overlay.style.position = 'fixed';
+                overlay.style.top = '0';
+                overlay.style.left = '0';
+                overlay.style.width = '100vw';
+                overlay.style.height = '100vh';
+                overlay.style.backgroundColor = 'var(--bg-color)';
+                overlay.style.zIndex = '9999';
+                overlay.style.display = 'flex';
+                overlay.style.flexDirection = 'column';
+                overlay.style.alignItems = 'center';
+                overlay.style.justifyContent = 'center';
+                overlay.style.padding = '24px';
+                overlay.style.textAlign = 'center';
+
+                overlay.innerHTML = `
+                    <div style="background: var(--surface); padding: 40px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); max-width: 400px; width: 100%;">
+                        <i class="ph ph-clock-counter-clockwise" style="font-size: 48px; color: var(--secondary-red); margin-bottom: 16px;"></i>
+                        <h2 style="margin-bottom: 8px; color: var(--text-main);">Sessão Encerrada</h2>
+                        <p id="logout-reason" style="color: var(--text-muted); margin-bottom: 24px;">${motivo}</p>
+                        <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="window.location.reload(true);">
+                            <i class="ph ph-sign-in"></i> Fazer Login Novamente
+                        </button>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+            } else {
+                document.getElementById('logout-reason').textContent = motivo;
+                overlay.style.display = 'flex';
+            }
+
+            // Limpar timer para evitar reexecução
+            clearTimeout(timeoutInatividade);
+            // Remover listeners
+            removerListenersAtividade();
+        }
+
+        function resetarTimer() {
+            clearTimeout(timeoutInatividade);
+            timeoutInatividade = setTimeout(() => encerrarSessao('Sua sessão expirou devido a 15 minutos de inatividade.'), TEMPO_LIMITE);
+        }
+
+        function removerListenersAtividade() {
+            window.removeEventListener('mousemove', resetarTimer);
+            window.removeEventListener('mousedown', resetarTimer);
+            window.removeEventListener('keydown', resetarTimer);
+            window.removeEventListener('scroll', resetarTimer);
+            window.removeEventListener('touchstart', resetarTimer);
+        }
+
+        // Iniciar monitoramento
+        window.addEventListener('mousemove', resetarTimer);
+        window.addEventListener('mousedown', resetarTimer);
+        window.addEventListener('keydown', resetarTimer);
+        window.addEventListener('scroll', resetarTimer, true); // true para capturar no bubbling phase
+        window.addEventListener('touchstart', resetarTimer);
+
+        // Iniciar o primeiro timer
+        resetarTimer();
+
         // ========== CONSULTAR ALUNO POR CPF ==========
         let cpfConsultaEmAndamento = false;
 
@@ -4088,48 +4161,36 @@
             navItems.forEach(item => {
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
-                    const targetId = item.getAttribute('data-target');
-
-                    // Salvar no localStorage como backup
-                    localStorage.setItem('activePortalTab', targetId);
-
-                    // Navegar com query param para forçar o reload e persistir estado na URL
-                    const url = new URL(window.location.href);
-                    url.searchParams.set('tab', targetId);
-                    window.location.href = url.href;
-                });
-            });
-
-            // Lógica de Restauração após Reload (Prioridade: URL > localStorage)
-            const urlParams = new URLSearchParams(window.location.search);
-            const savedTab = urlParams.get('tab') || localStorage.getItem('activePortalTab');
-
-            if (savedTab) {
-                const targetItem = document.querySelector(`.nav-item[data-target="${savedTab}"]`);
-                const targetView = document.getElementById(savedTab);
-
-                if (targetItem && targetView) {
                     navItems.forEach(n => n.classList.remove('active'));
                     views.forEach(v => v.classList.remove('active'));
+                    item.classList.add('active');
+                    const targetId = item.getAttribute('data-target');
+                    document.getElementById(targetId).classList.add('active');
+                    pageTitle.textContent = pageTitlesMap[targetId];
 
-                    targetItem.classList.add('active');
-                    targetView.classList.add('active');
-                    if (pageTitlesMap[savedTab]) pageTitle.textContent = pageTitlesMap[savedTab];
-                }
-            }
-
-            // Decidir qual dado carregar baseado na aba que ficou ativa
-            const currentTab = document.querySelector('.view.active')?.id;
-            if (currentTab === 'view-inicio' || currentTab === 'view-matriculas') {
-                carregarMatriculas();
-            } else if (currentTab === 'view-turmas') {
-                carregarTurmas();
-            }
+                    if (targetId === 'view-matriculas' && typeof carregarMatriculas === 'function') {
+                        carregarMatriculas();
+                    } else if (targetId === 'view-turmas' && typeof carregarTurmas === 'function') {
+                        carregarTurmas();
+                    }
+                });
+            });
 
             // Aplicar controle de acesso (RBAC)
             aplicarRBAC();
 
-            // Carregar dados iniciais (Turmas sempre carrega em background)
+            // Configurar botão de Logout
+            const btnLogout = document.querySelector('.dropdown-item i.ph-sign-out').closest('.dropdown-item');
+            if (btnLogout) {
+                btnLogout.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    toggleUserMenu(); // Fechar dropdown
+                    encerrarSessao('Sessão encerrada com sucesso. Até logo!');
+                });
+            }
+
+            // Carregar dados iniciais da API
+            carregarMatriculas();
             carregarTurmas();
             carregarOpcoesTurmas();
 
