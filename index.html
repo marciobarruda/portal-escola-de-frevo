@@ -4090,36 +4090,40 @@
                     e.preventDefault();
                     const targetId = item.getAttribute('data-target');
 
-                    // Salvar a aba ativa para o reload
+                    // Salvar no localStorage como backup
                     localStorage.setItem('activePortalTab', targetId);
 
-                    // Forçar reload da página
-                    window.location.reload();
+                    // Navegar com query param para forçar o reload e persistir estado na URL
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('tab', targetId);
+                    window.location.href = url.href;
                 });
             });
 
-            // Lógica de Restauração após Reload
-            const savedTab = localStorage.getItem('activePortalTab');
+            // Lógica de Restauração após Reload (Prioridade: URL > localStorage)
+            const urlParams = new URLSearchParams(window.location.search);
+            const savedTab = urlParams.get('tab') || localStorage.getItem('activePortalTab');
+
             if (savedTab) {
                 const targetItem = document.querySelector(`.nav-item[data-target="${savedTab}"]`);
-                if (targetItem) {
+                const targetView = document.getElementById(savedTab);
+
+                if (targetItem && targetView) {
                     navItems.forEach(n => n.classList.remove('active'));
                     views.forEach(v => v.classList.remove('active'));
 
                     targetItem.classList.add('active');
-                    document.getElementById(savedTab).classList.add('active');
-                    pageTitle.textContent = pageTitlesMap[savedTab];
-
-                    // Disparar carregamento de dados específico da aba
-                    if (savedTab === 'view-matriculas' && typeof carregarMatriculas === 'function') {
-                        carregarMatriculas();
-                    } else if (savedTab === 'view-turmas' && typeof carregarTurmas === 'function') {
-                        carregarTurmas();
-                    }
+                    targetView.classList.add('active');
+                    if (pageTitlesMap[savedTab]) pageTitle.textContent = pageTitlesMap[savedTab];
                 }
-            } else {
-                // Se não houver nada salvo, carregar matrículas por padrão (Dashboard inicial)
+            }
+
+            // Decidir qual dado carregar baseado na aba que ficou ativa
+            const currentTab = document.querySelector('.view.active')?.id;
+            if (currentTab === 'view-inicio' || currentTab === 'view-matriculas') {
                 carregarMatriculas();
+            } else if (currentTab === 'view-turmas') {
+                carregarTurmas();
             }
 
             // Aplicar controle de acesso (RBAC)
