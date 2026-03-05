@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Escola de Frevo do Recife</title>
+    <link rel="icon" type="image/svg+xml"
+        href="https://statics.recife.pe.gov.br//images/automacao/escola-frevo/escola_frevo_logo.svg">
     <!-- Fontes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -113,29 +115,16 @@
             font-size: 1.1rem;
         }
 
-        /* SVG Simulado da Logo do Frevo (Sombrinha) */
+        /* Logo Oficial da Escola de Frevo */
         .brand-logo {
-            width: 32px;
-            height: 32px;
-            background: conic-gradient(var(--primary-blue) 0deg 90deg,
-                    var(--secondary-red) 90deg 180deg,
-                    var(--accent-yellow) 180deg 270deg,
-                    var(--accent-green) 270deg 360deg);
-            border-radius: 50%;
-            clip-path: polygon(50% 50%, 100% 0, 100% 100%, 0 100%, 0 0);
+            width: 42px;
+            height: 42px;
+            background: url("https://statics.recife.pe.gov.br//images/automacao/escola-frevo/escola_frevo_logo.svg") no-repeat center center;
+            background-size: contain;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-        }
-
-        .brand-logo::after {
-            content: '';
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            background-color: var(--sidebar-bg);
-            border-radius: 50%;
+            flex-shrink: 0;
         }
 
         /* TOAST NOTIFICATION CSS */
