@@ -1902,27 +1902,27 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row" style="margin-bottom: 24px;">
+                                <div class="row" id="row-rg-uploads" style="margin-bottom: 24px;">
                                     <div class="col">
                                         <div class="form-group">
-                                            <label class="form-label" for="rg_frente">Anexar RG/CNH frente</label>
+                                            <label class="form-label" for="rg_frente">Anexar RG/CNH frente *</label>
                                             <input type="file" class="form-control" id="rg_frente" name="rg_frente"
                                                 accept=".pdf,.jpg,.jpeg,.png">
                                         </div>
                                     </div>
                                     <div class="col">
                                         <div class="form-group">
-                                            <label class="form-label" for="rg_verso">Anexar RG/CNH verso</label>
+                                            <label class="form-label" for="rg_verso">Anexar RG/CNH verso *</label>
                                             <input type="file" class="form-control" id="rg_verso" name="rg_verso"
                                                 accept=".pdf,.jpg,.jpeg,.png">
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row" style="margin-bottom: 24px;">
+                                <div class="row" id="row-certidao-uploads" style="margin-bottom: 24px; display: none;">
                                     <div class="col">
                                         <div class="form-group">
                                             <label class="form-label" for="certidao_nasc">Anexar certidão de
-                                                nascimento</label>
+                                                nascimento *</label>
                                             <input type="file" class="form-control" id="certidao_nasc"
                                                 name="certidao_nasc" accept=".pdf,.jpg,.jpeg,.png">
                                         </div>
@@ -2725,10 +2725,9 @@
                 setVal('cpfresponsavel', aluno.cpf_responsavel || '');
                 setVal('nomeCompletoResponsavel', aluno.nome_responsavel || aluno.nome_resp || '');
 
-                // Mostrar linha de responsável se for menor de idade
-                const idadeVal = parseInt(aluno.idade_aluno || aluno.idade) || 0;
-                const rowResp = document.getElementById('row-responsavel');
-                if (rowResp) rowResp.style.display = (idadeVal > 0 && idadeVal < 18) ? '' : 'none';
+                // Toggles de visibilidade inicial
+                toggleResponsavelSection();
+                toggleDocumentacaoFields();
 
                 // Turma (Fallback para Nível Sugerido)
                 let proxNivelVal = aluno.proximonivel || aluno.proximo_nivel || aluno.nivel_sugerido;
@@ -3255,6 +3254,32 @@
             }
         }
 
+        function toggleDocumentacaoFields() {
+            const possuiRG = document.getElementById('possuirg')?.value;
+            const rowRG = document.getElementById('row-rg-uploads');
+            const rowCert = document.getElementById('row-certidao-uploads');
+
+            if (possuiRG === 'Sim') {
+                if (rowRG) rowRG.style.display = 'flex';
+                if (rowCert) rowCert.style.display = 'none';
+                // Reset birth cert input if switching to RG
+                const certInput = document.getElementById('certidao_nasc');
+                if (certInput) certInput.value = '';
+            } else if (possuiRG === 'Não') {
+                if (rowRG) rowRG.style.display = 'none';
+                if (rowCert) rowCert.style.display = 'flex';
+                // Reset RG inputs if switching to birth cert
+                const rgFrente = document.getElementById('rg_frente');
+                const rgVerso = document.getElementById('rg_verso');
+                if (rgFrente) rgFrente.value = '';
+                if (rgVerso) rgVerso.value = '';
+            } else {
+                if (rowRG) rowRG.style.display = 'none';
+                if (rowCert) rowCert.style.display = 'none';
+            }
+            validarFormularioContinuo();
+        }
+
         function calcularIdadeNascimento(skipReactivity = false) {
             const dtInput = document.getElementById('datanascimento');
             const idadeEl = document.getElementById('idade');
@@ -3694,6 +3719,10 @@
                 cpfEl.value = '';
                 cpfEl.placeholder = 'Selecione o tipo de matrícula acima...';
             }
+
+            toggleResponsavelSection();
+            toggleDocumentacaoFields();
+            validarFormularioContinuo();
         }
 
         // ========== NOVA TURMA ==========
@@ -4627,6 +4656,18 @@
             if (valido && getRaw('usa_mediamento_ask') === 'Sim' && !getRaw('descreva_medicamento_ask')) valido = false;
             if (valido && getRaw('alergia_ask') === 'Sim' && !getRaw('descreva_alergia_ask')) valido = false;
 
+            // Validação Documentação Condicional
+            if (valido) {
+                const possuiRG = getRaw('possuirg');
+                if (possuiRG === 'Sim') {
+                    if (!getRaw('rg_frente') || !getRaw('rg_verso')) valido = false;
+                } else if (possuiRG === 'Não') {
+                    if (!getRaw('certidao_nasc')) valido = false;
+                } else {
+                    valido = false; // "Selecione..." is invalid
+                }
+            }
+
             const idade = parseInt(getRaw('idade')) || 0;
             if (valido && idade < 18 && (!getRaw('nomeCompletoResponsavel') || !getRaw('cpfresponsavel'))) valido = false;
 
@@ -4695,6 +4736,7 @@
         // Ouvinte global para todos os campos do formulário de matrícula
         document.getElementById('formMatricula')?.addEventListener('input', validarFormularioContinuo);
         document.getElementById('formMatricula')?.addEventListener('change', validarFormularioContinuo);
+        document.getElementById('possuirg')?.addEventListener('change', toggleDocumentacaoFields);
 
 
         // ========== RESUMO DA MATRÍCULA (VALIDAÇÃO E MODAL) ==========
