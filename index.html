@@ -3204,6 +3204,29 @@
             window._pendingModalidade = valor;
         }
 
+        function toggleResponsavelSection() {
+            const ageStr = document.getElementById('idade')?.value;
+            const idadeVal = parseInt(ageStr) || 0;
+            const tipoDef = document.getElementById('tipo_def_ask')?.value || '';
+            const rowResp = document.getElementById('row-responsavel');
+
+            const ageValid = ageStr && !isNaN(idadeVal) && idadeVal > 0;
+            const isMenorDeIdade = ageValid && idadeVal < 18;
+            const isIntelectual = tipoDef.toLowerCase() === 'intelectual';
+
+            if (rowResp) {
+                if (isMenorDeIdade || isIntelectual) {
+                    rowResp.style.display = '';
+                } else {
+                    rowResp.style.display = 'none';
+                    const cpfResp = document.getElementById('cpfresponsavel');
+                    const nomeResp = document.getElementById('nomeCompletoResponsavel');
+                    if (cpfResp) cpfResp.value = '';
+                    if (nomeResp) nomeResp.value = '';
+                }
+            }
+        }
+
         function calcularIdadeNascimento(skipReactivity = false) {
             const dtInput = document.getElementById('datanascimento');
             const idadeEl = document.getElementById('idade');
@@ -3243,6 +3266,8 @@
 
             // Preencher Faixa Etária (readonly)
             if (faixaEl) faixaEl.value = faixa;
+
+            if (typeof toggleResponsavelSection === 'function') toggleResponsavelSection();
 
             // Aplicar Modalidade (select disabled gerenciado via JS)
             aplicarModalidade(modalidadeValor);
@@ -4152,6 +4177,32 @@
             const tipoDefAsk = document.getElementById('tipo_def_ask');
             const qualDefAsk = document.getElementById('qual_deficiencia_ask');
 
+            const deficienciasPorTipo = {
+                Auditiva: [
+                    { value: "surdos", label: "Surdez total" },
+                    { value: "surdos_parcial", label: "Surdez parcial / perda auditiva" },
+                    { value: "implante", label: "Usuário de implante ou aparelho auditivo" }
+                ],
+                Física: [
+                    { value: "cadeirante", label: "Usuário de cadeira de rodas" },
+                    { value: "amputacao", label: "Amputação ou prótese" },
+                    { value: "paralisia", label: "Paralisia ou mobilidade reduzida" },
+                    { value: "pcd_motora_outro", label: "Outra condição motora" }
+                ],
+                Intelectual: [
+                    { value: "intelectual_leve", label: "Deficiência intelectual" },
+                    { value: "tea", label: "Transtorno do espectro autista" },
+                    { value: "tdah", label: "TDAH / transtornos do neurodesenvolvimento" },
+                    { value: "intelectual_outro", label: "Outra condição cognitiva" }
+                ],
+                Visual: [
+                    { value: "cegueira", label: "Cegueira" },
+                    { value: "baixa_visao", label: "Baixa visão" },
+                    { value: "campo_visual", label: "Campo visual reduzido" },
+                    { value: "visao_outro", label: "Outra condição visual" }
+                ]
+            };
+
             const togglePcdFields = () => {
                 const isPcd = (pcdAsk && pcdAsk.value === 'Sim');
                 const tipoRow = tipoDefAsk?.closest('.row');
@@ -4161,12 +4212,43 @@
 
                 if (qualDefAsk) {
                     const rowQual = qualDefAsk.closest('.form-group') || qualDefAsk.parentElement;
-                    const showQual = isPcd && tipoDefAsk && tipoDefAsk.value && tipoDefAsk.value.toLowerCase() !== 'selecione' && tipoDefAsk.value.trim() !== '';
+                    const tipoVal = tipoDefAsk ? tipoDefAsk.value : '';
+                    const showQual = isPcd && tipoVal !== '' && tipoVal.toLowerCase() !== 'selecione' && tipoVal.toLowerCase() !== 'outra';
+
                     if (rowQual) {
                         rowQual.style.display = showQual ? '' : 'none';
                     }
-                    if (!showQual) qualDefAsk.value = '';
+                    if (!showQual) {
+                        qualDefAsk.innerHTML = '<option value="">Selecione ou descreva...</option>';
+                        qualDefAsk.value = '';
+                    } else {
+                        const previous = qualDefAsk.value;
+                        qualDefAsk.innerHTML = '<option value="">Selecione ou descreva...</option>';
+                        const options = deficienciasPorTipo[tipoVal] || [];
+                        options.forEach((opt) => {
+                            const option = document.createElement("option");
+                            option.value = opt.label;
+                            option.textContent = opt.label;
+                            qualDefAsk.appendChild(option);
+                        });
+
+                        // Set previous selected value if available or match partially
+                        if (previous) {
+                            let found = Array.from(qualDefAsk.options).some(o => o.value === previous);
+                            if (!found) {
+                                const fb = document.createElement('option');
+                                fb.value = previous;
+                                fb.textContent = previous;
+                                fb.selected = true;
+                                qualDefAsk.appendChild(fb);
+                            } else {
+                                qualDefAsk.value = previous;
+                            }
+                        }
+                    }
                 }
+
+                if (typeof toggleResponsavelSection === 'function') toggleResponsavelSection();
             };
 
             if (pcdAsk) pcdAsk.addEventListener('change', togglePcdFields);
