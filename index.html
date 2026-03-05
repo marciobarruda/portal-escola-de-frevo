@@ -4088,26 +4088,44 @@
             navItems.forEach(item => {
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
-                    navItems.forEach(n => n.classList.remove('active'));
-                    views.forEach(v => v.classList.remove('active'));
-                    item.classList.add('active');
                     const targetId = item.getAttribute('data-target');
-                    document.getElementById(targetId).classList.add('active');
-                    pageTitle.textContent = pageTitlesMap[targetId];
 
-                    if (targetId === 'view-matriculas' && typeof carregarMatriculas === 'function') {
-                        carregarMatriculas();
-                    } else if (targetId === 'view-turmas' && typeof carregarTurmas === 'function') {
-                        carregarTurmas();
-                    }
+                    // Salvar a aba ativa para o reload
+                    localStorage.setItem('activePortalTab', targetId);
+
+                    // Forçar reload da página
+                    window.location.reload();
                 });
             });
+
+            // Lógica de Restauração após Reload
+            const savedTab = localStorage.getItem('activePortalTab');
+            if (savedTab) {
+                const targetItem = document.querySelector(`.nav-item[data-target="${savedTab}"]`);
+                if (targetItem) {
+                    navItems.forEach(n => n.classList.remove('active'));
+                    views.forEach(v => v.classList.remove('active'));
+
+                    targetItem.classList.add('active');
+                    document.getElementById(savedTab).classList.add('active');
+                    pageTitle.textContent = pageTitlesMap[savedTab];
+
+                    // Disparar carregamento de dados específico da aba
+                    if (savedTab === 'view-matriculas' && typeof carregarMatriculas === 'function') {
+                        carregarMatriculas();
+                    } else if (savedTab === 'view-turmas' && typeof carregarTurmas === 'function') {
+                        carregarTurmas();
+                    }
+                }
+            } else {
+                // Se não houver nada salvo, carregar matrículas por padrão (Dashboard inicial)
+                carregarMatriculas();
+            }
 
             // Aplicar controle de acesso (RBAC)
             aplicarRBAC();
 
-            // Carregar dados iniciais da API
-            carregarMatriculas();
+            // Carregar dados iniciais (Turmas sempre carrega em background)
             carregarTurmas();
             carregarOpcoesTurmas();
 
