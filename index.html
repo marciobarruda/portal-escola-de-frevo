@@ -2524,12 +2524,30 @@
                         <i class="ph ph-clock-counter-clockwise" style="font-size: 48px; color: var(--secondary-red); margin-bottom: 16px;"></i>
                         <h2 style="margin-bottom: 8px; color: var(--text-main);">Sessão Encerrada</h2>
                         <p id="logout-reason" style="color: var(--text-muted); margin-bottom: 24px;">${motivo}</p>
-                        <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="window.location.reload(true);">
+                        <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="forcarLogoutBrowser()">
                             <i class="ph ph-sign-in"></i> Fazer Login Novamente
                         </button>
                     </div>
                 `;
                 document.body.appendChild(overlay);
+
+                // Injetar função global de logout forçado
+                window.forcarLogoutBrowser = async function () {
+                    try {
+                        // Tentar forçar credenciais inválidas para limpar o cache do Basic Auth no navegador
+                        await fetch(window.location.href, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': 'Basic ' + btoa('logout:logout')
+                            }
+                        });
+                    } catch (e) {
+                        // Ignorar erros do fetch propositalmente mal-sucedido
+                    } finally {
+                        // Recarregar a página forçando o cache clean
+                        window.location.reload(true);
+                    }
+                };
             } else {
                 document.getElementById('logout-reason').textContent = motivo;
                 overlay.style.display = 'flex';
