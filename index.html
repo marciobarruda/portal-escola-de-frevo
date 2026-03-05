@@ -1460,6 +1460,8 @@
                             onclick="switchTab(this, 'modal-matricula')">Turma</button>
                         <button class="nav-tab" data-tab="tab-endereco"
                             onclick="switchTab(this, 'modal-matricula')">Endereço & Contato</button>
+                        <button class="nav-tab" data-tab="tab-responsavel" id="nav-tab-responsavel"
+                            onclick="switchTab(this, 'modal-matricula')" style="display: none;">Responsável</button>
                         <button class="nav-tab" data-tab="tab-documentacao"
                             onclick="switchTab(this, 'modal-matricula')">Documentação & Imagem</button>
                     </div>
@@ -1571,13 +1573,14 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-
-
-                            <div class="row" id="row-responsavel" style="display: none;">
+                        <!-- TAB: Responsável -->
+                        <div class="tab-content" id="tab-responsavel">
+                            <div class="row">
                                 <div class="col" style="flex: 1;">
                                     <div class="form-group">
-                                        <label class="form-label" for="cpfresponsavel">CPF do Responsável</label>
+                                        <label class="form-label" for="cpfresponsavel">CPF do Responsável *</label>
                                         <input type="text" class="form-control" id="cpfresponsavel"
                                             name="cpf_responsavel">
                                     </div>
@@ -1585,7 +1588,7 @@
                                 <div class="col" style="flex: 2;">
                                     <div class="form-group">
                                         <label class="form-label" for="nomeCompletoResponsavel">Nome do
-                                            Responsável</label>
+                                            Responsável *</label>
                                         <input type="text" class="form-control" id="nomeCompletoResponsavel"
                                             name="nome_responsavel">
                                     </div>
@@ -3208,17 +3211,23 @@
             const ageStr = document.getElementById('idade')?.value;
             const idadeVal = parseInt(ageStr) || 0;
             const tipoDef = document.getElementById('tipo_def_ask')?.value || '';
-            const rowResp = document.getElementById('row-responsavel');
+            const navTabResp = document.getElementById('nav-tab-responsavel');
+            const rowResp = document.getElementById('tab-responsavel');
 
             const ageValid = ageStr && !isNaN(idadeVal) && idadeVal > 0;
             const isMenorDeIdade = ageValid && idadeVal < 18;
             const isIntelectual = tipoDef.toLowerCase() === 'intelectual';
 
-            if (rowResp) {
+            if (navTabResp) {
                 if (isMenorDeIdade || isIntelectual) {
-                    rowResp.style.display = '';
+                    navTabResp.style.display = 'inline-block';
                 } else {
-                    rowResp.style.display = 'none';
+                    navTabResp.style.display = 'none';
+                    if (navTabResp.classList.contains('active')) {
+                        // Switch user out of the Responsável tab automatically if hidden
+                        const idTabBtn = document.querySelector('.nav-tab[data-tab="tab-identificacao"]');
+                        if (idTabBtn) switchTab(idTabBtn, 'modal-matricula');
+                    }
                     const cpfResp = document.getElementById('cpfresponsavel');
                     const nomeResp = document.getElementById('nomeCompletoResponsavel');
                     if (cpfResp) cpfResp.value = '';
@@ -3635,6 +3644,9 @@
             }
 
             const docsEditN = document.getElementById('docs-edit-mode');
+
+            const uName = window.currentUser || 'Usuário';
+            showToast(`Olá, ${uName}! A matrícula só poderá ser efetivada após o preenchimento de TODOS os campos obrigatórios.`, 'info');
             const laudoEditN = document.getElementById('laudo-edit-mode');
             if (docsEditN) docsEditN.style.display = 'block';
             if (laudoEditN) laudoEditN.style.display = 'block';
@@ -4611,7 +4623,7 @@
             const cep = getRaw('cep').replace(/\D/g, '');
             if (valido && cep.length !== 8) valido = false;
 
-            btnAvancar.disabled = !valido;
+            btnAvancar.style.display = valido ? 'inline-block' : 'none';
         }
 
         // Restrição e Autocomplete CEP
