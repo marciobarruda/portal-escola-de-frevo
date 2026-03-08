@@ -5678,12 +5678,13 @@
 
             // --- Filtrar alunos da turma e ano letivo ---
             const turmaId = String(turma.id || turma.turma_id || turma.wfid || selTurma.value || '').toLowerCase().trim();
-            const turmaNome = String(turma.turma || turma.nome || '').toLowerCase().trim();
+            const turmaNomeOriginal = [turma.nivel, turma.modalidade, turma.faixa_etaria].filter(Boolean).join(' | ');
+            const turmaNomeSimples = String(turma.turma || turma.nome || '').toLowerCase().trim();
 
             const alunos = (matriculasData || []).filter(m => {
                 const mTurma = String(m.turma || m.turma_id || '').toLowerCase().trim();
                 const mAno = String(m.ano_letivo || m.anoletivo || '');
-                const bateTurma = (mTurma === turmaId || (turmaNome && mTurma === turmaNome));
+                const bateTurma = (mTurma === turmaId || (turmaNomeSimples && mTurma === turmaNomeSimples));
                 return bateTurma && (mAno === anoLetivo);
             });
 
@@ -5699,37 +5700,37 @@
             // Linha 1: Título principal
             ws_data.push(['ESCOLA MUNICIPAL DE FREVO MAESTRO FERNANDO BORGES']);
 
-            // Linha 2: Meses / Nº turma / Curso / Frequência
+            // Linha 2: MÊS / Nº turma / TURMA / FREQUÊNCIA
             const mesTitulo = meses.map(m => MESES_PT[m]).join('/');
+            const professorStr = turma.professor || 'N/D';
             ws_data.push([
                 `MÊS: ${mesTitulo}`,
+                professorStr, // Substituído nº turma pelo professor como solicitado
                 '',
-                (turma.id || turma.turma_id || turma.wfid || '').toString(),
-                `CURSO: ${(turma.nivel || '')} ${(turma.modalidade || '')}`.trim(),
+                `TURMA: ${turmaNomeOriginal}`,
                 '',
                 `FREQUÊNCIA DO ANO LETIVO - ${anoLetivo}`
             ]);
 
             // Linha 3: Hora / Instrutor / DIAS/DATAS
             const horarioStr = turma.horario || '';
-            const professorStr = turma.professor || '';
             const linhaHeader3 = [
                 '',
                 '',
                 `HORA: ${horarioStr}`,
                 `INSTRUTOR: ${professorStr}`,
-                '',
                 'DIAS/DATAS'
             ];
-            // Adicionar cabeçalhos dos meses
+            // Cabeçalhos dos meses (vazios aqui, pois vamos mesclar via ws['!merges'])
             meses.forEach(mesIdx => {
                 linhaHeader3.push(MESES_PT[mesIdx]);
                 (datasParaMes[mesIdx] || []).slice(1).forEach(() => linhaHeader3.push(''));
             });
             ws_data.push(linhaHeader3);
 
-            // Linha 4: N° / DATA NASC. / FONE / ALUNO | dias do mês
-            const linha4 = ['', 'DATA NASC.', 'FONE 1:', '', 'ALUNO/A:'];
+            // Linha 4: N° / DATA NASC. / WHATSAPP / ALUNO | dias do mês
+            // Removida coluna vazia: ['', 'DATA NASC.', 'FONE 1:', '', 'ALUNO/A:'] -> ['', 'DATA NASC.', 'WHATSAPP', 'ALUNO/A:']
+            const linha4 = ['', 'DATA NASC.', 'WHATSAPP', 'ALUNO/A:'];
             meses.forEach(mesIdx => {
                 (datasParaMes[mesIdx] || []).forEach(dt => {
                     linha4.push(dt.getDate());
@@ -5737,18 +5738,15 @@
             });
             ws_data.push(linha4);
 
-            // Linha 5: vazia (espaço)
-            ws_data.push([]);
-
-            // Linhas de alunos
+            // Linha 5: Início imediato dos alunos (removida linha vazia)
             alunos.forEach((aluno, idx) => {
                 const pNome = aluno.nome_aluno || aluno.nome || aluno.aluno || aluno.aluno_nome || '';
                 const pFone = aluno.telefone_aluno || aluno.telefone || aluno.whatsapp || aluno.fone || aluno.tel || aluno.zap || aluno.wa || aluno.celular || '';
                 const pNasc = aluno.nascimento_aluno || aluno.data_nasc || aluno.datanascimento || aluno.data_nascimento || aluno.nascimento || aluno.nasc || '';
 
                 const numero = String(idx + 1).padStart(2, '0');
-                const linhaAluno = [numero, pNasc, pFone, '', pNome];
-                // Colunas de frequência (vazias, para preenchimento manual)
+                // Estrutura sem a coluna vazia
+                const linhaAluno = [numero, pNasc, pFone, pNome];
                 todasDatas.forEach(() => linhaAluno.push(''));
                 ws_data.push(linhaAluno);
             });
@@ -5756,19 +5754,35 @@
             // --- Criar a worksheet e formatar ---
             const ws = XLSX.utils.aoa_to_sheet(ws_data);
 
-            // Larguras de coluna aproximadas
+            // Larguras de coluna
             ws['!cols'] = [
-                { wch: 4 }, { wch: 14 }, { wch: 16 }, { wch: 4 }, { wch: 30 },
+                { wch: 4 }, { wch: 14 }, { wch: 16 }, { wch: 35 },
                 ...todasDatas.map(() => ({ wch: 4 }))
             ];
 
-            // Mesclar linha 1 (título): A1 até coluna total
-            const totalCols = 5 + todasDatas.length;
-            ws['!merges'] = [
+            // Mesclagens dinâmicas
+            const totalCols = 4 + todasDatas.length;
+            const merges = [
+                // Título principal (toda a largura)
                 { s: { r: 0, c: 0 }, e: { r: 0, c: totalCols - 1 } },
-                { s: { r: 1, c: 0 }, e: { r: 1, c: 1 } },
-                { s: { r: 2, c: 2 }, e: { r: 2, c: 3 } }
+                // Linha 2
+                { s: { r: 1, c: 1 }, e: { r: 1, c: 2 } }, // Professor
+                { s: { r: 1, c: 3 }, e: { r: 1, c: 4 } }  // Nome Turma
             ];
+
+            // Mesclar nomes dos meses na Linha 3 (Header DIAS/DATAS)
+            let currentCol = 5; // Início das datas
+            meses.forEach(mesIdx => {
+                const numDias = (datasParaMes[mesIdx] || []).length;
+                if (numDias > 0) {
+                    merges.push({
+                        s: { r: 2, c: currentCol },
+                        e: { r: 2, c: currentCol + numDias - 1 }
+                    });
+                    currentCol += numDias;
+                }
+            });
+            ws['!merges'] = merges;
 
             XLSX.utils.book_append_sheet(wb, ws, 'Frequência');
 
