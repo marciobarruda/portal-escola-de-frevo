@@ -14,7 +14,7 @@
     <!-- Ícones Phosphor -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <!-- SheetJS para geração de planilhas -->
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 
     <style>
         :root {
@@ -5693,62 +5693,98 @@
                 return;
             }
 
-            // --- Construir a planilha ---
-            const wb = XLSX.utils.book_new();
+            // --- Estilos de Célula ---
+            const borderThin = {
+                top: { style: 'thin' }, bottom: { style: 'thin' },
+                left: { style: 'thin' }, right: { style: 'thin' }
+            };
+            const fontBold = { bold: true, size: 9 };
+            const fontNormal = { size: 9 };
+            const alignCent = { horizontal: "center", vertical: "center" };
+            const alignLeft = { horizontal: "left", vertical: "center" };
+
+            const sTitle = { font: { bold: true, size: 11 }, alignment: alignCent };
+            const sHeaderLabel = { font: fontBold, alignment: alignLeft, border: borderThin };
+            const sHeaderLabelNoBorder = { font: fontBold, alignment: alignLeft };
+            const sFreqHeader = { font: fontBold, alignment: alignCent, border: borderThin };
+            const sCell = { font: fontNormal, border: borderThin, alignment: alignLeft };
+            const sCellCent = { font: fontNormal, border: borderThin, alignment: alignCent };
+
+            const fillVerde = { fgColor: { rgb: "C6EFCE" } };
+            const fillAzul = { fgColor: { rgb: "DDEBF7" } };
+
+            const sMesVerde = { ...sFreqHeader, fill: fillVerde };
+            const sMesAzul = { ...sFreqHeader, fill: fillAzul };
+            const sDiaVerde = { ...sCellCent, fill: fillVerde, font: { bold: true } };
+            const sDiaAzul = { ...sCellCent, fill: fillAzul, font: { bold: true } };
+            const sFreqVerde = { ...sCellCent, fill: fillVerde };
+            const sFreqAzul = { ...sCellCent, fill: fillAzul };
+
+            // --- Construção da Matriz ---
+            const totalCols = 4 + todasDatas.length;
             const ws_data = [];
 
             // Linha 1: Título principal
-            ws_data.push(['ESCOLA MUNICIPAL DE FREVO MAESTRO FERNANDO BORGES']);
+            const row1 = Array(totalCols).fill({ v: "", s: {} });
+            row1[4] = { v: "ESCOLA MUNICIPAL DE FREVO MAESTRO FERNANDO BORGES", s: sTitle };
+            ws_data.push(row1);
 
-            // Linha 2: MÊS / Nº turma / TURMA / FREQUÊNCIA
-            const mesTitulo = meses.map(m => MESES_PT[m]).join('/');
-            const professorStr = turma.professor || 'N/D';
-            ws_data.push([
-                `MÊS: ${mesTitulo}`,
-                professorStr, // Substituído nº turma pelo professor como solicitado
-                '',
-                `TURMA: ${turmaNomeOriginal}`,
-                '',
-                `FREQUÊNCIA DO ANO LETIVO - ${anoLetivo}`
-            ]);
+            // Linha 2: Turma / Frequência Ano
+            const row2 = Array(totalCols).fill({ v: "", s: {} });
+            row2[0] = { v: `TURMA: ${turmaNomeOriginal}`, s: sHeaderLabelNoBorder };
+            row2[12] = { v: `FREQUÊNCIA DO ANO LETIVO - ${anoLetivo}`, s: { font: { bold: true, size: 10 }, alignment: alignCent } };
+            ws_data.push(row2);
 
-            // Linha 3: Hora / Instrutor / DIAS/DATAS
-            const horarioStr = turma.horario || '';
-            const linhaHeader3 = [
-                '',
-                '',
-                `HORA: ${horarioStr}`,
-                `INSTRUTOR: ${professorStr}`,
-                'DIAS/DATAS'
-            ];
-            // Cabeçalhos dos meses (vazios aqui, pois vamos mesclar via ws['!merges'])
-            meses.forEach(mesIdx => {
-                linhaHeader3.push(MESES_PT[mesIdx]);
-                (datasParaMes[mesIdx] || []).slice(1).forEach(() => linhaHeader3.push(''));
+            // Linha 3: Instrutor / Hora / Meses
+            const row3 = Array(totalCols).fill({ v: "", s: {} });
+            row3[0] = { v: `INSTRUTOR: ${turma.professor || 'Alice'}`, s: sHeaderLabel };
+            row3[2] = { v: `HORA: ${turma.horario || '16:00 às 16:50'}`, s: sHeaderLabel };
+            row3[1] = { v: "", s: sHeaderLabel }; row3[3] = { v: "", s: sHeaderLabel };
+
+            let cur = 4;
+            meses.forEach((mIdx, i) => {
+                const sMes = (i % 2 === 0) ? sMesVerde : sMesAzul;
+                const num = datasParaMes[mIdx].length;
+                row3[cur] = { v: MESES_PT[mIdx], s: sMes };
+                for (let k = 1; k < num; k++) row3[cur + k] = { v: "", s: sMes };
+                cur += num;
             });
-            ws_data.push(linhaHeader3);
+            ws_data.push(row3);
 
-            // Linha 4: N° / DATA NASC. / WHATSAPP / ALUNO | dias do mês
-            // Removida coluna vazia: ['', 'DATA NASC.', 'FONE 1:', '', 'ALUNO/A:'] -> ['', 'DATA NASC.', 'WHATSAPP', 'ALUNO/A:']
-            const linha4 = ['', 'DATA NASC.', 'WHATSAPP', 'ALUNO/A:'];
-            meses.forEach(mesIdx => {
-                (datasParaMes[mesIdx] || []).forEach(dt => {
-                    linha4.push(dt.getDate());
+            // Linha 4: DATA NASC. / WHATSAPP / ALUNO / DIAS
+            const row4 = Array(totalCols).fill({ v: "", s: {} });
+            row4[0] = { v: "DATA NASC.", s: sFreqHeader };
+            row4[1] = { v: "WHATSAPP", s: sFreqHeader };
+            row4[2] = { v: "ALUNO/A:", s: sFreqHeader };
+            row4[3] = { v: "", s: sFreqHeader };
+            cur = 4;
+            meses.forEach((mIdx, i) => {
+                const sDia = (i % 2 === 0) ? sDiaVerde : sDiaAzul;
+                datasParaMes[mIdx].forEach(dt => { row4[cur++] = { v: dt.getDate(), s: sDia }; });
+            });
+            ws_data.push(row4);
+
+            // Linhas de Alunos
+            alunos.forEach(a => {
+                const row = Array(totalCols).fill({ v: "", s: {} });
+                // Usando data_nascimento_aluno conforme verificação no banco
+                const pNasc = a.data_nascimento_aluno || a.nascimento_aluno || a.data_nasc || '';
+                const pFone = a.telefone_aluno || a.telefone || a.whatsapp || '';
+                const pNome = a.nome_aluno || a.nome || '';
+
+                row[0] = { v: pNasc, s: sCellCent };
+                row[1] = { v: pFone, s: sCellCent };
+                row[2] = { v: pNome, s: sCell };
+                row[3] = { v: "", s: sCell }; // Coluna D (Spacer)
+
+                let colSub = 4;
+                meses.forEach((mIdx, i) => {
+                    const sF = (i % 2 === 0) ? sFreqVerde : sFreqAzul;
+                    datasParaMes[mIdx].forEach(() => {
+                        row[colSub++] = { v: "", s: sF };
+                    });
                 });
-            });
-            ws_data.push(linha4);
-
-            // Linha 5: Início imediato dos alunos (removida linha vazia)
-            alunos.forEach((aluno, idx) => {
-                const pNome = aluno.nome_aluno || aluno.nome || aluno.aluno || aluno.aluno_nome || '';
-                const pFone = aluno.telefone_aluno || aluno.telefone || aluno.whatsapp || aluno.fone || aluno.tel || aluno.zap || aluno.wa || aluno.celular || '';
-                const pNasc = aluno.nascimento_aluno || aluno.data_nasc || aluno.datanascimento || aluno.data_nascimento || aluno.nascimento || aluno.nasc || '';
-
-                const numero = String(idx + 1).padStart(2, '0');
-                // Estrutura sem a coluna vazia
-                const linhaAluno = [numero, pNasc, pFone, pNome];
-                todasDatas.forEach(() => linhaAluno.push(''));
-                ws_data.push(linhaAluno);
+                ws_data.push(row);
             });
 
             // --- Criar a worksheet e formatar ---
@@ -5756,38 +5792,37 @@
 
             // Larguras de coluna
             ws['!cols'] = [
-                { wch: 4 }, { wch: 14 }, { wch: 16 }, { wch: 35 },
-                ...todasDatas.map(() => ({ wch: 4 }))
+                { wch: 14 }, { wch: 15 }, { wch: 45 }, { wch: 2 },
+                ...todasDatas.map(() => ({ wch: 3.5 }))
             ];
 
             // Mesclagens dinâmicas
-            const totalCols = 4 + todasDatas.length;
             const merges = [
-                // Título principal (toda a largura)
-                { s: { r: 0, c: 0 }, e: { r: 0, c: totalCols - 1 } },
-                // Linha 2
-                { s: { r: 1, c: 1 }, e: { r: 1, c: 2 } }, // Professor
-                { s: { r: 1, c: 3 }, e: { r: 1, c: 4 } }  // Nome Turma
+                { s: { r: 0, c: 4 }, e: { r: 0, c: totalCols - 1 } }, // Título Escola
+                { s: { r: 1, c: 0 }, e: { r: 1, c: 3 } }, // Turma Label
+                { s: { r: 1, c: 12 }, e: { r: 1, c: totalCols - 1 } }, // Frequência do Ano Letivo
+                { s: { r: 2, c: 0 }, e: { r: 2, c: 1 } }, // Instrutor
+                { s: { r: 2, c: 2 }, e: { r: 2, c: 3 } }  // Hora
             ];
 
-            // Mesclar nomes dos meses na Linha 3 (Header DIAS/DATAS)
-            let currentCol = 5; // Início das datas
-            meses.forEach(mesIdx => {
-                const numDias = (datasParaMes[mesIdx] || []).length;
+            let colM = 4;
+            meses.forEach(mIdx => {
+                const numDias = (datasParaMes[mIdx] || []).length;
                 if (numDias > 0) {
                     merges.push({
-                        s: { r: 2, c: currentCol },
-                        e: { r: 2, c: currentCol + numDias - 1 }
+                        s: { r: 2, c: colM },
+                        e: { r: 2, c: colM + numDias - 1 }
                     });
-                    currentCol += numDias;
+                    colM += numDias;
                 }
             });
             ws['!merges'] = merges;
 
-            XLSX.utils.book_append_sheet(wb, ws, 'Frequência');
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Frequência");
 
-            const mesSelecionado = MESES_PT[mesInicial];
-            const nomeArq = `frequencia_turma_${turmaId}_${mesSelecionado}_${anoLetivo}.xlsx`;
+            const mesNome = MESES_PT[mesInicial];
+            const nomeArq = `frequencia_${turmaId}_${mesNome}_${anoLetivo}.xlsx`;
             XLSX.writeFile(wb, nomeArq);
             showToast(`Planilha "${nomeArq}" gerada com sucesso!`, 'success');
         }
