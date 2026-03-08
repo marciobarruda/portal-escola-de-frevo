@@ -93,8 +93,38 @@
             border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            transition: var(--transition);
+            transition: transform 0.3s ease, width 0.3s ease;
             z-index: 50;
+        }
+
+        /* ===== HAMBURGUER / MENU MOBILE ===== */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 49;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .hamburger-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            color: var(--text-main);
+            font-size: 1.5rem;
+            line-height: 1;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+        }
+
+        .hamburger-btn:hover {
+            background: var(--surface-hover);
         }
 
         .sidebar-header {
@@ -123,6 +153,136 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .hamburger-btn {
+                display: flex;
+                align-items: center;
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100%;
+                transform: translateX(-100%);
+                z-index: 50;
+                overflow-y: auto;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+            }
+
+            .topbar {
+                flex-wrap: wrap;
+                gap: 8px;
+                padding: 12px 16px;
+            }
+
+            .topbar h1 {
+                font-size: 1rem;
+            }
+
+            .user-menu-name,
+            .user-menu-role {
+                display: none;
+            }
+
+            /* Tables become card-like on mobile */
+            .table thead {
+                display: none;
+            }
+
+            .table tbody tr {
+                display: block;
+                border: 1px solid var(--border-color);
+                border-radius: var(--radius-md);
+                margin-bottom: 12px;
+                padding: 8px;
+                background: var(--surface);
+                box-shadow: var(--shadow-sm);
+            }
+
+            .table tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                padding: 6px 8px;
+                border: none;
+                font-size: 0.85rem;
+                gap: 8px;
+            }
+
+            .table tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: var(--text-muted);
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+
+            .table td:last-child {
+                justify-content: flex-end;
+            }
+
+            /* Modal full-screen on mobile */
+            .modal-content {
+                max-width: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+                border-radius: 0 !important;
+                height: 100dvh !important;
+                max-height: 100dvh !important;
+            }
+
+            .modal {
+                align-items: flex-start !important;
+                padding: 0 !important;
+            }
+
+            /* Metric cards wrap on mobile */
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+            }
+
+            /* Row stacks on mobile */
+            .row {
+                flex-direction: column;
+            }
+
+            .col,
+            .col-12 {
+                min-width: 0 !important;
+                width: 100% !important;
+                flex: 1 1 100% !important;
+            }
+
+            /* Toast smaller on mobile */
+            .toast {
+                min-width: unset;
+                max-width: calc(100vw - 32px);
+            }
+
+            .toast-container {
+                right: 16px;
+                bottom: 16px;
+                left: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .metrics-grid {
+                grid-template-columns: 1fr !important;
+            }
         }
 
         /* TOAST NOTIFICATION CSS */
@@ -1005,7 +1165,12 @@
 
             <!-- TOPBAR -->
             <header class="topbar">
-                <h1 class="page-title" id="current-page-title">Página inicial</h1>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <button class="hamburger-btn" id="hamburgerBtn" title="Menu" aria-label="Abrir menu">
+                        <i class="ph ph-list"></i>
+                    </button>
+                    <h1 class="page-title" id="current-page-title">Página inicial</h1>
+                </div>
                 <div class="topbar-actions">
                     <button class="icon-btn" title="Notificações"><i class="ph ph-bell"></i></button>
 
@@ -1026,13 +1191,17 @@
                                 <i class="ph ph-gear"></i> Configurações
                             </a>
                             <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item" style="color: var(--secondary-red);">
+                            <a href="https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/logout"
+                                class="dropdown-item" style="color: var(--secondary-red);" id="btn-logout">
                                 <i class="ph ph-sign-out"></i> Sair / Logout
                             </a>
                         </div>
                     </div>
                 </div>
             </header>
+
+            <!-- SIDEBAR OVERLAY (mobile) -->
+            <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
             <!-- VIEWS CONTAINER -->
             <div class="view-container">
@@ -2494,74 +2663,18 @@
         // ========== CONTROLE DE SESSÃO E INATIVIDADE ==========
         let timeoutInatividade;
         const TEMPO_LIMITE = 15 * 60 * 1000; // 15 minutos em milissegundos
+        const LOGOUT_URL = 'https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/logout';
 
-        function encerrarSessao(motivo = 'Sua sessão expirou por inatividade.') {
-            // Ocultar conteúdo principal
-            document.querySelector('.sidebar').style.display = 'none';
-            document.querySelector('.main-content').style.display = 'none';
-
-            // Criar e exibir overlay de sessão encerrada
-            let overlay = document.getElementById('session-expired-overlay');
-            if (!overlay) {
-                overlay = document.createElement('div');
-                overlay.id = 'session-expired-overlay';
-                overlay.style.position = 'fixed';
-                overlay.style.top = '0';
-                overlay.style.left = '0';
-                overlay.style.width = '100vw';
-                overlay.style.height = '100vh';
-                overlay.style.backgroundColor = 'var(--bg-color)';
-                overlay.style.zIndex = '9999';
-                overlay.style.display = 'flex';
-                overlay.style.flexDirection = 'column';
-                overlay.style.alignItems = 'center';
-                overlay.style.justifyContent = 'center';
-                overlay.style.padding = '24px';
-                overlay.style.textAlign = 'center';
-
-                overlay.innerHTML = `
-                    <div style="background: var(--surface); padding: 40px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); max-width: 400px; width: 100%;">
-                        <i class="ph ph-clock-counter-clockwise" style="font-size: 48px; color: var(--secondary-red); margin-bottom: 16px;"></i>
-                        <h2 style="margin-bottom: 8px; color: var(--text-main);">Sessão Encerrada</h2>
-                        <p id="logout-reason" style="color: var(--text-muted); margin-bottom: 24px;">${motivo}</p>
-                        <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="forcarLogoutBrowser()">
-                            <i class="ph ph-sign-in"></i> Fazer Login Novamente
-                        </button>
-                    </div>
-                `;
-                document.body.appendChild(overlay);
-
-                // Injetar função global de logout forçado
-                window.forcarLogoutBrowser = async function () {
-                    try {
-                        // Tentar forçar credenciais inválidas para limpar o cache do Basic Auth no navegador
-                        await fetch(window.location.href, {
-                            method: 'GET',
-                            headers: {
-                                'Authorization': 'Basic ' + btoa('logout:logout')
-                            }
-                        });
-                    } catch (e) {
-                        // Ignorar erros do fetch propositalmente mal-sucedido
-                    } finally {
-                        // Recarregar a página forçando o cache clean
-                        window.location.reload(true);
-                    }
-                };
-            } else {
-                document.getElementById('logout-reason').textContent = motivo;
-                overlay.style.display = 'flex';
-            }
-
-            // Limpar timer para evitar reexecução
+        function encerrarSessao() {
+            // Redirecionar para o endpoint de logout do n8n
             clearTimeout(timeoutInatividade);
-            // Remover listeners
             removerListenersAtividade();
+            window.location.href = LOGOUT_URL;
         }
 
         function resetarTimer() {
             clearTimeout(timeoutInatividade);
-            timeoutInatividade = setTimeout(() => encerrarSessao('Sua sessão expirou devido a 15 minutos de inatividade.'), TEMPO_LIMITE);
+            timeoutInatividade = setTimeout(encerrarSessao, TEMPO_LIMITE);
         }
 
         function removerListenersAtividade() {
@@ -2572,11 +2685,11 @@
             window.removeEventListener('touchstart', resetarTimer);
         }
 
-        // Iniciar monitoramento
+        // Iniciar monitoramento de atividade
         window.addEventListener('mousemove', resetarTimer);
         window.addEventListener('mousedown', resetarTimer);
         window.addEventListener('keydown', resetarTimer);
-        window.addEventListener('scroll', resetarTimer, true); // true para capturar no bubbling phase
+        window.addEventListener('scroll', resetarTimer, true);
         window.addEventListener('touchstart', resetarTimer);
 
         // Iniciar o primeiro timer
@@ -4197,15 +4310,41 @@
             // Aplicar controle de acesso (RBAC)
             aplicarRBAC();
 
-            // Configurar botão de Logout
-            const btnLogout = document.querySelector('.dropdown-item i.ph-sign-out').closest('.dropdown-item');
+            // Configurar botão de Logout (garantia extra caso JS seja necessário)
+            const btnLogout = document.getElementById('btn-logout');
             if (btnLogout) {
                 btnLogout.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    toggleUserMenu(); // Fechar dropdown
-                    encerrarSessao('Sessão encerrada com sucesso. Até logo!');
+                    // Navegação direta via href já cuida do redirecionamento.
+                    // Fechar dropdown antes de sair.
+                    toggleUserMenu();
                 });
             }
+
+            // Hamburger para menu mobile
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const sidebar = document.querySelector('.sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            if (hamburgerBtn && sidebar) {
+                hamburgerBtn.addEventListener('click', () => {
+                    sidebar.classList.toggle('open');
+                    sidebarOverlay.classList.toggle('active');
+                });
+            }
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', () => {
+                    sidebar.classList.remove('open');
+                    sidebarOverlay.classList.remove('active');
+                });
+            }
+            // Fechar sidebar ao clicar em nav-item no mobile
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('open');
+                        sidebarOverlay.classList.remove('active');
+                    }
+                });
+            });
 
             // Carregar dados iniciais da API
             carregarMatriculas();
