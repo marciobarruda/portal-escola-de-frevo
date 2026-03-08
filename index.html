@@ -13,6 +13,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Ícones Phosphor -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- SheetJS para geração de planilhas -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 
     <style>
         :root {
@@ -1141,6 +1143,10 @@
                     <i class="ph ph-gear"></i>
                     <span>Administração</span>
                 </a>
+                <a class="nav-item" data-target="view-relatorios">
+                    <i class="ph ph-file-spreadsheet"></i>
+                    <span>Relatórios</span>
+                </a>
             </div>
 
             <div class="sidebar-footer" style="padding: 24px 12px; text-align: center;">
@@ -1586,7 +1592,78 @@
                     </div>
                 </section>
 
-            </div>
+                <!-- VIEW 5: RELATÓRIOS -->
+                <section id="view-relatorios" class="view">
+                    <div class="card">
+                        <div class="card-header" style="margin-bottom: 24px;">
+                            <div>
+                                <h2 style="font-size: 1.25rem; color: var(--text-main); margin-bottom: 8px;">Emissão de
+                                    Relatórios</h2>
+                                <p style="color: var(--text-muted); font-size: 0.9rem;">Gere planilhas de frequência por
+                                    turma e trimestre</p>
+                            </div>
+                        </div>
+
+                        <h3
+                            style="font-size: 1.1rem; margin-bottom: 16px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">
+                            <i class="ph ph-clipboard-text" style="margin-right: 6px; color: var(--primary-blue);"></i>
+                            Lista de Frequência
+                        </h3>
+
+                        <div class="row" style="margin-bottom: 20px; align-items: flex-end;">
+                            <div class="col" style="flex: 2;">
+                                <div class="form-group">
+                                    <label class="form-label">Turma *</label>
+                                    <select class="form-control" id="relat-turma">
+                                        <option value="">Selecione a turma...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col" style="flex: 1;">
+                                <div class="form-group">
+                                    <label class="form-label">Ano Letivo *</label>
+                                    <select class="form-control" id="relat-ano">
+                                        <option value="2025">2025</option>
+                                        <option value="2026" selected>2026</option>
+                                        <option value="2027">2027</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col" style="flex: 1;">
+                                <div class="form-group">
+                                    <label class="form-label">Mês inicial do trimestre *</label>
+                                    <select class="form-control" id="relat-mes">
+                                        <option value="0">Janeiro</option>
+                                        <option value="1">Fevereiro</option>
+                                        <option value="2" selected>Março</option>
+                                        <option value="3">Abril</option>
+                                        <option value="4">Maio</option>
+                                        <option value="5">Junho</option>
+                                        <option value="6">Julho</option>
+                                        <option value="7">Agosto</option>
+                                        <option value="8">Setembro</option>
+                                        <option value="9">Outubro</option>
+                                        <option value="10">Novembro</option>
+                                        <option value="11">Dezembro</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col" style="flex: 0 0 200px;">
+                                <button class="btn btn-primary" style="width:100%; justify-content:center;"
+                                    onclick="emitirFrequencia()">
+                                    <i class="ph ph-download-simple"></i> Emitir Frequência
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="relat-preview"
+                            style="display:none; background: var(--surface-hover); border:1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; font-size: 0.85rem; color: var(--text-muted);">
+                            <i class="ph ph-info" style="margin-right: 4px;"></i>
+                            Prévio: <strong id="relat-preview-text"></strong>
+                        </div>
+                    </div>
+                </section>
+
         </main>
 
         <!-- MODAIS -->
@@ -2209,8 +2286,14 @@
 
                             <div class="form-group">
                                 <label class="radio-label" style="font-weight: 500; font-size: 0.95rem;">
-                                    <input type="radio" name="autoriza_imagem" value="Sim" checked> O aluno autoriza o
-                                    uso de sua imagem
+                                    <input type="radio" name="autoriza_imagem" value="Sim" checked required> O aluno
+                                    autoriza o uso de sua imagem
+                                </label>
+                                <br>
+                                <label class="radio-label"
+                                    style="font-weight: 500; font-size: 0.95rem; margin-top: 8px;">
+                                    <input type="radio" name="autoriza_imagem" value="Não"> O aluno NÃO autoriza o uso
+                                    de sua imagem
                                 </label>
                             </div>
                         </div>
@@ -3797,7 +3880,7 @@
                 } catch (e) {
                     ulTs.textContent = m.timestamp;
                 }
-                ulUser.textContent = m.email_logado || '';
+                ulUser.textContent = (m.email_logado || '').toUpperCase();
             } else if (ulInfo) {
                 ulInfo.style.display = 'none';
             }
@@ -3873,7 +3956,7 @@
 
             const docsEditN = document.getElementById('docs-edit-mode');
 
-            const uName = window.currentUser || 'Usuário';
+            const uName = currentUser || 'Usuário';
             const avisoEl = document.getElementById('texto-aviso');
             if (avisoEl) avisoEl.textContent = `Olá, ${uName}! A matrícula só poderá ser efetivada após o preenchimento de TODOS os campos obrigatórios.`;
             openModal('modal-aviso');
@@ -4286,7 +4369,8 @@
                 'view-inicio': 'Página inicial',
                 'view-matriculas': 'Matrículas',
                 'view-turmas': 'Turmas',
-                'view-admin': 'Administração'
+                'view-admin': 'Administração',
+                'view-relatorios': 'Relatórios'
             };
 
             navItems.forEach(item => {
@@ -4303,6 +4387,8 @@
                         carregarMatriculas();
                     } else if (targetId === 'view-turmas' && typeof carregarTurmas === 'function') {
                         carregarTurmas();
+                    } else if (targetId === 'view-relatorios') {
+                        carregarTurmasRelatorio();
                     }
                 });
             });
@@ -4843,7 +4929,7 @@
                 inicionovatos: document.getElementById('inicionovatos')?.value || '',
                 iniciooficina: document.getElementById('iniciooficina')?.value || '',
                 iniciorenovacao: document.getElementById('iniciorenovacao')?.value || '',
-                responsavel: window.usuarioLogado || document.getElementById('user-name-display')?.textContent.trim() || 'Desconhecido',
+                responsavel: currentUser || 'Desconhecido',
                 terminonovatos: document.getElementById('terminonovatos')?.value || '',
                 terminooficina: document.getElementById('terminooficina')?.value || '',
                 terminorenovacao: document.getElementById('terminorenovacao')?.value || ''
@@ -4858,10 +4944,10 @@
 
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-                alert('Períodos de matrícula salvos com sucesso!');
+                showToast('Calendário salvo com sucesso!', 'success');
             } catch (error) {
                 console.error('Erro ao salvar períodos:', error);
-                alert('Erro na comunicação com o servidor ao salvar os períodos de matrícula.');
+                showToast('Erro ao salvar o calendário. Tente novamente.', 'error');
             } finally {
                 btnElement.disabled = false;
                 btnElement.innerHTML = originalText;
@@ -5398,6 +5484,177 @@
                 btnElement.disabled = false;
                 btnElement.innerHTML = originalText;
             }
+        }
+
+        // ========== RELATÓRIOS: POPULAÇÃO DO SELECT DE TURMAS ==========
+        function carregarTurmasRelatorio() {
+            const sel = document.getElementById('relat-turma');
+            if (!sel) return;
+            sel.innerHTML = '<option value="">Selecione a turma...</option>';
+            (turmasData || []).forEach(t => {
+                const id = t.id || t.turma_id || t.wfid || '';
+                const nome = [t.nivel, t.modalidade, t.faixa_etaria, t.dias, t.horario].filter(Boolean).join(' | ');
+                const opt = document.createElement('option');
+                opt.value = id;
+                opt.textContent = nome ? `#${id} — ${nome}` : `Turma #${id}`;
+                opt.dataset.turma = JSON.stringify(t);
+                sel.appendChild(opt);
+            });
+        }
+
+        // ========== RELATÓRIOS: EMISSÃO DE FREQUÊNCIA EM XLSX ==========
+        function emitirFrequencia() {
+            if (typeof XLSX === 'undefined') {
+                showToast('Biblioteca de planilhas não carregada. Recarregue a página.', 'error');
+                return;
+            }
+
+            const selTurma = document.getElementById('relat-turma');
+            const anoLetivo = document.getElementById('relat-ano')?.value || '2026';
+            const mesInicial = parseInt(document.getElementById('relat-mes')?.value || '2', 10);
+
+            const opt = selTurma?.options[selTurma.selectedIndex];
+            if (!opt || !opt.value) { showToast('Selecione uma turma.', 'error'); return; }
+
+            let turma;
+            try { turma = JSON.parse(opt.dataset.turma); } catch (e) { showToast('Dados da turma inválidos.', 'error'); return; }
+
+            // --- Mapeamento de dias da turma para números de dia da semana (0=Dom,...,6=Sáb) ---
+            const DIAS_MAP = {
+                'segunda': 1, 'segunda-feira': 1,
+                'terça': 2, 'terca': 2, 'terça-feira': 2,
+                'quarta': 3, 'quarta-feira': 3,
+                'quinta': 4, 'quinta-feira': 4,
+                'sexta': 5, 'sexta-feira': 5,
+                'sábado': 6, 'sabado': 6,
+                'domingo': 0
+            };
+
+            const diasStr = (turma.dias || '').toLowerCase();
+            const diasAula = [];
+            Object.entries(DIAS_MAP).forEach(([key, val]) => {
+                if (diasStr.includes(key) && !diasAula.includes(val)) diasAula.push(val);
+            });
+            if (diasAula.length === 0) {
+                showToast('Não foi possível identificar os dias de aula da turma. Verifique o campo "Dias".', 'error');
+                return;
+            }
+
+            // --- Calcular datas do trimestre (3 meses) que coincidem com os dias da turma ---
+            const MESES_PT = ['JANEIRO', 'FEVEREIRO', 'MARÇO', 'ABRIL', 'MAIO', 'JUNHO', 'JULHO', 'AGOSTO', 'SETEMBRO', 'OUTUBRO', 'NOVEMBRO', 'DEZEMBRO'];
+            const meses = [mesInicial, mesInicial + 1, mesInicial + 2].map(m => m % 12);
+            const ano = parseInt(anoLetivo, 10);
+            const datasParaMes = {}; // { mesIndex: [Date,...] }
+            const todasDatas = [];
+
+            meses.forEach(mesIdx => {
+                const ultimo = new Date(ano, mesIdx + 1, 0).getDate();
+                datasParaMes[mesIdx] = [];
+                for (let d = 1; d <= ultimo; d++) {
+                    const dt = new Date(ano, mesIdx, d);
+                    if (diasAula.includes(dt.getDay())) {
+                        datasParaMes[mesIdx].push(dt);
+                        todasDatas.push(dt);
+                    }
+                }
+            });
+
+            if (todasDatas.length === 0) {
+                showToast('Nenhuma data encontrada para o trimestre nos dias desta turma.', 'error');
+                return;
+            }
+
+            // --- Filtrar alunos da turma e ano letivo ---
+            const turmaId = String(turma.id || turma.turma_id || selTurma.value || '');
+            const alunos = (matriculasData || []).filter(m => {
+                const matTurma = String(m.turma || m.turma_id || '');
+                const matAno = String(m.ano_letivo || m.anoletivo || '');
+                return matTurma === turmaId && matAno === anoLetivo;
+            });
+
+            // --- Construir a planilha ---
+            const wb = XLSX.utils.book_new();
+            const ws_data = [];
+
+            // Linha 1: Título principal
+            ws_data.push(['ESCOLA MUNICIPAL DE FREVO MAESTRO FERNANDO BORGES']);
+
+            // Linha 2: Meses / Nº turma / Curso / Frequência
+            const mesTitulo = meses.map(m => MESES_PT[m]).join('/');
+            ws_data.push([
+                `MÊS: ${mesTitulo}`,
+                '',
+                turmaId,
+                `CURSO: ${(turma.nivel || '')} ${(turma.modalidade || '')}`.trim(),
+                '',
+                `FREQUÊNCIA DO ANO LETIVO - ${anoLetivo}`
+            ]);
+
+            // Linha 3: Hora / Instrutor / DIAS/DATAS
+            const horarioStr = turma.horario || '';
+            const professorStr = turma.professor || '';
+            const linhaHeader3 = [
+                '',
+                '',
+                `HORA: ${horarioStr}`,
+                `INSTRUTOR: ${professorStr}`,
+                '',
+                'DIAS/DATAS'
+            ];
+            // Adicionar cabeçalhos dos meses
+            meses.forEach(mesIdx => {
+                linhaHeader3.push(MESES_PT[mesIdx]);
+                (datasParaMes[mesIdx] || []).slice(1).forEach(() => linhaHeader3.push(''));
+            });
+            ws_data.push(linhaHeader3);
+
+            // Linha 4: N° / DATA NASC. / FONE / ALUNO | dias do mês
+            const linha4 = ['', 'DATA NASC.', 'FONE 1:', '', 'ALUNO/A:'];
+            meses.forEach(mesIdx => {
+                (datasParaMes[mesIdx] || []).forEach(dt => {
+                    linha4.push(dt.getDate());
+                });
+            });
+            ws_data.push(linha4);
+
+            // Linha 5: vazia (espaço)
+            ws_data.push([]);
+
+            // Linhas de alunos
+            alunos.forEach((aluno, idx) => {
+                const nasc = aluno.data_nasc || aluno.datanascimento || '';
+                const fone = aluno.telefone || aluno.whatsapp || '';
+                const nome = aluno.nome || '';
+                const numero = String(idx + 1).padStart(2, '0');
+                const linhaAluno = [numero, nasc, fone, '', nome];
+                // Colunas de frequência (vazias, para preenchimento manual)
+                todasDatas.forEach(() => linhaAluno.push(''));
+                ws_data.push(linhaAluno);
+            });
+
+            // --- Criar a worksheet e formatar ---
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+
+            // Larguras de coluna aproximadas
+            ws['!cols'] = [
+                { wch: 4 }, { wch: 14 }, { wch: 16 }, { wch: 4 }, { wch: 30 },
+                ...todasDatas.map(() => ({ wch: 4 }))
+            ];
+
+            // Mesclar linha 1 (título): A1 até coluna total
+            const totalCols = 5 + todasDatas.length;
+            ws['!merges'] = [
+                { s: { r: 0, c: 0 }, e: { r: 0, c: totalCols - 1 } },
+                { s: { r: 1, c: 0 }, e: { r: 1, c: 1 } },
+                { s: { r: 2, c: 2 }, e: { r: 2, c: 3 } }
+            ];
+
+            XLSX.utils.book_append_sheet(wb, ws, 'Frequência');
+
+            const mesSelecionado = MESES_PT[mesInicial];
+            const nomeArq = `frequencia_turma_${turmaId}_${mesSelecionado}_${anoLetivo}.xlsx`;
+            XLSX.writeFile(wb, nomeArq);
+            showToast(`Planilha "${nomeArq}" gerada com sucesso!`, 'success');
         }
     </script>
 </body>
