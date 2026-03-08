@@ -1360,7 +1360,7 @@
                                 <i class="ph ph-magnifying-glass"
                                     style="color: var(--text-muted); font-size: 1.1rem; flex-shrink: 0;"></i>
                                 <input type="text" class="form-control" id="filter-matricula-cpf"
-                                    placeholder="Pesquisar por nome ou CPF" oninput="filtrarMatriculas()"
+                                    placeholder="Nome, CPF ou WhatsApp" oninput="filtrarMatriculas()"
                                     style="width: 100%;">
                             </div>
                             <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
@@ -4277,21 +4277,27 @@
             const filtroAnoTipoStatus = (document.getElementById('filter-ano-tipo-status')?.value || '').toLowerCase().trim();
 
             const dadosFiltrados = matriculasData.filter(m => {
-                // Critério 1: Matrícula ou CPF
+                // Critério 1: NOME, CPF, Matrícula ou WHATSAPP
                 if (filtroMatCpf) {
                     const mat = (m.matricula || '').toString().toLowerCase();
                     const cpf = (m.cpf_aluno || m.cpf || '').toLowerCase();
                     const cpfFmt = formatarCPF(m.cpf_aluno || m.cpf || '').toLowerCase();
-                    if (!mat.includes(filtroMatCpf) && !cpf.includes(filtroMatCpf) && !cpfFmt.includes(filtroMatCpf)) {
+                    const nome = (m.nome_aluno || m.nome || '').toLowerCase();
+                    const fone = (m.telefone_aluno || m.telefone || m.whatsapp || '').toLowerCase();
+
+                    if (!mat.includes(filtroMatCpf) &&
+                        !cpf.includes(filtroMatCpf) &&
+                        !cpfFmt.includes(filtroMatCpf) &&
+                        !nome.includes(filtroMatCpf) &&
+                        !fone.includes(filtroMatCpf)) {
                         return false;
                     }
                 }
 
-                // Critério 2: Nome ou Turma
+                // Critério 2: Turma (Nome mantido por redundância ou filtro específico)
                 if (filtroNomeTurma) {
-                    const nome = (m.nome_aluno || m.nome || '').toLowerCase();
                     const turma = (m.turma || '').toLowerCase();
-                    if (!nome.includes(filtroNomeTurma) && !turma.includes(filtroNomeTurma)) {
+                    if (!turma.includes(filtroNomeTurma)) {
                         return false;
                     }
                 }
