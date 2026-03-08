@@ -1611,18 +1611,10 @@
                         </h3>
 
                         <div class="row" style="margin-bottom: 20px; align-items: flex-end;">
-                            <div class="col" style="flex: 2;">
-                                <div class="form-group">
-                                    <label class="form-label">Turma *</label>
-                                    <select class="form-control" id="relat-turma">
-                                        <option value="">Selecione a turma...</option>
-                                    </select>
-                                </div>
-                            </div>
                             <div class="col" style="flex: 1;">
                                 <div class="form-group">
                                     <label class="form-label">Ano Letivo *</label>
-                                    <select class="form-control" id="relat-ano">
+                                    <select class="form-control" id="relat-ano" onchange="carregarTurmasRelatorio()">
                                         <option value="2025">2025</option>
                                         <option value="2026" selected>2026</option>
                                         <option value="2027">2027</option>
@@ -1631,7 +1623,25 @@
                             </div>
                             <div class="col" style="flex: 1;">
                                 <div class="form-group">
-                                    <label class="form-label">Mês inicial do trimestre *</label>
+                                    <label class="form-label">Tipo *</label>
+                                    <select class="form-control" id="relat-tipo" onchange="carregarTurmasRelatorio()">
+                                        <option value="ANO LETIVO">Ano Letivo</option>
+                                        <option value="OFICINA">Oficina</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col" style="flex: 2;">
+                                <div class="form-group">
+                                    <label class="form-label">Turma *</label>
+                                    <select class="form-control" id="relat-turma"
+                                        onchange="atualizarListaAlunosRelatorio()">
+                                        <option value="">Selecione a turma...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col" style="flex: 1;">
+                                <div class="form-group">
+                                    <label class="form-label">Mês inicial *</label>
                                     <select class="form-control" id="relat-mes">
                                         <option value="0">Janeiro</option>
                                         <option value="1">Fevereiro</option>
@@ -1648,10 +1658,36 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col" style="flex: 0 0 200px;">
-                                <button class="btn btn-primary" style="width:100%; justify-content:center;"
-                                    onclick="emitirFrequencia()">
-                                    <i class="ph ph-download-simple"></i> Emitir Frequência
+                        </div>
+
+                        <!-- LISTAGEM DE ALUNOS PARA CONFERÊNCIA -->
+                        <div id="relat-alunos-container" style="display:none; margin-top: 24px;">
+                            <h4
+                                style="font-size: 1rem; margin-bottom: 12px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center;">
+                                Alunos da Turma
+                                <span id="relat-count"
+                                    style="font-size: 0.8rem; background: var(--surface-hover); padding: 4px 12px; border-radius: 12px; color: var(--primary-blue);">0
+                                    alunos</span>
+                            </h4>
+                            <div class="table-responsive"
+                                style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                                <table class="table" style="font-size: 0.85rem; margin-bottom: 0;">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome do Aluno</th>
+                                            <th>WhatsApp</th>
+                                            <th>Data Nasc.</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="relat-alunos-list">
+                                        <!-- Populado via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div style="margin-top: 24px; display: flex; justify-content: flex-end;">
+                                <button class="btn btn-primary" onclick="emitirFrequencia()">
+                                    <i class="ph ph-download-simple"></i> Gerar Frequência (XLS)
                                 </button>
                             </div>
                         </div>
@@ -5494,18 +5530,82 @@
 
         // ========== RELATÓRIOS: POPULAÇÃO DO SELECT DE TURMAS ==========
         function carregarTurmasRelatorio() {
-            const sel = document.getElementById('relat-turma');
-            if (!sel) return;
-            sel.innerHTML = '<option value="">Selecione a turma...</option>';
+            const selAno = document.getElementById('relat-ano');
+            const selTipo = document.getElementById('relat-tipo');
+            const selTurma = document.getElementById('relat-turma');
+            if (!selAno || !selTipo || !selTurma) return;
+
+            const anoFiltro = selAno.value;
+            const tipoFiltro = selTipo.value; // 'ANO LETIVO' ou 'OFICINA'
+
+            selTurma.innerHTML = '<option value="">Selecione a turma...</option>';
+            document.getElementById('relat-alunos-container').style.display = 'none';
+
             (turmasData || []).forEach(t => {
                 const id = t.id || t.turma_id || t.wfid || '';
+                const anoT = String(t.ano_letivo || t.anoletivo || '').trim();
+                const modalidadeT = String(t.modalidade || '').toUpperCase().trim();
+
+                // Filtrar por ano
+                if (anoFiltro && anoT !== anoFiltro) return;
+
+                // Filtrar por tipo (Ano Letivo ou Oficina)
+                if (tipoFiltro === 'OFICINA') {
+                    if (!modalidadeT.includes('OFICINA')) return;
+                } else {
+                    if (modalidadeT.includes('OFICINA')) return;
+                }
+
                 const nome = [t.nivel, t.modalidade, t.faixa_etaria, t.dias, t.horario].filter(Boolean).join(' | ');
                 const opt = document.createElement('option');
                 opt.value = id;
-                opt.textContent = nome ? `#${id} — ${nome}` : `Turma #${id}`;
+                opt.textContent = nome || `Turma #${id}`;
                 opt.dataset.turma = JSON.stringify(t);
-                sel.appendChild(opt);
+                selTurma.appendChild(opt);
             });
+        }
+
+        // ========== RELATÓRIOS: ATUALIZAR LISTAGEM EM TELA ==========
+        function atualizarListaAlunosRelatorio() {
+            const selTurma = document.getElementById('relat-turma');
+            const selAno = document.getElementById('relat-ano');
+            const container = document.getElementById('relat-alunos-container');
+            const listBody = document.getElementById('relat-alunos-list');
+            const countLabel = document.getElementById('relat-count');
+
+            const opt = selTurma?.options[selTurma.selectedIndex];
+            if (!opt || !opt.value) {
+                container.style.display = 'none';
+                return;
+            }
+
+            let turma;
+            try { turma = JSON.parse(opt.dataset.turma); } catch (e) { return; }
+
+            const turmaId = String(turma.id || turma.turma_id || turma.wfid || '').toLowerCase().trim();
+            const turmaNome = String(turma.turma || turma.nome || '').toLowerCase().trim();
+            const anoFiltro = selAno.value;
+
+            const alunos = (matriculasData || []).filter(m => {
+                const mTurma = String(m.turma || m.turma_id || '').toLowerCase().trim();
+                const mAno = String(m.ano_letivo || m.anoletivo || '');
+                const bateTurma = (mTurma === turmaId || (turmaNome && mTurma === turmaNome));
+                return bateTurma && (mAno === anoFiltro);
+            });
+
+            listBody.innerHTML = '';
+            alunos.forEach(a => {
+                const tr = document.createElement('tr');
+                const pNome = a.nome_aluno || a.nome || a.aluno || 'N/A';
+                const pFone = a.whatsapp || a.telefone || a.fone || 'N/A';
+                const pNasc = a.data_nasc || a.datanascimento || a.data_nascimento || 'N/A';
+
+                tr.innerHTML = `<td>${pNome}</td><td>${pFone}</td><td>${pNasc}</td>`;
+                listBody.appendChild(tr);
+            });
+
+            countLabel.textContent = `${alunos.length} ${alunos.length === 1 ? 'aluno' : 'alunos'}`;
+            container.style.display = 'block';
         }
 
         // ========== RELATÓRIOS: EMISSÃO DE FREQUÊNCIA EM XLSX ==========
@@ -5571,19 +5671,20 @@
             }
 
             // --- Filtrar alunos da turma e ano letivo ---
-            const turmaId = String(turma.id || turma.turma_id || turma.wfid || selTurma.value || '');
+            const turmaId = String(turma.id || turma.turma_id || turma.wfid || selTurma.value || '').toLowerCase().trim();
             const turmaNome = String(turma.turma || turma.nome || '').toLowerCase().trim();
 
             const alunos = (matriculasData || []).filter(m => {
-                const matTurma = String(m.turma || m.turma_id || '').toLowerCase().trim();
-                const matAno = String(m.ano_letivo || m.anoletivo || '');
-
-                // Corresponder por ID ou Nome (pra garantir captura caso os dados variem)
-                const bateTurma = (matTurma === turmaId.toLowerCase() || (turmaNome && matTurma === turmaNome));
-                const bateAno = (matAno === anoLetivo);
-
-                return bateTurma && bateAno;
+                const mTurma = String(m.turma || m.turma_id || '').toLowerCase().trim();
+                const mAno = String(m.ano_letivo || m.anoletivo || '');
+                const bateTurma = (mTurma === turmaId || (turmaNome && mTurma === turmaNome));
+                return bateTurma && (mAno === anoLetivo);
             });
+
+            if (alunos.length === 0) {
+                showToast('Nenhum aluno encontrado para os critérios selecionados.', 'error');
+                return;
+            }
 
             // --- Construir a planilha ---
             const wb = XLSX.utils.book_new();
@@ -5597,7 +5698,7 @@
             ws_data.push([
                 `MÊS: ${mesTitulo}`,
                 '',
-                turmaId,
+                (turma.id || turma.turma_id || turma.wfid || '').toString(),
                 `CURSO: ${(turma.nivel || '')} ${(turma.modalidade || '')}`.trim(),
                 '',
                 `FREQUÊNCIA DO ANO LETIVO - ${anoLetivo}`
@@ -5635,11 +5736,12 @@
 
             // Linhas de alunos
             alunos.forEach((aluno, idx) => {
-                const nasc = aluno.data_nasc || aluno.datanascimento || '';
-                const fone = aluno.telefone || aluno.whatsapp || '';
-                const nome = aluno.nome || '';
+                const pNome = aluno.nome_aluno || aluno.nome || aluno.aluno || '';
+                const pFone = aluno.whatsapp || aluno.telefone || aluno.fone || '';
+                const pNasc = aluno.data_nasc || aluno.datanascimento || aluno.data_nascimento || '';
+
                 const numero = String(idx + 1).padStart(2, '0');
-                const linhaAluno = [numero, nasc, fone, '', nome];
+                const linhaAluno = [numero, pNasc, pFone, '', pNome];
                 // Colunas de frequência (vazias, para preenchimento manual)
                 todasDatas.forEach(() => linhaAluno.push(''));
                 ws_data.push(linhaAluno);
