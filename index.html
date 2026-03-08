@@ -1144,7 +1144,7 @@
                     <span>Administração</span>
                 </a>
                 <a class="nav-item" data-target="view-relatorios">
-                    <i class="ph ph-file-spreadsheet"></i>
+                    <i class="ph ph-table"></i>
                     <span>Relatórios</span>
                 </a>
             </div>
@@ -2724,13 +2724,19 @@
 
             // 2. Restrições por role
             if (currentRole === 'staff') {
-                // Remover aba "Administração" do menu
+                // Remover aba "Administração" e "Relatórios" do menu
                 const navAdmin = document.querySelector('.nav-item[data-target="view-admin"]');
                 if (navAdmin) navAdmin.remove();
 
-                // Remover seção de Administração do DOM
+                const navRelatorios = document.querySelector('.nav-item[data-target="view-relatorios"]');
+                if (navRelatorios) navRelatorios.remove();
+
+                // Remover seções do DOM
                 const viewAdmin = document.getElementById('view-admin');
                 if (viewAdmin) viewAdmin.remove();
+
+                const viewRelatorios = document.getElementById('view-relatorios');
+                if (viewRelatorios) viewRelatorios.remove();
 
                 // Ocultar botão "Nova Turma"
                 const btnNovaTurma = document.querySelector('#view-turmas .btn.btn-primary[onclick*="novaTurma"]');
@@ -5565,11 +5571,18 @@
             }
 
             // --- Filtrar alunos da turma e ano letivo ---
-            const turmaId = String(turma.id || turma.turma_id || selTurma.value || '');
+            const turmaId = String(turma.id || turma.turma_id || turma.wfid || selTurma.value || '');
+            const turmaNome = String(turma.turma || turma.nome || '').toLowerCase().trim();
+
             const alunos = (matriculasData || []).filter(m => {
-                const matTurma = String(m.turma || m.turma_id || '');
+                const matTurma = String(m.turma || m.turma_id || '').toLowerCase().trim();
                 const matAno = String(m.ano_letivo || m.anoletivo || '');
-                return matTurma === turmaId && matAno === anoLetivo;
+
+                // Corresponder por ID ou Nome (pra garantir captura caso os dados variem)
+                const bateTurma = (matTurma === turmaId.toLowerCase() || (turmaNome && matTurma === turmaNome));
+                const bateAno = (matAno === anoLetivo);
+
+                return bateTurma && bateAno;
             });
 
             // --- Construir a planilha ---
