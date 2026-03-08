@@ -1191,7 +1191,7 @@
                                 <i class="ph ph-gear"></i> Configurações
                             </a>
                             <div class="dropdown-divider"></div>
-                            <a href="https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/logout"
+                            <a href="https://login.recife.pe.gov.br/auth/realms/prefeitura/protocol/openid-connect/logout?redirect_uri=https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/portal-escola-frevo"
                                 class="dropdown-item" style="color: var(--secondary-red);" id="btn-logout">
                                 <i class="ph ph-sign-out"></i> Sair / Logout
                             </a>
@@ -2663,7 +2663,7 @@
         // ========== CONTROLE DE SESSÃO E INATIVIDADE ==========
         let timeoutInatividade;
         const TEMPO_LIMITE = 15 * 60 * 1000; // 15 minutos em milissegundos
-        const LOGOUT_URL = 'https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/logout';
+        const LOGOUT_URL = 'https://login.recife.pe.gov.br/auth/realms/prefeitura/protocol/openid-connect/logout?redirect_uri=https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/portal-escola-frevo';
 
         function encerrarSessao() {
             // Redirecionar para o endpoint de logout do n8n
