@@ -5606,6 +5606,18 @@
                 return bateTurma && (mAno === anoFiltro);
             });
 
+            // Ordenação Alfabética (ASC)
+            alunos.sort((a, b) => {
+                const nA = (a.nome_aluno || a.nome || a.aluno || '').toUpperCase();
+                const nB = (b.nome_aluno || b.nome || b.aluno || '').toUpperCase();
+                return nA.localeCompare(nB, 'pt-BR');
+            });
+
+            // Debug Log para resolver nascimento de uma vez por todas
+            if (alunos.length > 0) {
+                console.log('DEBUG ALUNO [0]:', alunos[0]);
+            }
+
             listBody.innerHTML = '';
             alunos.forEach(a => {
                 const tr = document.createElement('tr');
@@ -5700,6 +5712,13 @@
                 const mAno = String(m.ano_letivo || m.anoletivo || '');
                 const bateTurma = (mTurma === turmaId || (turmaNomeSimples && mTurma === turmaNomeSimples));
                 return bateTurma && (mAno === anoLetivo);
+            });
+
+            // Ordenação Alfabética (ASC)
+            alunos.sort((a, b) => {
+                const nA = (a.nome_aluno || a.nome || a.aluno || '').toUpperCase();
+                const nB = (b.nome_aluno || b.nome || b.aluno || '').toUpperCase();
+                return nA.localeCompare(nB, 'pt-BR');
             });
 
             if (alunos.length === 0) {
