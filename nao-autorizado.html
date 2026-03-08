@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso Não Autorizado - Escola de Frevo do Recife</title>
+    <link rel="icon" type="image/svg+xml"
+        href="https://statics.recife.pe.gov.br//images/automacao/escola-frevo/escola_frevo_logo.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        :root {
+            --primary-blue: #0047AB;
+            --secondary-red: #E30022;
+            --accent-yellow: #FFD700;
+            --accent-green: #00A859;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --bg-blur: rgba(255, 255, 255, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Fundo Decorativo (Frevo Style) */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--secondary-red), var(--accent-yellow), var(--accent-green));
+            z-index: 10;
+        }
+
+        .background-blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(0, 71, 171, 0.05) 0%, rgba(227, 0, 34, 0.05) 100%);
+            filter: blur(80px);
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .blob-1 {
+            top: -100px;
+            right: -100px;
+        }
+
+        .blob-2 {
+            bottom: -100px;
+            left: -100px;
+        }
+
+        .container {
+            position: relative;
+            z-index: 5;
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+        }
+
+        .unauthorized-card {
+            background: var(--bg-blur);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 24px;
+            padding: 48px 32px;
+            text-align: center;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-container {
+            margin-bottom: 32px;
+        }
+
+        .logo {
+            height: 100px;
+            width: auto;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.05));
+        }
+
+        .icon-box {
+            width: 80px;
+            height: 80px;
+            background: rgba(227, 0, 34, 0.1);
+            color: var(--secondary-red);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin: 0 auto 24px;
+        }
+
+        h1 {
+            color: var(--text-main);
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.025em;
+        }
+
+        p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .btn-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--primary-blue);
+            color: white;
+            text-decoration: none;
+            padding: 14px 28px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0, 71, 171, 0.2);
+        }
+
+        .btn-home:hover {
+            background-color: #003a8c;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 71, 171, 0.3);
+        }
+
+        .btn-home:active {
+            transform: translateY(0);
+        }
+
+        .footer-text {
+            margin-top: 32px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-blob blob-1"></div>
+    <div class="background-blob blob-2"></div>
+
+    <div class="container">
+        <div class="unauthorized-card">
+            <div class="logo-container">
+                <img src="https://statics.recife.pe.gov.br//images/automacao/escola-frevo/escola_frevo_logo.svg"
+                    alt="Escola de Frevo" class="logo">
+            </div>
+
+            <div class="icon-box">
+                <i class="ph-duotone ph-warning-octagon"></i>
+            </div>
+
+            <h1>Acesso não autorizado</h1>
+            <p>Você não possui as permissões necessárias para acessar este serviço ou recurso. Por favor, retorne à
+                página inicial ou entre em contato com o administrador.</p>
+
+            <a href="index.html" class="btn-home">
+                <i class="ph ph-house"></i>
+                Voltar para o Início
+            </a>
+
+            <div class="footer-text">
+                Escola de Frevo do Recife • Maestro Fernando Borges
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
