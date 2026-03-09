@@ -1528,12 +1528,55 @@
                             </div>
                         </div>
 
+                        <!-- Seção Gestão de Usuários -->
+                        <div class="card-header" style="margin-bottom: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%;">
+                                <div>
+                                    <h2 style="font-size: 1.1rem; color: var(--text-main); margin-bottom: 8px;">
+                                        Gestão de Usuários</h2>
+                                    <p style="color: var(--text-muted); font-size: 0.85rem;">Gerencie quem pode acessar
+                                        e configurar o sistema</p>
+                                </div>
+                                <button class="btn btn-primary" style="padding: 10px 20px; font-size: 0.9rem;"
+                                    onclick="abrirModalUsuario()">
+                                    <i class="ph ph-user-plus" style="margin-right: 8px;"></i>Novo Usuário
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-container"
+                            style="border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-bottom: 32px;">
+                            <table class="table" style="margin-bottom: 0;">
+                                <thead>
+                                    <tr>
+                                        <th>Login</th>
+                                        <th>Usuário (Nome)</th>
+                                        <th>Perfil (Role)</th>
+                                        <th style="text-align: right;">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabela-usuarios-body">
+                                    <tr>
+                                        <td colspan="4"
+                                            style="text-align: center; padding: 40px; color: var(--text-muted);">
+                                            <i class="ph ph-circle-notch ph-spin"
+                                                style="font-size: 1.5rem; margin-bottom: 8px;"></i><br>
+                                            Carregando usuários...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <hr style="margin: 32px 0; border: none; border-top: 1px solid var(--border-color);">
+
                         <div class="row">
-                            <!-- Coluna Esquerda: Períodos de Matrícula -->
-                            <div class="col" style="flex: 2;">
+                            <!-- Coluna Única: Períodos e Datas -->
+                            <div class="col-12">
                                 <h3
                                     style="font-size: 1.1rem; color: var(--text-main); margin-bottom: 16px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">
-                                    Períodos de Matrícula</h3>
+                                    Períodos de Matrícula e Início das Aulas</h3>
 
                                 <form>
                                     <div class="card"
@@ -1544,14 +1587,23 @@
                                         <div class="row">
                                             <div class="col">
                                                 <div class="form-group">
-                                                    <label class="form-label">Início</label>
+                                                    <label class="form-label">Início Inscrição</label>
                                                     <input type="date" class="form-control" id="iniciooficina">
                                                 </div>
                                             </div>
                                             <div class="col">
                                                 <div class="form-group">
-                                                    <label class="form-label">Fim</label>
+                                                    <label class="form-label">Fim Inscrição</label>
                                                     <input type="date" class="form-control" id="terminooficina">
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="form-group">
+                                                    <label class="form-label"
+                                                        style="color: var(--primary-blue); font-weight: 600;">Início das
+                                                        Aulas (Oficina)</label>
+                                                    <input type="date" class="form-control" id="inicio-aulas-oficina"
+                                                        style="border-color: var(--primary-blue);">
                                                 </div>
                                             </div>
                                         </div>
@@ -1575,6 +1627,7 @@
                                                     <input type="date" class="form-control" id="terminorenovacao">
                                                 </div>
                                             </div>
+                                            <div class="col"></div> <!-- Espaçador para manter alinhamento -->
                                         </div>
                                     </div>
 
@@ -1586,89 +1639,38 @@
                                         <div class="row">
                                             <div class="col">
                                                 <div class="form-group">
-                                                    <label class="form-label">Início</label>
+                                                    <label class="form-label">Início Inscrição</label>
                                                     <input type="date" class="form-control" id="inicionovatos">
                                                 </div>
                                             </div>
                                             <div class="col">
                                                 <div class="form-group">
-                                                    <label class="form-label">Fim</label>
+                                                    <label class="form-label">Fim Inscrição</label>
                                                     <input type="date" class="form-control" id="terminonovatos">
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="form-group">
+                                                    <label class="form-label"
+                                                        style="color: var(--accent-green); font-weight: 600;">Início das
+                                                        Aulas (Ano Letivo)</label>
+                                                    <input type="date" class="form-control" id="inicio-aulas-anoletivo"
+                                                        style="border-color: var(--accent-green);">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </form>
-                                <button type="button" class="btn btn-primary" onclick="salvarPeriodosMatricula(this)"
-                                    style="float: right;">
-                                    Salvar calendário
-                                </button>
-                            </div>
 
-                            <!-- Coluna Direita: Início das Aulas -->
-                            <div class="col" style="flex: 1;">
-                                <h3
-                                    style="font-size: 1.1rem; color: var(--text-main); margin-bottom: 16px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">
-                                    Datas Importantes</h3>
-
-                                <div class="card"
-                                    style="box-shadow: none; border: 1px solid var(--border-color); background-color: var(--surface-hover); padding: 16px;">
-                                    <div class="form-group" style="margin-bottom: 16px;">
-                                        <label class="form-label">Início das Aulas (Oficina)</label>
-                                        <input type="date" class="form-control" id="inicio-aulas-oficina">
-                                    </div>
-                                    <div class="form-group" style="margin-bottom: 0;">
-                                        <label class="form-label">Início das Aulas (Ano Letivo)</label>
-                                        <input type="date" class="form-control" id="inicio-aulas-anoletivo">
-                                    </div>
+                                <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+                                    <button class="btn btn-outline"
+                                        onclick="confirmarSalvarCalendarioAulas(this)">Salvar início das aulas</button>
+                                    <button type="button" class="btn btn-primary"
+                                        onclick="salvarPeriodosMatricula(this)">
+                                        Salvar períodos de matrícula
+                                    </button>
                                 </div>
-
-                                <button class="btn btn-primary" style="width: 100%; margin-top: 24px;"
-                                    onclick="confirmarSalvarCalendarioAulas(this)">Salvar início das aulas</button>
                             </div>
-                        </div>
-
-                        <hr style="margin: 32px 0; border: none; border-top: 1px solid var(--border-color);">
-
-                        <!-- Seção Gestão de Usuários -->
-                        <div class="card-header" style="margin-bottom: 24px;">
-                            <div
-                                style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%;">
-                                <div>
-                                    <h2 style="font-size: 1.1rem; color: var(--text-main); margin-bottom: 8px;">
-                                        Gestão de Usuários</h2>
-                                    <p style="color: var(--text-muted); font-size: 0.85rem;">Gerencie quem pode acessar
-                                        e configurar o sistema</p>
-                                </div>
-                                <button class="btn btn-primary" style="padding: 10px 20px; font-size: 0.9rem;"
-                                    onclick="abrirModalUsuario()">
-                                    <i class="ph ph-user-plus" style="margin-right: 8px;"></i>Novo Usuário
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="table-container"
-                            style="border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
-                            <table class="table" style="margin-bottom: 0;">
-                                <thead>
-                                    <tr>
-                                        <th>Login</th>
-                                        <th>Usuário (Nome)</th>
-                                        <th>Perfil (Role)</th>
-                                        <th style="text-align: right;">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tabela-usuarios-body">
-                                    <tr>
-                                        <td colspan="4"
-                                            style="text-align: center; padding: 40px; color: var(--text-muted);">
-                                            <i class="ph ph-circle-notch ph-spin"
-                                                style="font-size: 1.5rem; margin-bottom: 8px;"></i><br>
-                                            Carregando usuários...
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
                         </div>
                     </div>
                 </section>
@@ -2399,12 +2401,6 @@
                                 <label class="radio-label" style="font-weight: 500; font-size: 0.95rem;">
                                     <input type="radio" name="autoriza_imagem" value="Sim" checked required> O aluno
                                     autoriza o uso de sua imagem
-                                </label>
-                                <br>
-                                <label class="radio-label"
-                                    style="font-weight: 500; font-size: 0.95rem; margin-top: 8px;">
-                                    <input type="radio" name="autoriza_imagem" value="Não"> O aluno NÃO autoriza o uso
-                                    de sua imagem
                                 </label>
                             </div>
                         </div>
@@ -4326,16 +4322,17 @@
                 if (docsView) docsView.style.display = 'block';
                 if (laudoEdit) laudoEdit.style.display = 'none';
                 if (laudoView) laudoView.style.display = 'block';
-                renderizarThumbnails(m);
                 document.querySelectorAll('.confirm-field').forEach(el => el.style.display = 'none');
             } else {
-                // Modo edição: mostrar uploads e confirmações
+                // Modo edição: mostrar uploads, confirmações e TAMBÉM thumbnails existentes
                 if (docsEdit) docsEdit.style.display = 'block';
-                if (docsView) docsView.style.display = 'none';
+                if (docsView) docsView.style.display = 'block';
                 if (laudoEdit) laudoEdit.style.display = 'block';
-                if (laudoView) laudoView.style.display = 'none';
+                if (laudoView) laudoView.style.display = 'block';
                 document.querySelectorAll('.confirm-field').forEach(el => el.style.display = '');
             }
+
+            renderizarThumbnails(m);
 
             openModal('modal-matricula', isReadOnly);
 
