@@ -2137,13 +2137,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div id="btn-escolher-turma" style="margin-top: 20px; text-align: right; display:none;">
-                                <button type="button" class="btn btn-outline"
-                                    style="color: var(--primary-blue); border-color: var(--primary-blue);"
-                                    onclick="buscarTurmasDinamicas()">
-                                    <i class="ph ph-magnifying-glass"></i> Escolher Outra Turma
-                                </button>
-                            </div>
                         </div>
 
                         <!-- TAB: Endereço -->
@@ -4334,9 +4327,6 @@
                 if (laudoView) laudoView.style.display = 'block';
                 renderizarThumbnails(m);
                 document.querySelectorAll('.confirm-field').forEach(el => el.style.display = 'none');
-                // Ocultar botão Escolher Outra Turma
-                const btnTurma = document.getElementById('btn-escolher-turma');
-                if (btnTurma) btnTurma.style.display = 'none';
             } else {
                 // Modo edição: mostrar uploads e confirmações
                 if (docsEdit) docsEdit.style.display = 'block';
@@ -4344,9 +4334,6 @@
                 if (laudoEdit) laudoEdit.style.display = 'block';
                 if (laudoView) laudoView.style.display = 'none';
                 document.querySelectorAll('.confirm-field').forEach(el => el.style.display = '');
-                // Mostrar botão Escolher Outra Turma
-                const btnTurma = document.getElementById('btn-escolher-turma');
-                if (btnTurma) btnTurma.style.display = '';
             }
 
             openModal('modal-matricula', isReadOnly);
