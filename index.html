@@ -2139,7 +2139,8 @@
                             </div>
                             <div id="btn-escolher-turma" style="margin-top: 20px; text-align: right; display:none;">
                                 <button type="button" class="btn btn-outline"
-                                    style="color: var(--primary-blue); border-color: var(--primary-blue);">
+                                    style="color: var(--primary-blue); border-color: var(--primary-blue);"
+                                    onclick="buscarTurmasDinamicas()">
                                     <i class="ph ph-magnifying-glass"></i> Escolher Outra Turma
                                 </button>
                             </div>
@@ -3987,20 +3988,20 @@
                     turmaSelect.appendChild(opt);
                 }
 
-                // Força bruta de read-only
-                if (isReadOnly) {
-                    turmaSelect.disabled = true;
-                    turmaSelect.style.pointerEvents = 'none';
+                // Reset da trava de read-only para garantir que a edição libere o campo
+                turmaSelect.disabled = isReadOnly;
+                turmaSelect.style.pointerEvents = isReadOnly ? 'none' : 'auto';
+                turmaSelect.style.backgroundColor = isReadOnly ? 'var(--surface-hover)' : '#fff';
 
-                    const inputsDeps = ['dias', 'horario', 'local'];
-                    inputsDeps.forEach(id => {
-                        const el = document.getElementById(id);
-                        if (el) {
-                            el.readOnly = true;
-                            el.style.pointerEvents = 'none';
-                        }
-                    });
-                }
+                const inputsDeps = ['dias', 'horario', 'local'];
+                inputsDeps.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.readOnly = isReadOnly;
+                        el.style.pointerEvents = isReadOnly ? 'none' : 'auto';
+                        el.style.backgroundColor = isReadOnly ? 'var(--surface-hover)' : '#fff';
+                    }
+                });
             }
             // Nível (select)
             const nivelSelect = document.getElementById('nivel');
