@@ -1528,152 +1528,149 @@
                             </div>
                         </div>
 
-                        <!-- Seção Gestão de Usuários -->
-                        <div class="card-header" style="margin-bottom: 24px;">
-                            <div
-                                style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%;">
-                                <div>
-                                    <h2 style="font-size: 1.1rem; color: var(--text-main); margin-bottom: 8px;">
-                                        Gestão de Usuários</h2>
-                                    <p style="color: var(--text-muted); font-size: 0.85rem;">Gerencie quem pode acessar
-                                        e configurar o sistema</p>
+                        <div class="row" style="gap: 24px; align-items: flex-start;">
+                            <!-- Coluna Esquerda: Gestão de Usuários -->
+                            <div class="col-md-7">
+                                <div class="card-header" style="margin-bottom: 24px; padding: 0;">
+                                    <div
+                                        style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%;">
+                                        <div>
+                                            <h2 style="font-size: 1.1rem; color: var(--text-main); margin-bottom: 8px;">
+                                                Gestão de Usuários</h2>
+                                            <p style="color: var(--text-muted); font-size: 0.85rem;">Gerencie quem pode
+                                                acessar
+                                                e configurar o sistema</p>
+                                        </div>
+                                        <button class="btn btn-primary" style="padding: 10px 20px; font-size: 0.9rem;"
+                                            onclick="abrirModalUsuario()">
+                                            <i class="ph ph-user-plus" style="margin-right: 8px;"></i>Novo Usuário
+                                        </button>
+                                    </div>
                                 </div>
-                                <button class="btn btn-primary" style="padding: 10px 20px; font-size: 0.9rem;"
-                                    onclick="abrirModalUsuario()">
-                                    <i class="ph ph-user-plus" style="margin-right: 8px;"></i>Novo Usuário
-                                </button>
+
+                                <div class="table-container"
+                                    style="border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-bottom: 0;">
+                                    <table class="table" style="margin-bottom: 0;">
+                                        <thead>
+                                            <tr>
+                                                <th>Login</th>
+                                                <th>Usuário (Nome)</th>
+                                                <th>Perfil (Role)</th>
+                                                <th style="text-align: right;">Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tabela-usuarios-body">
+                                            <tr>
+                                                <td colspan="4"
+                                                    style="text-align: center; padding: 40px; color: var(--text-muted);">
+                                                    <i class="ph ph-circle-notch ph-spin"
+                                                        style="font-size: 1.5rem; margin-bottom: 8px;"></i><br>
+                                                    Carregando usuários...
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="table-container"
-                            style="border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-bottom: 32px;">
-                            <table class="table" style="margin-bottom: 0;">
-                                <thead>
-                                    <tr>
-                                        <th>Login</th>
-                                        <th>Usuário (Nome)</th>
-                                        <th>Perfil (Role)</th>
-                                        <th style="text-align: right;">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tabela-usuarios-body">
-                                    <tr>
-                                        <td colspan="4"
-                                            style="text-align: center; padding: 40px; color: var(--text-muted);">
-                                            <i class="ph ph-circle-notch ph-spin"
-                                                style="font-size: 1.5rem; margin-bottom: 8px;"></i><br>
-                                            Carregando usuários...
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                            <!-- Coluna Direita: Empilhamento de Blocos -->
+                            <div class="col-md-5">
 
-                        <hr style="margin: 32px 0; border: none; border-top: 1px solid var(--border-color);">
-
-                        <div class="row">
-                            <!-- Coluna Única: Períodos e Datas -->
-                            <div class="col-12">
+                                <!-- Bloco 1: Períodos de Matrícula -->
                                 <h3
                                     style="font-size: 1.1rem; color: var(--text-main); margin-bottom: 16px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">
-                                    Períodos de Matrícula e Início das Aulas</h3>
+                                    Períodos de Matrícula</h3>
 
-                                <form>
+                                <form id="form-periodos-admin">
                                     <div class="card"
-                                        style="box-shadow: none; border: 1px solid var(--border-color); margin-bottom: 16px; padding: 16px;">
-                                        <h4
-                                            style="font-size: 0.95rem; color: var(--primary-blue); margin-bottom: 12px;">
+                                        style="box-shadow: none; border: 1px solid var(--border-color); margin-bottom: 12px; padding: 12px; background: var(--surface-hover);">
+                                        <h4 style="font-size: 0.9rem; color: var(--primary-blue); margin-bottom: 8px;">
                                             Oficina de Férias</h4>
                                         <div class="row">
                                             <div class="col">
-                                                <div class="form-group">
-                                                    <label class="form-label">Início Inscrição</label>
+                                                <div class="form-group" style="margin-bottom:0;">
+                                                    <label class="form-label" style="font-size: 0.8rem;">Início</label>
                                                     <input type="date" class="form-control" id="iniciooficina">
                                                 </div>
                                             </div>
                                             <div class="col">
-                                                <div class="form-group">
-                                                    <label class="form-label">Fim Inscrição</label>
+                                                <div class="form-group" style="margin-bottom:0;">
+                                                    <label class="form-label" style="font-size: 0.8rem;">Fim</label>
                                                     <input type="date" class="form-control" id="terminooficina">
-                                                </div>
-                                            </div>
-                                            <div class="col">
-                                                <div class="form-group">
-                                                    <label class="form-label"
-                                                        style="color: var(--primary-blue); font-weight: 600;">Início das
-                                                        Aulas (Oficina)</label>
-                                                    <input type="date" class="form-control" id="inicio-aulas-oficina"
-                                                        style="border-color: var(--primary-blue);">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="card"
-                                        style="box-shadow: none; border: 1px solid var(--border-color); margin-bottom: 16px; padding: 16px;">
-                                        <h4
-                                            style="font-size: 0.95rem; color: var(--accent-orange); margin-bottom: 12px;">
-                                            Renovação de Matrículas</h4>
+                                        style="box-shadow: none; border: 1px solid var(--border-color); margin-bottom: 12px; padding: 12px; background: var(--surface-hover);">
+                                        <h4 style="font-size: 0.9rem; color: var(--accent-orange); margin-bottom: 8px;">
+                                            Renovação</h4>
                                         <div class="row">
                                             <div class="col">
-                                                <div class="form-group">
-                                                    <label class="form-label">Início</label>
+                                                <div class="form-group" style="margin-bottom:0;">
+                                                    <label class="form-label" style="font-size: 0.8rem;">Início</label>
                                                     <input type="date" class="form-control" id="iniciorenovacao">
                                                 </div>
                                             </div>
                                             <div class="col">
-                                                <div class="form-group">
-                                                    <label class="form-label">Fim</label>
+                                                <div class="form-group" style="margin-bottom:0;">
+                                                    <label class="form-label" style="font-size: 0.8rem;">Fim</label>
                                                     <input type="date" class="form-control" id="terminorenovacao">
                                                 </div>
                                             </div>
-                                            <div class="col"></div> <!-- Espaçador para manter alinhamento -->
                                         </div>
                                     </div>
 
                                     <div class="card"
-                                        style="box-shadow: none; border: 1px solid var(--border-color); margin-bottom: 16px; padding: 16px;">
-                                        <h4
-                                            style="font-size: 0.95rem; color: var(--accent-green); margin-bottom: 12px;">
+                                        style="box-shadow: none; border: 1px solid var(--border-color); margin-bottom: 12px; padding: 12px; background: var(--surface-hover);">
+                                        <h4 style="font-size: 0.9rem; color: var(--accent-green); margin-bottom: 8px;">
                                             Novas Matrículas</h4>
                                         <div class="row">
                                             <div class="col">
-                                                <div class="form-group">
-                                                    <label class="form-label">Início Inscrição</label>
+                                                <div class="form-group" style="margin-bottom:0;">
+                                                    <label class="form-label" style="font-size: 0.8rem;">Início</label>
                                                     <input type="date" class="form-control" id="inicionovatos">
                                                 </div>
                                             </div>
                                             <div class="col">
-                                                <div class="form-group">
-                                                    <label class="form-label">Fim Inscrição</label>
+                                                <div class="form-group" style="margin-bottom:0;">
+                                                    <label class="form-label" style="font-size: 0.8rem;">Fim</label>
                                                     <input type="date" class="form-control" id="terminonovatos">
-                                                </div>
-                                            </div>
-                                            <div class="col">
-                                                <div class="form-group">
-                                                    <label class="form-label"
-                                                        style="color: var(--accent-green); font-weight: 600;">Início das
-                                                        Aulas (Ano Letivo)</label>
-                                                    <input type="date" class="form-control" id="inicio-aulas-anoletivo"
-                                                        style="border-color: var(--accent-green);">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                    <button type="button" class="btn btn-primary"
+                                        onclick="salvarPeriodosMatricula(this)"
+                                        style="width: 100%; margin-bottom: 24px;">
+                                        Salvar períodos
+                                    </button>
                                 </form>
 
-                                <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
-                                    <button class="btn btn-outline"
-                                        onclick="confirmarSalvarCalendarioAulas(this)">Salvar início das aulas</button>
-                                    <button type="button" class="btn btn-primary"
-                                        onclick="salvarPeriodosMatricula(this)">
-                                        Salvar períodos de matrícula
-                                    </button>
+                                <!-- Bloco 2: Datas Importantes -->
+                                <h3
+                                    style="font-size: 1.1rem; color: var(--text-main); margin-bottom: 16px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">
+                                    Datas Importantes</h3>
+
+                                <div class="card"
+                                    style="box-shadow: none; border: 1px solid var(--border-color); background-color: var(--surface-hover); padding: 16px; margin-bottom: 16px;">
+                                    <div class="form-group" style="margin-bottom: 16px;">
+                                        <label class="form-label">Início das Aulas (Oficina)</label>
+                                        <input type="date" class="form-control" id="inicio-aulas-oficina">
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 0;">
+                                        <label class="form-label">Início das Aulas (Ano Letivo)</label>
+                                        <input type="date" class="form-control" id="inicio-aulas-anoletivo">
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+
+                                <button class="btn btn-primary" style="width: 100%;"
+                                    onclick="confirmarSalvarCalendarioAulas(this)">Salvar início das aulas</button>
+                            </div> <!-- col-md-5 -->
+                        </div> <!-- outer row -->
+                    </div> <!-- card -->
+                </section> <!-- view-admin -->
 
                 <!-- VIEW 5: RELATÓRIOS -->
                 <section id="view-relatorios" class="view">
@@ -2072,7 +2069,7 @@
                                     <div class="form-group">
                                         <label class="form-label" for="proximonivel">Nível sugerido</label>
                                         <input type="text" class="form-control" id="proximonivel" name="" readonly
-                                            style="background-color: var(--surface-hover);">
+                                            style="pointer-events: none; background-color: var(--surface-hover);">
                                     </div>
                                 </div>
                             </div>
@@ -2949,14 +2946,15 @@
         }
 
         // Iniciar monitoramento de atividade
-        window.addEventListener('mousemove', resetarTimer);
-        window.addEventListener('mousedown', resetarTimer);
-        window.addEventListener('keydown', resetarTimer);
-        window.addEventListener('scroll', resetarTimer, true);
-        window.addEventListener('touchstart', resetarTimer);
+        // (Inatividade desativada a pedido do usuário)
+        // window.addEventListener('mousemove', resetarTimer);
+        // window.addEventListener('mousedown', resetarTimer);
+        // window.addEventListener('keydown', resetarTimer);
+        // window.addEventListener('scroll', resetarTimer, true);
+        // window.addEventListener('touchstart', resetarTimer);
 
         // Iniciar o primeiro timer
-        resetarTimer();
+        // resetarTimer();
 
         // ========== CONSULTAR ALUNO POR CPF ==========
         let cpfConsultaEmAndamento = false;
@@ -3805,7 +3803,13 @@
             const setSelect = (id, val) => {
                 const el = document.getElementById(id);
                 if (!el) return;
-                const upperVal = (val || '').toUpperCase();
+                let upperVal = (val || '').toUpperCase();
+
+                // Correção global de encoding para Sim/Não
+                if (upperVal === 'NÒO' || upperVal === 'NAO' || upperVal === 'N\xc3O') {
+                    upperVal = 'NÃO';
+                }
+
                 for (let i = 0; i < el.options.length; i++) {
                     if (el.options[i].text.toUpperCase() === upperVal || el.options[i].value.toUpperCase() === upperVal) {
                         el.selectedIndex = i;
@@ -3817,9 +3821,14 @@
 
             // Número da matrícula (wfid) no badge do header
             const numBadge = document.getElementById('modal-matricula-numero');
+
+            // Garantir extração robusta do número da matrícula
+            const identificadorMatricula = m.wfid || m.id || m.matricula || '';
+            window._currentMatriculaWfid = identificadorMatricula;
+
             if (numBadge) {
-                if (m.wfid) {
-                    numBadge.textContent = `Matrícula #${m.wfid}`;
+                if (identificadorMatricula) {
+                    numBadge.textContent = `Matrícula #${identificadorMatricula}`;
                     numBadge.style.display = 'inline-block';
                 } else {
                     numBadge.style.display = 'none';
@@ -3835,8 +3844,9 @@
             const dtEl = document.getElementById('datanascimento');
             if (dtEl) {
                 dtEl.value = m.data_nascimento_aluno || m.nascimento || '';
-                // Calcular tudo a partir desta data (ignora valores de idade/faixa do payload)
-                calcularIdadeNascimento(isReadOnly);
+                // Calcular tudo a partir desta data (SEMPRE forçar skipReactivity aqui para não engatilhar a busca de turmas)
+                // Isso previne que a turma que já está salva seja limpa pela busca do webhook
+                calcularIdadeNascimento(true);
             }
             setSelect('racacor', m.raca_cor_aluno || m.raca);
             setSelect('genero', m.genero_aluno || m.genero);
@@ -3883,9 +3893,9 @@
             setVal('qual_contraindicacao_ask', m.contraindicacao);
 
             // Atividade física: pode ser "Sim" ou a descrição da atividade
-            const atv = m.atividade_fisica || '';
-            if (atv.toUpperCase() === 'SIM' || atv.toUpperCase() === 'NÒO') {
-                setSelect('realiza_atv_ask', atv);
+            const atv = (m.atividade_fisica || '').trim();
+            if (atv.toUpperCase() === 'SIM' || atv.toUpperCase() === 'NÃO' || atv.toUpperCase() === 'NAO' || atv.toUpperCase() === 'N\xc3O') {
+                setSelect('realiza_atv_ask', atv.toUpperCase() === 'SIM' ? 'Sim' : 'Não');
                 setVal('descreva_atv_ask', '');
             } else if (atv) {
                 setSelect('realiza_atv_ask', 'Sim');
@@ -3893,9 +3903,9 @@
             }
 
             // Medicamento contínuo
-            const med = m.medicamento_continuo || '';
-            if (med.toUpperCase() === 'SIM' || med.toUpperCase() === 'NÒO') {
-                setSelect('usa_mediamento_ask', med);
+            const med = (m.medicamento_continuo || '').trim();
+            if (med.toUpperCase() === 'SIM' || med.toUpperCase() === 'NÃO' || med.toUpperCase() === 'NAO' || med.toUpperCase() === 'N\xc3O') {
+                setSelect('usa_mediamento_ask', med.toUpperCase() === 'SIM' ? 'Sim' : 'Não');
                 setVal('descreva_medicamento_ask', '');
             } else if (med) {
                 setSelect('usa_mediamento_ask', 'Sim');
@@ -3903,9 +3913,9 @@
             }
 
             // Alergia
-            const alg = m.alergia || '';
-            if (alg.toUpperCase() === 'SIM' || alg.toUpperCase() === 'NÒO') {
-                setSelect('alergia_ask', alg);
+            const alg = (m.alergia || '').trim();
+            if (alg.toUpperCase() === 'SIM' || alg.toUpperCase() === 'NÃO' || alg.toUpperCase() === 'NAO' || alg.toUpperCase() === 'N\xc3O') {
+                setSelect('alergia_ask', alg.toUpperCase() === 'SIM' ? 'Sim' : 'Não');
                 setVal('descreva_alergia_ask', '');
             } else if (alg) {
                 setSelect('alergia_ask', 'Sim');
@@ -3943,20 +3953,40 @@
 
                 if (profGroup) profGroup.style.display = 'none';
             } else {
-                if (profGroup) profGroup.style.display = '';
+                let diasStr = '', horStr = '', salaStr = '', profStr = '';
 
-                const turmaRef = buscarTurmaCorrespondente(m.ano_letivo, m.turma);
-                if (turmaRef) {
-                    setVal('dias', turmaRef.dias);
-                    setVal('horario', turmaRef.horario);
-                    setVal('local', turmaRef.sala);
-                    setVal('professor', turmaRef.professor);
-                } else {
-                    setVal('dias', '');
-                    setVal('horario', '');
-                    setVal('local', '');
-                    setVal('professor', '');
+                // Ocultar sempre o campo professor na matrícula
+                if (profGroup) profGroup.style.display = 'none';
+
+                // Extração direta a partir do nome formatado da turma
+                if (m.turma) {
+                    const parts = m.turma.split('-');
+                    if (parts.length >= 3) {
+                        const diasHorario = parts[1].trim();
+                        const dhMatch = diasHorario.match(/(.*?)\((.*?)\)/);
+                        if (dhMatch) {
+                            diasStr = dhMatch[1].trim();
+                            horStr = dhMatch[2].trim();
+                        } else {
+                            diasStr = diasHorario;
+                        }
+                        salaStr = parts.slice(2).join('-').trim();
+                    }
                 }
+
+                setVal('dias', diasStr);
+                setVal('horario', horStr);
+                setVal('local', salaStr);
+                setVal('professor', profStr);
+
+                // Armazena no fallback para o fetch assíncrono (buscarTurmasDinamicas) não apagar quando finalizar
+                window._fallbackTurmaData = {
+                    turma: m.turma,
+                    dias: diasStr,
+                    horario: horStr,
+                    local: salaStr,
+                    professor: profStr
+                };
             }
 
             // Turma (select)
@@ -3978,18 +4008,20 @@
                     turmaSelect.appendChild(opt);
                 }
 
-                // Reset da trava de read-only para garantir que a edição libere o campo
+                // Tranca permanente para EDIÇÃO, impedindo sobreposição
+                turmaSelect.readOnly = isReadOnly; // No modo editar (isReadOnly=false), pode ser disabled/enabled
                 turmaSelect.disabled = isReadOnly;
                 turmaSelect.style.pointerEvents = isReadOnly ? 'none' : 'auto';
                 turmaSelect.style.backgroundColor = isReadOnly ? 'var(--surface-hover)' : '#fff';
 
-                const inputsDeps = ['dias', 'horario', 'local'];
+                // Os metadados de turma abaixo devem sempre permanecer bloqueados para edição manual
+                const inputsDeps = ['dias', 'horario', 'local', 'professor'];
                 inputsDeps.forEach(id => {
                     const el = document.getElementById(id);
                     if (el) {
-                        el.readOnly = isReadOnly;
-                        el.style.pointerEvents = isReadOnly ? 'none' : 'auto';
-                        el.style.backgroundColor = isReadOnly ? 'var(--surface-hover)' : '#fff';
+                        el.readOnly = true;
+                        el.style.pointerEvents = 'none';
+                        el.style.backgroundColor = 'var(--surface-hover)';
                     }
                 });
             }
@@ -4046,7 +4078,9 @@
 
             // Autorização de imagem
             const autoImgRadios = document.querySelectorAll('input[name="autoriza_imagem"]');
-            autoImgRadios.forEach(r => { r.checked = (r.value === (m.autorizacao_uso_imagem || 'Sim')); });
+            autoImgRadios.forEach(r => {
+                r.checked = ((m.autorizacao_uso_imagem || 'Sim').toLowerCase() === r.value.toLowerCase() || (!m.autorizacao_uso_imagem && r.value === 'Sim'));
+            });
 
             // Último registro/atualização (footer)
             const ulInfo = document.getElementById('ultimo-registro-info');
@@ -4056,8 +4090,19 @@
                 ulInfo.style.display = 'block';
                 // Formatar timestamp para fuso de Recife
                 try {
-                    const dt = new Date(m.timestamp);
-                    ulTs.textContent = dt.toLocaleString('pt-BR', { timeZone: 'America/Recife', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                    let tsString = m.timestamp;
+                    if (typeof tsString === 'string') {
+                        tsString = tsString.replace(' ', 'T');
+                        if (tsString.includes('T') && !tsString.includes('Z') && !tsString.match(/[-+]\d{2}:\d{2}$/)) {
+                            tsString += 'Z'; // Forçar UTC caso venha sem fuso do n8n
+                        }
+                    }
+                    const dt = new Date(tsString);
+                    if (!isNaN(dt.getTime())) {
+                        ulTs.textContent = dt.toLocaleString('pt-BR', { timeZone: 'America/Recife', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                    } else {
+                        ulTs.textContent = m.timestamp;
+                    }
                 } catch (e) {
                     ulTs.textContent = m.timestamp;
                 }
@@ -4090,7 +4135,11 @@
             modal.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="number"], input[type="date"]').forEach(el => el.value = '');
             modal.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
             modal.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
-            modal.querySelectorAll('input[type="file"]').forEach(el => el.value = '');
+            modal.querySelectorAll('input[type="file"]').forEach(el => {
+                el.value = '';
+                const fg = el.closest('.form-group');
+                if (fg) fg.style.display = 'block';
+            });
 
             // Definir ano letivo como ano atual
             const anoEl = document.getElementById('anoLetivo');
@@ -4107,11 +4156,11 @@
             if (laudoView) laudoView.style.display = 'none';
             document.querySelectorAll('.confirm-field').forEach(el => el.style.display = '');
 
-            // Garantir que o campo de professor seja exibido (pode ter sido ocultado anteriormente)
+            // Garantir que o campo de professor fique oculto (conforme solicitado pelo usuário)
             const profEl = document.getElementById('professor');
             if (profEl) {
                 const profGp = profEl.closest('.form-group');
-                if (profGp) profGp.style.display = '';
+                if (profGp) profGp.style.display = 'none';
             }
 
             // Ocultar último registro
@@ -4336,6 +4385,25 @@
 
             openModal('modal-matricula', isReadOnly);
 
+            // Se não for read-only (modo edição): garantir que documentos pré-existentes tornam uploads opcionais
+            // e disparar validação para que o botão Avançar apareça na PRIMEIRA abertura
+            if (!isReadOnly) {
+                // Remover obrigatoriedade de todos os file inputs em modo edição
+                // (renderizarThumbnails já oculta/remove required dos que têm doc, aqui cobre os restantes)
+                const modalForm = document.getElementById('modal-matricula');
+                if (modalForm) {
+                    modalForm.querySelectorAll('input[type="file"]').forEach(fi => {
+                        fi.removeAttribute('required');
+                    });
+                }
+                // Dispara validação após DOM estabilizar para exibir o botão Avançar
+                setTimeout(() => {
+                    if (typeof validarFormularioContinuo === 'function') {
+                        validarFormularioContinuo();
+                    }
+                }, 200);
+            }
+
             // Validar parecer: re-habilitar radios de parecer após abrir read-only
             if (validarParecer) {
                 const parecerSim = document.getElementById('parecer_valido_sim');
@@ -4358,9 +4426,9 @@
         // ========== RENDERIZAR THUMBNAILS DE DOCUMENTOS ==========
         function renderizarThumbnails(m) {
             const docs = [
-                { fields: ['anexo_rg_frente_base64', 'rg_frente'], thumbId: 'thumb-rg-frente', imgId: 'thumb-rg-frente-img', linkId: 'thumb-rg-frente-link' },
-                { fields: ['anexo_rg_verso_base64', 'rg_verso'], thumbId: 'thumb-rg-verso', imgId: 'thumb-rg-verso-img', linkId: 'thumb-rg-verso-link' },
-                { fields: ['anexo_cn_base64', 'certidao_nasc'], thumbId: 'thumb-certidao', imgId: 'thumb-certidao-img', linkId: 'thumb-certidao-link' }
+                { fields: ['anexo_rg_frente_base64', 'rg_frente'], thumbId: 'thumb-rg-frente', imgId: 'thumb-rg-frente-img', linkId: 'thumb-rg-frente-link', inputId: 'rg_frente' },
+                { fields: ['anexo_rg_verso_base64', 'rg_verso'], thumbId: 'thumb-rg-verso', imgId: 'thumb-rg-verso-img', linkId: 'thumb-rg-verso-link', inputId: 'rg_verso' },
+                { fields: ['anexo_cn_base64', 'certidao_nasc'], thumbId: 'thumb-certidao', imgId: 'thumb-certidao-img', linkId: 'thumb-certidao-link', inputId: 'certidao_nasc' }
             ];
 
             let temDocumento = false;
@@ -4368,6 +4436,8 @@
                 const el = document.getElementById(d.thumbId);
                 const img = document.getElementById(d.imgId);
                 const link = document.getElementById(d.linkId);
+                const fileInput = document.getElementById(d.inputId);
+
                 // Tentar múltiplos nomes de campo (API nova e antiga)
                 let base64 = null;
                 for (const f of d.fields) { if (m[f]) { base64 = m[f]; break; } }
@@ -4377,8 +4447,18 @@
                     if (link) link.href = src;
                     if (el) el.style.display = 'flex';
                     temDocumento = true;
+
+                    if (fileInput) {
+                        const fg = fileInput.closest('.form-group');
+                        if (fg) fg.style.display = 'none';
+                        fileInput.removeAttribute('required');
+                    }
                 } else {
                     if (el) el.style.display = 'none';
+                    if (fileInput) {
+                        const fg = fileInput.closest('.form-group');
+                        if (fg) fg.style.display = 'block';
+                    }
                 }
             });
 
@@ -4391,6 +4471,7 @@
             const laudoLink = document.getElementById('thumb-laudo-link');
             const laudoBase64 = m.anexo_parecer_base64 || m.parecer_medico;
             const laudoNenhumMsg = document.getElementById('laudo-nenhum-msg');
+            const laudoFileInput = document.getElementById('parecer_medico');
 
             if (laudoBase64 && laudoBase64.length > 10) {
                 const src = laudoBase64.startsWith('data:') ? laudoBase64 : `data:image/jpeg;base64,${laudoBase64}`;
@@ -4398,9 +4479,20 @@
                 if (laudoLink) laudoLink.href = src;
                 if (laudoEl) laudoEl.style.display = 'flex';
                 if (laudoNenhumMsg) laudoNenhumMsg.style.display = 'none';
+
+                if (laudoFileInput) {
+                    const fg = laudoFileInput.closest('.form-group');
+                    if (fg) fg.style.display = 'none';
+                    laudoFileInput.removeAttribute('required');
+                }
             } else {
                 if (laudoEl) laudoEl.style.display = 'none';
                 if (laudoNenhumMsg) laudoNenhumMsg.style.display = 'block';
+
+                if (laudoFileInput) {
+                    const fg = laudoFileInput.closest('.form-group');
+                    if (fg) fg.style.display = 'block';
+                }
             }
         }
 
@@ -4708,6 +4800,11 @@
             window.onModalMatriculaOpen = function (isReadOnly = false) {
                 if (isReadOnly) return; // BLOQUEIO ABSOLUTO: Sem reatividade para modo visualização!
 
+                // BLOQUEIO EDIÇÃO: Se _fallbackTurmaData está definido significa que estamos em modo
+                // de edição com dados de Turma já preenchidos. Não disparar buscarTurmasDinamicas
+                // para não apagar os dados carregados do banco.
+                if (window._fallbackTurmaData && window._fallbackTurmaData.turma) return;
+
                 const dt = document.getElementById('datanascimento');
                 if (dt && dt.value) {
                     // Recalcula tudo a partir da data de nascimento (fonte primária)
@@ -4915,6 +5012,7 @@
 
             const selectTurma = document.getElementById('turma');
             if (!selectTurma) return;
+            const prevTurma = selectTurma.value;
 
             // Pré-requisitos obrigatórios: faixa_etaria, modalidade, nivel e ano_letivo
             // tipomatricula é enviado se disponível mas não bloqueia a chamada
@@ -4938,7 +5036,7 @@
             if (tipomatricula) payload.tipomatricula = tipomatricula;
 
             try {
-                const response = await fetch('https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/turmas-frevo', {
+                const response = await fetch('https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/turmas-frevo-perfil-escola', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -4979,13 +5077,72 @@
                     selectTurma.appendChild(opt);
                 });
 
+                if (prevTurma) {
+                    let achou = false;
+                    for (let i = 0; i < selectTurma.options.length; i++) {
+                        if (selectTurma.options[i].value === prevTurma || selectTurma.options[i].text === prevTurma) {
+                            selectTurma.selectedIndex = i;
+                            achou = true; break;
+                        }
+                    }
+                    if (!achou) {
+                        const opt = document.createElement('option');
+                        opt.value = prevTurma;
+                        opt.textContent = prevTurma;
+                        opt.selected = true;
+
+                        // Resgatar também os valores dos campos associados que já deveriam estar na tela ou em memória
+                        const _dias = document.getElementById('dias')?.value || '';
+                        const _horario = document.getElementById('horario')?.value || '';
+                        const _local = document.getElementById('local')?.value || '';
+                        const _prof = document.getElementById('professor')?.value || '';
+
+                        opt.dataset.dias = _dias;
+                        opt.dataset.horario = _horario;
+                        opt.dataset.local = _local;
+                        opt.dataset.professor = _prof;
+                        selectTurma.appendChild(opt);
+
+                        // E reatribuir para garantir que a renderização os recupere no dispach do change
+                        window._fallbackTurmaData = { dias: _dias, horario: _horario, local: _local, professor: _prof };
+                    }
+                }
+
             } catch (error) {
                 console.error('Erro na busca de turmas:', error);
                 selectTurma.innerHTML = '<option value="">Erro ao carregar turmas</option>';
             } finally {
                 selectTurma.disabled = false;
-                // Dispara o change para limpar os campos dependentes
-                selectTurma.dispatchEvent(new Event('change'));
+
+                // Forçar a reentrada os valores caso o backend esvazie nossos dados originais
+                if (window._fallbackTurmaData && window._fallbackTurmaData.turma) {
+                    let found = false;
+                    for (let i = 0; i < selectTurma.options.length; i++) {
+                        if (selectTurma.options[i].value === window._fallbackTurmaData.turma) {
+                            selectTurma.selectedIndex = i;
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        const opt = document.createElement('option');
+                        opt.value = window._fallbackTurmaData.turma;
+                        opt.textContent = window._fallbackTurmaData.turma;
+                        opt.selected = true;
+                        selectTurma.appendChild(opt);
+                    }
+
+                    if (document.getElementById('dias')) document.getElementById('dias').value = window._fallbackTurmaData.dias || '';
+                    if (document.getElementById('horario')) document.getElementById('horario').value = window._fallbackTurmaData.horario || '';
+                    if (document.getElementById('local')) document.getElementById('local').value = window._fallbackTurmaData.local || '';
+                    if (document.getElementById('professor')) document.getElementById('professor').value = window._fallbackTurmaData.professor || '';
+
+                    window._fallbackTurmaData = null; // Consume
+                    validarFormularioContinuo(); // Dispara validacao pois repopulamos o select
+                } else {
+                    // Dispara o change normal apenas se não recarregamos pelo fallback
+                    selectTurma.dispatchEvent(new Event('change'));
+                }
             }
         }
 
@@ -5333,9 +5490,12 @@
             if (valido) {
                 const possuiRG = getRaw('possuirg');
                 if (possuiRG === 'Sim') {
-                    if (!getRaw('rg_frente') || !getRaw('rg_verso')) valido = false;
+                    const hasFrente = getRaw('rg_frente') || (window._currentMatriculaDocs && window._currentMatriculaDocs.rg_frente);
+                    const hasVerso = getRaw('rg_verso') || (window._currentMatriculaDocs && window._currentMatriculaDocs.rg_verso);
+                    if (!hasFrente || !hasVerso) valido = false;
                 } else if (possuiRG === 'Não') {
-                    if (!getRaw('certidao_nasc')) valido = false;
+                    const hasCN = getRaw('certidao_nasc') || (window._currentMatriculaDocs && window._currentMatriculaDocs.certidao_nasc);
+                    if (!hasCN) valido = false;
                 } else {
                     valido = false; // "Selecione..." is invalid
                 }
@@ -5697,7 +5857,7 @@
                 anexo_rg_frente_base64: await getFileB64('rg_frente', 'rg_frente'),
                 anexo_rg_verso_base64: await getFileB64('rg_verso', 'rg_verso'),
                 anexo_cn_base64: await getFileB64('certidao_nasc', 'certidao_nasc'),
-                wfid: window._currentMatriculaWfid || '',
+                wfid: matriculaSelecionadaId || window._currentMatriculaWfid || '',
                 nivel_atual: getVal('nivel'),
                 anexo_parecer_base64: await getFileB64('parecer_medico', 'parecer_medico'),
                 parecer_valido: document.querySelector('input[name="parecer_valido"]:checked')?.value || ''
